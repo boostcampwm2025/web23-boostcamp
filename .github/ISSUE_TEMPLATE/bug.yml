@@ -1,0 +1,19 @@
+name: 버그 이슈 템플릿
+description: 버그가 났을 때, 버그에 대한 이슈를 작성합니다.
+title: "[Task] "
+labels: [ ⚠️ bug ]
+sections:
+  - heading: "어떤 버그인가요??"
+    body: "> 어떤 버그인지 간결하게 설명해주세요"
+
+  - heading: "어떤 상황에서 발생한 버그인가요?"
+    body: "(가능하면) Given-When-Then 형식으로 서술해주세요"
+
+  - heading: "예상 결과"
+    body: "> 예상했던 정상적인 결과가 어떤 것이었는지 설명해주세요"
+
+  - heading: "수정범위, 영향범위(선택)"
+    body: ""
+
+  - heading: "참고할만한 자료(선택)"
+    body: ""
