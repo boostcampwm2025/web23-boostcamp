@@ -3,23 +3,22 @@ description: 기능을 개발할 때, 기능에 대한 이슈를 작성합니다
 title: "[Task] "
 labels: ["✨ feature"]
 body:
-  - type: markdown
+  - type: textarea
+    id: feature
     attributes:
-      value: |
-        ## 어떤 기능인가요?
-        > 추가하려는 기능에 대해 간결하게 설명해주세요
+      label: 어떤 기능인가요?
+      description: 추가하려는 기능에 대해 간결하게 설명해주세요
 
-  - type: checkboxes
+  - type: textarea
     id: tasks
     attributes:
       label: 작업 상세 내용
-      options:
-        - label: TODO 1
-        - label: TODO 2
-        - label: TODO 3
+      value: |
+        - [ ] TODO
+        - [ ] TODO
+        - [ ] TODO
 
   - type: textarea
     id: references
     attributes:
       label: 참고할만한 자료(선택)
-      placeholder: 관련 문서 링크나 스크린샷이 있다면 첨부해주세요.
