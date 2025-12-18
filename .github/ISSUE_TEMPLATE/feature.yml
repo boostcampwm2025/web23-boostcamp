@@ -2,15 +2,22 @@ name: 기능 이슈 템플릿
 description: 기능을 개발할 떄, 기능에 대한 이슈를 작성합니다.
 title: "[Task] "
 labels: [✨ feature]
-sections:
-  - heading: "어떤 기능인가요?"
-    body: "> 추가하려는 기능에 대해 간결하게 설명해주세요"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 어떤 기능인가요?
 
-  - heading: "작업 상세 내용"
-    checklist:
-      - "[ ] TODO"
-      - "[ ] TODO"
-      - "[ ] TODO"
+        > 추가하려는 기능에 대해 간결하게 설명해주세요
 
-  - heading: "참고할만한 자료(선택)"
-    body: ""
+  - type: checkboxes
+    attributes:
+      label: 작업 상세 내용
+      options:
+        - label: TODO
+        - label: TODO
+        - label: TODO
+
+  - type: textarea
+    attributes:
+      label: 참고할만한 자료(선택)
