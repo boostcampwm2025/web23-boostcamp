@@ -61,4 +61,4 @@ jobs:
       - name: 📊 CI Summary
         if: always()
         run: |
-          echo "린트, 빌드, 테스트 상세 결과는 상단 **Checks** 탭에서 확인 >> $GITHUB_STEP_SUMMARY
+          echo "린트, 빌드, 테스트 상세 결과는 상단 **Checks** 탭에서 확인" >> $GITHUB_STEP_SUMMARY
