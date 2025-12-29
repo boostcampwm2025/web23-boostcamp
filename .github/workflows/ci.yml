@@ -1,0 +1,64 @@
+name: Monorepo pnpm CI
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main", "develop"]
+
+jobs:
+  ci-pipeline:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      checks: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      # 1. 린트, 빌드, 테스트 한 번에 실행 (변경된 패키지만)
+      - name: Run Lint, Build & Test (Affected)
+        run: npx turbo run lint build test:ci --filter=...[origin/main]
+        continue-on-error: true
+
+      # 2. 테스트 결과 시각화
+      - name: Publish Test Report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: 🧪 Unit Test Results
+          path: "packages/**/junit.xml"
+          reporter: jest-junit
+
+      # 3. 도커 푸시 (인스턴스 생기기 전까지 비활성화)
+      - name: Docker Login & Push (Backend)
+        if: false
+        # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.NCP_SECRET_KEY }}" | docker login ${{ secrets.DOCKER_REGISTRY }} -u ${{ secrets.NCP_ACCESS_KEY }} --password-stdin
+          docker build -t ${{ secrets.DOCKER_REGISTRY }}/backend:latest -f ./packages/backend/Dockerfile .
+          docker push ${{ secrets.DOCKER_REGISTRY }}/backend:latest
+
+      # 4. 요약 현황판
+      - name: 📊 CI Summary
+        if: always()
+        run: |
+          echo "린트, 빌드, 테스트 상세 결과는 상단 **Checks** 탭에서 확인 >> $GITHUB_STEP_SUMMARY
