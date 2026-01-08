@@ -10,9 +10,11 @@
     "test:ci": "jest --ci --passWithNoTests --reporters=default --reporters=jest-junit"
   },
   "dependencies": {
-    "next": "16.0.10",
-    "react": "19.2.1",
-    "react-dom": "19.2.1"
+    "iron-session": "^8.0.4",
+    "motion": "^12.24.10",
+    "next": "16.1.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
@@ -28,6 +30,7 @@
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "tailwindcss": "^4.1.18",
+    "tailwindcss-animate": "^1.0.7",
     "ts-jest": "^29.2.5",
     "typescript": "^5"
   }
