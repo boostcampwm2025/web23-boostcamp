@@ -9,7 +9,7 @@ export class AIPersona {
     @Column({ type: 'varchar', length: 255 })
     prompt: string;
 
-    @Column({ type: 'varchar', length: 255 })
+    @Column({ type: 'varchar', length: 255, unique: true })
     name: string;
 
     @Column({ name: 'img_url', type: 'varchar', length: 255 })
