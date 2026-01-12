@@ -8,9 +8,14 @@ async function bootstrap() {
     logger: WinstonModule.createLogger(winstonOptions),
   });
 
-  await app.listen(process.env.PORT ?? 3001);
+  await app.listen(process.env.PORT ?? 8000);
 }
 bootstrap().catch((err) => {
-  console.error(err);
+  const logger = WinstonModule.createLogger(winstonOptions);
+  if (logger.fatal) {
+    logger.fatal(err);
+  } else {
+    logger.error(err);
+  }
   process.exit(1);
 });
