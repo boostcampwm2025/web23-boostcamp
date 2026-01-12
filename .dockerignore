@@ -1,0 +1,39 @@
+# IDEs and Tools
+**/.idea
+**/.vscode
+**/.DS_Store
+
+# Dependencies
+**/node_modules
+**/pnpm-lock.yaml
+**/yarn.lock
+**/package-lock.json
+**/.pnpm-store
+
+# Build Outputs
+**/dist
+**/build
+**/.next
+**/.turbo
+
+# Logs
+**/logs
+**/*.log
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+
+# Environment Files
+**/.env
+**/.env.local
+**/.env.development
+**/.env.production
+**/.env.test
+
+# Tests
+**/coverage
+
+# Git
+.git
+.gitignore
