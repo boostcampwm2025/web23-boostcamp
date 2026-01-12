@@ -1,0 +1,41 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: web23-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - web23-network
+
+  backend:
+    build:
+      context: ../../
+      dockerfile: packages/backend/Dockerfile
+    container_name: web23-backend
+    volumes:
+      - .:/app/packages/backend
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "${PORT}:${PORT}"
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+    networks:
+      - web23-network
+
+volumes:
+  mysql_data:
+
+networks:
+  web23-network:
+    driver: bridge
