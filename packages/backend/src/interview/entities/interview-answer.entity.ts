@@ -1,29 +1,33 @@
 import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    CreateDateColumn,
-    UpdateDateColumn,
-    ManyToOne,
-    JoinColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Interview } from './interview.entity';
 
 @Entity('interviews_answers')
 export class InterviewAnswer {
-    @PrimaryGeneratedColumn({ type: 'bigint', name: 'answer_id' })
-    answerId: string;
+  constructor(content: string) {
+    this.content = content;
+  }
 
-    @Column({ type: 'varchar', length: 255 })
-    content: string;
+  @PrimaryGeneratedColumn({ type: 'bigint', name: 'answer_id' })
+  answerId: string;
 
-    @CreateDateColumn({ name: 'created_at' })
-    createdAt: Date;
+  @Column({ type: 'varchar', length: 255 })
+  content: string;
 
-    @UpdateDateColumn({ name: 'modified_at' })
-    modifiedAt: Date;
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
 
-    @ManyToOne(() => Interview, (interview) => interview.answers)
-    @JoinColumn({ name: 'interview_id' })
-    interview: Interview;
+  @UpdateDateColumn({ name: 'modified_at' })
+  modifiedAt: Date;
+
+  @ManyToOne(() => Interview, (interview) => interview.answers)
+  @JoinColumn({ name: 'interview_id' })
+  interview: Interview;
 }

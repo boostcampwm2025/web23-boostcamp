@@ -3,7 +3,7 @@ import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { AuthModule } from './auth/auth.module';
 import { DocumentModule } from './document/document.module';
 import { InterviewModule } from './interview/interview.module';
-import { UserModule } from "./user/user.module";
+import { UserModule } from './user/user.module';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,10 +14,7 @@ import { winstonOptions } from './common/logger/winston.config';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: [
-        `.env.${process.env.NODE_ENV}`,
-        '.env',
-      ],
+      envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
     }),
     WinstonModule.forRoot(winstonOptions),
     TypeOrmModule.forRootAsync({
@@ -49,4 +46,3 @@ export class AppModule implements NestModule {
     consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }
-
