@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import { MountainSnow } from "lucide-react";
 
@@ -9,7 +8,7 @@ import { logout } from "@/app/actions/auth";
 
 export default function Header() {
   return (
-    <header className="flex items-center justify-between border-b px-4 py-4">
+    <header className="fixed top-0 flex w-full items-center justify-between border-b bg-white px-1.5 py-1.5 shadow-sm backdrop-blur-md">
       <nav className="flex items-center gap-4 font-semibold">
         <h1>
           <Link href={"/"}>
