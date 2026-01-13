@@ -8,11 +8,11 @@ import { logout } from "@/app/actions/auth";
 
 export default function Header() {
   return (
-    <header className="fixed top-0 flex w-full items-center justify-between border-b bg-white px-1.5 py-1.5 shadow-sm backdrop-blur-md">
+    <header className="fixed top-0 flex w-full items-center justify-between border-b bg-white px-6 py-1.5 shadow-sm backdrop-blur-md">
       <nav className="flex items-center gap-4 font-semibold">
         <h1>
           <Link href={"/"}>
-            <MountainSnow />
+            <MountainSnow className="text-primary" />
           </Link>
         </h1>
         <AutoBreadcrumb />

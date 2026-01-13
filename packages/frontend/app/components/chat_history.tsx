@@ -14,7 +14,7 @@ interface IChatHistory {
 
 export default function ChatHistory({ chatMessages }: IChatHistory) {
   return (
-    <>
+    <div>
       {chatMessages.map((message) => (
         <div
           key={message.id}
@@ -26,19 +26,19 @@ export default function ChatHistory({ chatMessages }: IChatHistory) {
           <h5 className="text-xs font-semibold">{message.sender}</h5>
           <span
             className={cn(
-              "w-fit max-w-3/4 rounded-md border bg-white p-2 text-sm",
+              "w-fit max-w-3/4 rounded-2xl border bg-white p-2 text-xs text-pretty",
               message.role === "ai"
                 ? "rounded-bl-none"
-                : "rounded-br-none border-blue-100 bg-blue-50",
+                : "rounded-br-none border-primary bg-primary/10",
             )}
           >
             {message.content}
           </span>
           <h6 className="text-xs text-black/60">
-            {new Date(message.timestamp).toLocaleString()}
+            {new Date(message.timestamp).toLocaleString("ko-KR")}
           </h6>
         </div>
       ))}
-    </>
+    </div>
   );
 }

@@ -3,40 +3,46 @@
 import { useState } from "react";
 
 import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { ArrowRight } from "lucide-react";
+import { Textarea } from "@/app/components/ui/textarea";
+import { ArrowUp, AudioLines } from "lucide-react";
 
-export default function ChatInput({
-  onSend,
-}: {
+interface IChatInputProps {
+  placeholder?: string;
   onSend: (text: string) => void;
-}) {
+}
+
+export default function ChatInput({ placeholder, onSend }: IChatInputProps) {
   const [text, setText] = useState("");
 
   const submit = () => {
-    if (!text.trim()) {
-      return;
-    }
-    onSend(text);
+    if (!text.trim()) return;
+    onSend(text.trim());
     setText("");
   };
 
   return (
-    <div className="fixed bottom-0 left-0 w-full">
-      <div className="relative">
-        <Input
+    <div className="mx-auto w-full">
+      <div className="flex items-end gap-2 rounded-xl border bg-white px-3 py-2 shadow-sm">
+        <Textarea
           value={text}
+          placeholder={placeholder}
+          className="resize-none border-0 p-2 text-sm shadow-none focus-visible:ring-0"
           onChange={(e) => setText(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && submit()}
-          placeholder="메시지를 입력하세요... "
-          className=""
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              submit();
+            }
+          }}
         />
+
         <Button
+          size="icon"
           onClick={submit}
           disabled={!text.trim()}
-          className="absolute right-4 bottom-0 rounded-full"
+          className="h-8 w-8 rounded-full"
         >
-          <ArrowRight />
+          {text.trim() ? <ArrowUp size={16} /> : <AudioLines size={16} />}
         </Button>
       </div>
     </div>

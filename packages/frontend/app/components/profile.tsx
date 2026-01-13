@@ -27,29 +27,23 @@ export default function Profile({
     <div className="p-3">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Avatar className="cursor-pointer">
+          <Avatar className="cursor-pointer ring-1 ring-primary transition-all hover:brightness-110">
             <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
             <AvatarFallback>Default</AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="start">
+        <DropdownMenuContent className="m-1 w-56" align="start">
           <DropdownMenuLabel>Email</DropdownMenuLabel>
-          <DropdownMenuItem>
-            {email}
-            {/* <DropdownMenuShortcut>⌘E</DropdownMenuShortcut> */}
-          </DropdownMenuItem>
+          <DropdownMenuItem>{email}</DropdownMenuItem>
 
-          <DropdownMenuSeparator />
+          {/* <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem>Theme</DropdownMenuItem>
-            <DropdownMenuItem>
-              New Team
-              <DropdownMenuShortcut>⌘+T</DropdownMenuShortcut>
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
+            <DropdownMenuItem>New Team</DropdownMenuItem>
+          </DropdownMenuGroup> */}
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={logout}>
-            Log out
+          <DropdownMenuItem onClick={logout} className="cursor-pointer">
+            sign out
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -9,11 +9,11 @@ export default function Chat({
   chatMessages: IChatMessage[];
 }) {
   return (
-    <div>
-      <div className="px-6">
+    <div className="flex h-full flex-col">
+      <div className="flex-1 overflow-y-auto">
         <ChatHistory chatMessages={chatMessages} />
-        <ChatInput onSend={()=>{}} />
       </div>
+      <ChatInput placeholder="??" onSend={() => {}} />
     </div>
   );
 }
