@@ -1,4 +1,5 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { AuthModule } from './auth/auth.module';
 import { DocumentModule } from './document/document.module';
 import { InterviewModule } from './interview/interview.module';
@@ -6,6 +7,8 @@ import { UserModule } from "./user/user.module";
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { WinstonModule } from 'nest-winston';
+import { winstonOptions } from './common/logger/winston.config';
 
 @Module({
   imports: [
@@ -16,6 +19,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         '.env',
       ],
     }),
+    WinstonModule.forRoot(winstonOptions),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -40,4 +44,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}
+
