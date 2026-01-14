@@ -11,7 +11,7 @@ export class InterviewService {
     private readonly sttService: SttService,
   ) { }
 
-  async answer(
+  async answerWithVoice(
     userId: string,
     interviewId: string,
     file: Express.Multer.File,
@@ -28,6 +28,23 @@ export class InterviewService {
     interview.answers.push(answer);
     await this.interviewRepository.save(interview);
     return sttResult;
+  }
+
+  async answerWithChat(
+    userId: string,
+    interviewId: string,
+    answerText: string,
+  ): Promise<string> {
+    const interview = await this.findExistingInterview(interviewId, [
+      'answers',
+      'user',
+    ]);
+    interview.validateUser(userId);
+
+    const answer = new InterviewAnswer(answerText);
+    interview.answers.push(answer);
+    await this.interviewRepository.save(interview);
+    return answerText;
   }
 
   async findExistingInterview(
