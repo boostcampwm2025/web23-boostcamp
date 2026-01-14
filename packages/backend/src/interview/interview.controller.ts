@@ -15,7 +15,7 @@ import { InterviewAnswerResponse } from './dto/interview-answer-response.dto';
 
 @Controller('interview')
 export class InterviewController {
-  constructor(private readonly interviewService: InterviewService) { }
+  constructor(private readonly interviewService: InterviewService) {}
 
   @Post('answer/voice')
   @UseInterceptors(FileInterceptor('file'))
