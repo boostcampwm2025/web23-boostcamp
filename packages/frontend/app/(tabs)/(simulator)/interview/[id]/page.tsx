@@ -51,7 +51,7 @@ export default function Page() {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   return (
-    <div className="mx-auto grid grid-cols-1 gap-4 md:max-w-2xl lg:max-w-7xl lg:grid-cols-12 2xl:max-w-428">
+    <div className="mx-auto mt-20 grid grid-cols-1 gap-4 md:max-w-2xl lg:max-w-7xl lg:grid-cols-12 2xl:max-w-428">
       <div
         className={cn(
           "grid max-w-2xl auto-rows-auto grid-cols-3 gap-1.5 lg:max-w-7xl",

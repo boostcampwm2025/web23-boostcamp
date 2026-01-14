@@ -9,7 +9,7 @@ export default function VideoTile({
   return (
     <div
       className={cn(
-        "relative aspect-video w-full overflow-hidden rounded-lg bg-black",
+        "relative w-full overflow-hidden rounded-lg bg-black",
         isSpeaker ? "shadow-lg ring-2 ring-primary" : "",
       )}
     >

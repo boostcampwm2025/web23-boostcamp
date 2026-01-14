@@ -39,12 +39,12 @@ export default function AutoBreadcrumb() {
               <BreadcrumbItem key={href} className="flex items-center">
                 {isLast ? (
                   <BreadcrumbPage className="text-xs">
-                    {segment.replace(/-/g, " ")}
+                    {decodeURIComponent(segment).replace(/-/g, " ")}
                   </BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink asChild>
                     <Link href={href} className="text-xs">
-                      {segment.replace(/-/g, " ")}
+                      {decodeURIComponent(segment).replace(/-/g, " ")}
                     </Link>
                   </BreadcrumbLink>
                 )}
