@@ -1,17 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { MessageSquare, X } from "lucide-react";
-
-import Chat from "@/app/(tabs)/(simulator)/components/chat";
-import VideoTile from "@/app/(tabs)/(simulator)/interview/components/video_tile";
 
 import { IChatMessage } from "@/app/components/chat_history";
-import { Button } from "@/app/components/ui/button";
 
-import { cn } from "@/app/lib/utils";
 import VideoGrid from "../components/video_grid";
 import ChatPanel from "../../components/chat_panel";
+import { InterviewControls } from "../components/interview_controls";
 
 const initialMessages: IChatMessage[] = [
   {
@@ -53,8 +48,20 @@ export default function Page() {
 
   return (
     <div className="mx-auto flex max-w-630 flex-col gap-5 py-2 xl:flex-row">
-      <div className="flex-2">
+      <div className="relative flex-2">
         <VideoGrid />
+        {/* <InterviewControls /> */}
+        {/* FIXME: 이 부분은 의논.. 그 채팅방 껏을 떄도 자막 보이게.. */}
+        {/* <div className="absolute bottom-4 left-4">
+          <div className="rounded-md bg-black/60 px-3 py-1 text-sm text-white">
+            면접관: React의 Virtual DOM 작동 원리에 대해 설명해 주실 수 있나요?
+          </div>
+        </div> */}
+
+        {/* control message show , mic on off, cam on off */}
+        <InterviewControls
+          onToggleChat={() => setIsChatOpen((prev) => !prev)}
+        />
       </div>
       {isChatOpen && (
         <div className="flex-1">
