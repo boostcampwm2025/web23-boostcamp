@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InterviewRepository } from './interview.repository';
 import { Interview } from './entities/interview.entity';
 import { SttService } from './stt.service';
@@ -9,7 +9,7 @@ export class InterviewService {
   constructor(
     private readonly interviewRepository: InterviewRepository,
     private readonly sttService: SttService,
-  ) {}
+  ) { }
 
   async answer(
     userId: string,
