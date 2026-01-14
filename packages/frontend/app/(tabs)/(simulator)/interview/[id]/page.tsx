@@ -10,6 +10,8 @@ import { IChatMessage } from "@/app/components/chat_history";
 import { Button } from "@/app/components/ui/button";
 
 import { cn } from "@/app/lib/utils";
+import VideoGrid from "../components/video_grid";
+import ChatPanel from "../../components/chat_panel";
 
 const initialMessages: IChatMessage[] = [
   {
@@ -46,54 +48,30 @@ const initialMessages: IChatMessage[] = [
   },
 ];
 
-// FIXME: 여기는 디테일이 아직 필요.. 아이디어 많..
 export default function Page() {
-  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(true);
 
   return (
-    <div className="mx-auto mt-20 grid grid-cols-1 gap-4 md:max-w-2xl lg:max-w-7xl lg:grid-cols-12 2xl:max-w-428">
-      <div
-        className={cn(
-          "grid max-w-2xl auto-rows-auto grid-cols-3 gap-1.5 lg:max-w-7xl",
-          isChatOpen ? "lg:col-span-9" : "lg:col-span-12",
-        )}
-      >
-        <VideoTile />
-        <VideoTile />
-        <VideoTile />
-        <div className="col-span-3">
-          <VideoTile isSpeaker />
-        </div>
+    <div className="mx-auto flex max-w-630 flex-col gap-5 py-2 xl:flex-row">
+      <div className="flex-2">
+        <VideoGrid />
       </div>
       {isChatOpen && (
-        <div className="flex max-w-2xl flex-col rounded-2xl border bg-white p-3 lg:col-span-3">
-          <div className="mb-3 flex items-center justify-between border-b pb-2">
-            <div className="flex items-center gap-2">
-              <MessageSquare className="size-4" />
-              <h3 className="text-sm font-semibold"> 채팅 기록</h3>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6"
-              onClick={() => setIsChatOpen(false)}
-            >
-              <X className="size-4" />
-            </Button>
-          </div>
-          <div className="min-h-0 flex-1">
-            <Chat chatMessages={initialMessages} />
-          </div>
+        <div className="flex-1">
+          <ChatPanel
+            message={initialMessages}
+            onClose={() => setIsChatOpen(false)}
+          />
         </div>
       )}
-      {!isChatOpen && (
+      {/* {!isChatOpen && (
         <Button
           className="fixed right-6 bottom-6 h-12 w-12 rounded-full shadow-lg"
           onClick={() => setIsChatOpen(true)}
         >
           <MessageSquare className="size-6" />
         </Button>
-      )}
+      )} */}
     </div>
   );
 }
