@@ -5,9 +5,9 @@ import { InterviewService } from './interview.service';
 
 @Controller('interview')
 export class InterviewController {
-  constructor(private readonly interviewService: InterviewService) {}
+  constructor(private readonly interviewService: InterviewService) { }
 
-  @Post(':interviewId/answer')
+  @Post(':interviewId/answer/voice')
   @UseInterceptors(FileInterceptor('file'))
   async answer(
     @UploadedFile() file: Express.Multer.File,
