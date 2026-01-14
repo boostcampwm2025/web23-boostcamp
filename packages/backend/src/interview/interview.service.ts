@@ -1,7 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException} from '@nestjs/common';
 import { InterviewRepository } from './interview.repository';
 import { Interview } from './entities/interview.entity';
-import { NotFoundException } from '@nestjs/common';
 import { SttService } from './stt.service';
 import { InterviewAnswer } from './entities/interview-answer.entity';
 
