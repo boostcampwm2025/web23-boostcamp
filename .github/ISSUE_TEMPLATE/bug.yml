@@ -1,7 +1,7 @@
 name: 버그 이슈 템플릿
 description: 버그가 났을 때, 버그에 대한 이슈를 작성합니다.
 title: "[Task] "
-labels: [ "⚠️ bug" ]
+labels: ["⚠️ bug"]
 body:
   - type: textarea
     attributes:
