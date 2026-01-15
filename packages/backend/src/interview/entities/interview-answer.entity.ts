@@ -18,7 +18,7 @@ export class InterviewAnswer {
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'answer_id' })
   answerId: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'text' })
   content: string;
 
   @CreateDateColumn({ name: 'created_at' })

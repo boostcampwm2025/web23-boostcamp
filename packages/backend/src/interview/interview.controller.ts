@@ -12,6 +12,8 @@ import {
   InterviewAnswerChatRequest,
 } from './dto/interview-answer-request.dto';
 import { InterviewAnswerResponse } from './dto/interview-answer-response.dto';
+import { InterviewQuestionRequest } from './dto/interview-question-request.dto';
+import { InterviewQuestionResponse } from './dto/interview-question-response.dto';
 
 @Controller('interview')
 export class InterviewController {
@@ -51,5 +53,12 @@ export class InterviewController {
     return {
       answer: answerResult,
     };
+  }
+
+  @Post('tech/question')
+  async getIntervalQuestion(
+    @Body() body: InterviewQuestionRequest,
+  ): Promise<InterviewQuestionResponse> {
+    return await this.interviewService.chatInterviewer(body.interviewId);
   }
 }
