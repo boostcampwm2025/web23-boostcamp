@@ -4,10 +4,13 @@ import Header from "@/app/components/header";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <SidebarProvider>
-      <AppSidebar />
+    <main>
       <Header />
-      <main className="mt-20 w-full">{children}</main>
-    </SidebarProvider>
+
+      <SidebarProvider>
+        <AppSidebar />
+        <main className="mt-20 h-full w-full">{children}</main>
+      </SidebarProvider>
+    </main>
   );
 }

@@ -5,6 +5,7 @@ import Score from "./components/score";
 import { Heart, HeartOff } from "lucide-react";
 import Tip from "./components/tip";
 import { Button } from "@/app/components/ui/button";
+import { Skeleton } from "@/app/components/ui/skeleton";
 
 const initialMessages = [
   {
@@ -57,9 +58,10 @@ export default function InterviewResultPage() {
           </div>
         </div>
         <div className="flex flex-col gap-6 md:flex-row">
-          <Panel className="flex-1 p-5">
+          <Skeleton className="flex-1 rounded-2xl border p-5 shadow" />
+          {/* <Panel className="flex-1 p-5">
             <Score />
-          </Panel>
+          </Panel> */}
           <Panel className="flex-2 p-5">
             <video src="..." className="rounded-2xl bg-primary"></video>
           </Panel>
@@ -68,9 +70,10 @@ export default function InterviewResultPage() {
           <Panel className="flex-2 p-5">
             <ChatHistory chatMessages={initialMessages} />
           </Panel>
-          <Panel className="flex-1 p-5">
+          <Skeleton className="flex-1 animate-pulse rounded-2xl border p-5 shadow" />
+          {/* <Panel className="flex-1 p-5">
             <AISummary />
-          </Panel>
+          </Panel> */}
         </div>
         <div className="flex flex-col gap-6 md:flex-row">
           <Panel className="flex-1 bg-primary/5 p-5">
@@ -82,10 +85,10 @@ export default function InterviewResultPage() {
             Did you find this feedback helpful?
           </span>
           <div className="flex gap-2">
-            <Button className="animate-bounce cursor-pointer">
+            <Button className="cursor-pointer">
               <Heart className="text-white" />
             </Button>
-            <Button className="animate-bounce cursor-pointer">
+            <Button className="cursor-pointer">
               <HeartOff className="text-white" />
             </Button>
           </div>
