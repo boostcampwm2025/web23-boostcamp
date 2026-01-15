@@ -10,13 +10,19 @@ import {
 import { cn } from "@/app/lib/utils";
 
 import Chat from "./chat";
+import { IChatMessage } from "@/app/components/chat-history";
 
 interface IChatPanel {
   onClose: () => void;
   className?: string;
+  initialChats?: IChatMessage[];
 }
 
-export default function ChatPanel({ onClose, className }: IChatPanel) {
+export default function ChatPanel({
+  onClose,
+  className,
+  initialChats,
+}: IChatPanel) {
   return (
     <Card className={cn("flex h-full flex-col", className)}>
       <CardHeader className="flex items-center justify-between border-b pb-2">
@@ -34,7 +40,7 @@ export default function ChatPanel({ onClose, className }: IChatPanel) {
         </Button>
       </CardHeader>
       <CardContent className="min-h-0 flex-1 overflow-y-auto">
-        <Chat />
+        <Chat initalChats={initialChats ?? []} />
       </CardContent>
     </Card>
   );
