@@ -7,13 +7,20 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:backend": "cd packages/backend && docker-compose up -d mysql && docker-compose up --build backend",
+    "dev:backend:stop": "cd packages/backend && docker-compose down"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.6.1",
   "devDependencies": {
+    "@types/multer": "^2.0.0",
+    "prettier": "^3.4.2",
     "turbo": "^2.6.3"
+  },
+  "dependencies": {
+    "pnpm": "^10.28.0"
   }
 }
