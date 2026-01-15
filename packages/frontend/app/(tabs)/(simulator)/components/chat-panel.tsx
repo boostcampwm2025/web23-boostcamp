@@ -1,4 +1,5 @@
-import { IChatMessage } from "@/app/components/chat_history";
+import { MessageSquare, X } from "lucide-react";
+
 import { Button } from "@/app/components/ui/button";
 import {
   Card,
@@ -7,15 +8,15 @@ import {
   CardTitle,
 } from "@/app/components/ui/card";
 import { cn } from "@/app/lib/utils";
-import { MessageSquare, X } from "lucide-react";
+
 import Chat from "./chat";
 
-interface ChatPanel {
+interface IChatPanel {
   onClose: () => void;
   className?: string;
 }
 
-export default function ChatPanel({ onClose, className }: ChatPanel) {
+export default function ChatPanel({ onClose, className }: IChatPanel) {
   return (
     <Card className={cn("flex h-full flex-col", className)}>
       <CardHeader className="flex items-center justify-between border-b pb-2">

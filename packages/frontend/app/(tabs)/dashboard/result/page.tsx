@@ -1,12 +1,12 @@
-import ChatHistory, { IChatMessage } from "@/app/components/chat_history";
-
-import Panel from "./components/panel";
-import Score from "./components/score";
-import RecentRecording from "./components/recent_recording";
 import { Bot, Heart, HeartOff } from "lucide-react";
-import Tip from "./components/tip";
-import { Button } from "@/app/components/ui/button";
+
+import ChatHistory, { IChatMessage } from "@/app/components/chat-history";
 import { Skeleton } from "@/app/components/ui/skeleton";
+import { Button } from "@/app/components/ui/button";
+
+import RecentRecording from "./components/recent-recording";
+import Panel from "./components/panel";
+import Tip from "./components/tip";
 
 const initialMessages = [
   {
@@ -62,7 +62,6 @@ export default function InterviewResultPage() {
           <Skeleton className="flex flex-1 items-center justify-center gap-4 rounded-2xl border p-5 shadow">
             <Bot />
           </Skeleton>
-
           {/* <Panel className="flex-1 p-5">
             <Score />
           </Panel> */}

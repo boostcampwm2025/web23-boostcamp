@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { IChatMessage } from "@/app/components/chat_history";
-import VideoGrid from "../components/video_grid";
-import ChatPanel from "../../components/chat_panel";
-import { InterviewControls } from "../components/interview_controls";
+
 import { useMediaPermissions } from "@/app/hooks/use-media-permissions";
 import useMediaRecorder from "@/app/hooks/use-media-recorder";
+
+
+import VideoGrid from "../components/video-grid";
+import ChatPanel from "../../components/chat-panel";
+import { InterviewControls } from "../components/interview-controls";
+
 
 export default function Page() {
   const [isChatOpen, setIsChatOpen] = useState(true);

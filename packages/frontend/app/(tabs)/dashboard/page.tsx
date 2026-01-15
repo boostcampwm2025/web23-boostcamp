@@ -1,12 +1,6 @@
-import {
-  /* Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarHeader, */
-  SidebarProvider,
-} from "@/app/components/ui/sidebar";
-import { AppSidebar } from "./components/app_sidebar";
+import { SidebarProvider } from "@/app/components/ui/sidebar";
+
+import { AppSidebar } from "./components/app-sidebar";
 
 export default function Page() {
   return (
