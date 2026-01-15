@@ -3,6 +3,7 @@ import { InterviewRepository } from './interview.repository';
 import { Interview } from './entities/interview.entity';
 import { SttService } from './stt.service';
 import { InterviewAnswer } from './entities/interview-answer.entity';
+import { InterviewChatHistoryResponse } from './dto/interview-chat-history-response.dto';
 
 @Injectable()
 export class InterviewService {
@@ -59,5 +60,15 @@ export class InterviewService {
       throw new NotFoundException('존재하지않는 인터뷰입니다.');
     }
     return interview;
+  }
+
+  async findInterviewChatHistory(userId: string, interviewId: string): Promise<InterviewChatHistoryResponse> {
+    const interview = await this.findExistingInterview(interviewId, [
+      'answers',
+      'user',
+      'questions'
+    ]);
+    interview.validateUser(userId);
+    return InterviewChatHistoryResponse.fromEntity(interview.answers, interview.questions);
   }
 }
