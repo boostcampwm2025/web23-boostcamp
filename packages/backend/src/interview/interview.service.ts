@@ -13,8 +13,6 @@ import { InterviewAIService } from './interview-ai.service';
 import { SttService } from './stt.service';
 import { InterviewRepository } from './interview.repository';
 import { Interview } from './entities/interview.entity';
-import { SttService } from './stt.service';
-import { InterviewAnswer } from './entities/interview-answer.entity';
 import { InterviewChatHistoryResponse } from './dto/interview-chat-history-response.dto';
 import { PortfolioRepository } from '../document/repositories/portfolio.repository';
 import { CoverLetterRepository } from '../document/repositories/cover-letter.repository';
@@ -84,14 +82,20 @@ export class InterviewService {
     return interview;
   }
 
-  async findInterviewChatHistory(userId: string, interviewId: string): Promise<InterviewChatHistoryResponse> {
+  async findInterviewChatHistory(
+    userId: string,
+    interviewId: string,
+  ): Promise<InterviewChatHistoryResponse> {
     const interview = await this.findExistingInterview(interviewId, [
       'answers',
       'user',
-      'questions'
+      'questions',
     ]);
     interview.validateUser(userId);
-    return InterviewChatHistoryResponse.fromEntity(interview.answers, interview.questions);
+    return InterviewChatHistoryResponse.fromEntity(
+      interview.answers,
+      interview.questions,
+    );
   }
 
   async chatInterviewer(interviewId: string) {
@@ -155,7 +159,7 @@ export class InterviewService {
       }
 
       const savedQuestion = await this.questionRepository.createQuestion(
-        JSON.stringify(parsed),
+        parsed.question,
         interviewId,
       );
 
