@@ -8,37 +8,47 @@ export default function RecentRecording() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
+    let objectUrl: string | null = null;
+
     (async () => {
       try {
         const blob = await getLatestVideo();
-        if (!mounted) return;
-        if (blob) {
-          const objectUrl = URL.createObjectURL(blob);
-          setUrl(objectUrl);
+        if (!blob) {
+          return;
         }
-      } catch (err) {
-        console.error("최근 녹화 불러오기 실패:", err);
+        objectUrl = URL.createObjectURL(blob);
+        setUrl(objectUrl);
+      } catch (error) {
+        console.error("최근 녹화 불러오기 실패:", error);
       } finally {
-        if (mounted) setLoading(false);
+        setLoading(false);
       }
     })();
 
     return () => {
-      mounted = false;
-      if (url) {
-        URL.revokeObjectURL(url);
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [url]);
+  }, []);
 
-  if (loading) return <div className="rounded-2xl bg-primary/10 p-6">Loading...</div>;
+  if (loading)
+    return <div className="rounded-2xl bg-primary/10 p-6">Loading...</div>;
 
-  if (!url) return <div className="rounded-2xl bg-primary/10 p-6">No recording found.</div>;
+  if (!url)
+    return (
+      <div className="rounded-2xl bg-primary/10 p-6">No recording found.</div>
+    );
 
   return (
     <div>
-      <video src={url} controls preload="metadata" className="rounded-2xl bg-primary w-full" playsInline />
+      <video
+        src={url}
+        controls
+        preload="metadata"
+        className="w-full rounded-2xl bg-primary"
+        playsInline
+      />
     </div>
   );
 }

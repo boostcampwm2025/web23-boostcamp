@@ -1,5 +1,6 @@
-import { useCallback, useRef, useState, useEffect } from 'react';
-import { saveVideo, saveAudio } from '@/app/lib/media/mediaStorage';
+import { useCallback, useRef, useState, useEffect } from "react";
+
+import { saveVideo, saveAudio } from "@/app/lib/media/mediaStorage";
 
 export const useMediaRecorder = (stream?: MediaStream | null) => {
   const mediaRecorderRefVideo = useRef<MediaRecorder | null>(null);
@@ -7,12 +8,13 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
   const chunksRefVideo = useRef<BlobPart[]>([]);
   const chunksRefAudio = useRef<BlobPart[]>([]);
   const audioStreamRef = useRef<MediaStream | null>(null);
+
   const [isRecording, setIsRecording] = useState(false);
   const [lastBlob, setLastBlob] = useState<Blob | null>(null);
 
   const startVideoRecording = useCallback(() => {
     if (!stream) {
-      console.warn('비디오 녹음용 스트림이 없습니다.');
+      console.warn("비디오 녹음용 스트림이 없습니다.");
       return;
     }
 
@@ -20,18 +22,20 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
     try {
       let mr: MediaRecorder | null = null;
       try {
-        mr = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp8,opus' });
-      } catch (e) {
+        mr = new MediaRecorder(stream, {
+          mimeType: "video/webm;codecs=vp9,flac",
+        });
+      } catch (error) {
         try {
           mr = new MediaRecorder(stream as MediaStream);
-        } catch (err) {
-          console.error('비디오용 MediaRecorder 생성 실패:', err);
+        } catch (error) {
+          console.error("비디오용 MediaRecorder 생성 실패:", error);
           mr = null;
         }
       }
 
       if (!mr) {
-        console.warn('비디오용 MediaRecorder를 생성할 수 없습니다.');
+        console.warn("비디오용 MediaRecorder를 생성할 수 없습니다.");
         return;
       }
 
@@ -44,14 +48,16 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
         mr.start();
         setIsRecording(true);
       } catch (err) {
-        console.error('비디오 MediaRecorder 시작 실패:', err);
+        console.error("비디오 MediaRecorder 시작 실패:", err);
       }
     } catch (outer) {
-      console.error('비디오 녹화 시작 중 예외 발생:', outer);
+      console.error("비디오 녹화 시작 중 예외 발생:", outer);
     }
   }, [stream]);
 
-  const stopVideoRecording = useCallback<() => Promise<Blob | null>>(async () => {
+  const stopVideoRecording = useCallback<
+    () => Promise<Blob | null>
+  >(async () => {
     return new Promise<Blob | null>((resolve) => {
       const mr = mediaRecorderRefVideo.current;
       if (!mr) {
@@ -60,11 +66,13 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
       }
 
       mr.onstop = async () => {
-        const videoBlob = new Blob(chunksRefVideo.current, { type: 'video/webm' });
+        const videoBlob = new Blob(chunksRefVideo.current, {
+          type: "video/webm",
+        });
         try {
           await saveVideo(videoBlob);
         } catch (err) {
-          console.error('비디오 저장 실패:', err);
+          console.error("비디오 저장 실패:", err);
         }
         chunksRefVideo.current = [];
         setIsRecording(false);
@@ -77,7 +85,7 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
       try {
         mr.stop();
       } catch (err) {
-        console.warn('MediaRecorder 중지 중 오류', err);
+        console.warn("MediaRecorder 중지 중 오류", err);
         resolve(null);
       }
     });
@@ -85,14 +93,14 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
 
   const startAudioRecording = useCallback(() => {
     if (!stream) {
-      console.warn('오디오 녹음용 스트림이 없습니다.');
+      console.warn("오디오 녹음용 스트림이 없습니다.");
       return;
     }
 
     // 비디오 레코더와 충돌을 피하기 위해 오디오 전용 MediaStream 생성
     const audioTracks = stream.getAudioTracks();
     if (!audioTracks || audioTracks.length === 0) {
-      console.warn('스트림에 오디오 트랙이 없습니다.');
+      console.warn("스트림에 오디오 트랙이 없습니다.");
       return;
     }
 
@@ -102,25 +110,29 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
       audioStreamRef.current = null;
     }
 
-    const audioStream = new MediaStream(audioTracks.map((t) => (t.clone ? t.clone() : t)));
+    const audioStream = new MediaStream(
+      audioTracks.map((t) => (t.clone ? t.clone() : t)),
+    );
     audioStreamRef.current = audioStream;
 
     chunksRefAudio.current = [];
     try {
       let mr: MediaRecorder | null = null;
       try {
-        mr = new MediaRecorder(audioStream, { mimeType: 'audio/webm;codecs=opus' });
+        mr = new MediaRecorder(audioStream, {
+          mimeType: "audio/webm;codecs=opus",
+        });
       } catch (e) {
         try {
           mr = new MediaRecorder(audioStream as MediaStream);
         } catch (err) {
-          console.error('오디오용 MediaRecorder 생성 실패:', err);
+          console.error("오디오용 MediaRecorder 생성 실패:", err);
           mr = null;
         }
       }
 
       if (!mr) {
-        console.warn('오디오용 MediaRecorder를 생성할 수 없습니다.');
+        console.warn("오디오용 MediaRecorder를 생성할 수 없습니다.");
         return;
       }
 
@@ -133,14 +145,16 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
         mr.start();
         setIsRecording(true);
       } catch (err) {
-        console.error('오디오 MediaRecorder 시작 실패:', err);
+        console.error("오디오 MediaRecorder 시작 실패:", err);
       }
     } catch (outer) {
-      console.error('오디오 녹화 시작 중 예외 발생:', outer);
+      console.error("오디오 녹화 시작 중 예외 발생:", outer);
     }
   }, [stream]);
 
-  const stopAudioRecording = useCallback<() => Promise<Blob | null>>(async () => {
+  const stopAudioRecording = useCallback<
+    () => Promise<Blob | null>
+  >(async () => {
     return new Promise<Blob | null>((resolve) => {
       const mr = mediaRecorderRefAudio.current;
       if (!mr) {
@@ -149,11 +163,13 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
       }
 
       mr.onstop = async () => {
-        const audioBlob = new Blob(chunksRefAudio.current, { type: 'audio/webm' });
+        const audioBlob = new Blob(chunksRefAudio.current, {
+          type: "audio/webm",
+        });
         try {
           await saveAudio(audioBlob);
         } catch (err) {
-          console.error('오디오 저장 실패:', err);
+          console.error("오디오 저장 실패:", err);
         }
         chunksRefAudio.current = [];
         setIsRecording(false);
@@ -172,7 +188,7 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
       try {
         mr.stop();
       } catch (err) {
-        console.warn('MediaRecorder 중지 중 오류', err);
+        console.warn("MediaRecorder 중지 중 오류", err);
         resolve(null);
       }
     });
@@ -181,12 +197,18 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
   useEffect(() => {
     return () => {
       try {
-        if (mediaRecorderRefVideo.current && mediaRecorderRefVideo.current.state !== 'inactive') {
+        if (
+          mediaRecorderRefVideo.current &&
+          mediaRecorderRefVideo.current.state !== "inactive"
+        ) {
           mediaRecorderRefVideo.current.stop();
         }
       } catch (_) {}
       try {
-        if (mediaRecorderRefAudio.current && mediaRecorderRefAudio.current.state !== 'inactive') {
+        if (
+          mediaRecorderRefAudio.current &&
+          mediaRecorderRefAudio.current.state !== "inactive"
+        ) {
           mediaRecorderRefAudio.current.stop();
         }
       } catch (_) {}
