@@ -1,8 +1,8 @@
 import ChatHistory, { IChatMessage } from "@/app/components/chat_history";
-import AISummary from "./components/ai_summary";
+
 import Panel from "./components/panel";
-import Score from "./components/score";
-import { Heart, HeartOff } from "lucide-react";
+
+import { Bot, Heart, HeartOff } from "lucide-react";
 import Tip from "./components/tip";
 import { Button } from "@/app/components/ui/button";
 import { Skeleton } from "@/app/components/ui/skeleton";
@@ -58,7 +58,10 @@ export default function InterviewResultPage() {
           </div>
         </div>
         <div className="flex flex-col gap-6 md:flex-row">
-          <Skeleton className="flex-1 rounded-2xl border p-5 shadow" />
+          <Skeleton className="flex flex-1 items-center justify-center gap-4 rounded-2xl border p-5 shadow">
+            <Bot />
+          </Skeleton>
+
           {/* <Panel className="flex-1 p-5">
             <Score />
           </Panel> */}
@@ -70,7 +73,9 @@ export default function InterviewResultPage() {
           <Panel className="flex-2 p-5">
             <ChatHistory chatMessages={initialMessages} />
           </Panel>
-          <Skeleton className="flex-1 animate-pulse rounded-2xl border p-5 shadow" />
+          <Skeleton className="flex flex-1 items-center justify-center gap-4 rounded-2xl border p-5 shadow">
+            <Bot />
+          </Skeleton>
           {/* <Panel className="flex-1 p-5">
             <AISummary />
           </Panel> */}

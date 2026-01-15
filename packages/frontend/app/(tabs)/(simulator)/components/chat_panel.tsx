@@ -18,7 +18,7 @@ interface ChatPanel {
 
 export default function ChatPanel({ message, onClose, className }: ChatPanel) {
   return (
-    <Card className={cn("flex size-full flex-col", className)}>
+    <Card className={cn("flex flex-col", className)}>
       <CardHeader className="flex items-center justify-between border-b pb-2">
         <CardTitle className="flex items-center gap-2">
           <MessageSquare className="size-4" />

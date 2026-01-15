@@ -47,8 +47,8 @@ export default function Page() {
   const [isChatOpen, setIsChatOpen] = useState(true);
 
   return (
-    <div className="flex max-w-630 flex-col items-center justify-center gap-5 py-2 xl:flex-row">
-      <div className="relative max-w-7xl flex-2">
+    <div className="mt-5 flex max-w-630 flex-col items-center justify-center gap-5 py-2 xl:flex-row">
+      <div className="relative w-full max-w-7xl xl:flex-2">
         <VideoGrid />
         {/* <InterviewControls /> */}
         {/* FIXME: 이 부분은 의논.. 그 채팅방 껏을 떄도 자막 보이게.. */}
