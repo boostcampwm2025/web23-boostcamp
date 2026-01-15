@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { useMediaPermissions } from "@/app/hooks/use-media-permissions";
@@ -9,6 +9,7 @@ import VideoGrid from "../components/video-grid";
 import ChatPanel from "../../components/chat-panel";
 import { InterviewControls } from "../components/interview-controls";
 import { IChatMessage } from "@/app/components/chat-history";
+import { generateQuestion } from "./actions";
 
 export default function InterviewClient({
   initialChats,
@@ -66,6 +67,14 @@ export default function InterviewClient({
     stopVideoRecording,
     stopMediaStream,
   ]);
+
+  useLayoutEffect(() => {
+    if (initialChats.length === 0) {
+      generateQuestion({
+        interviewId: "1",
+      });
+    }
+  });
 
   return (
     <div className="mt-5 flex h-full max-w-630 flex-col justify-center gap-5 py-2 xl:flex-row">

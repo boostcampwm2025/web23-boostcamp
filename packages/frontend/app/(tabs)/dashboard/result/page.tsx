@@ -11,28 +11,7 @@ import { getHistory } from "../../(simulator)/interview/[id]/actions";
 
 export default async function InterviewResultPage() {
   const { history } = await getHistory({ interviewId: "1" });
-  const filteredHistory = history.filter(
-    (item) => item.answer !== null || item.question !== null,
-  );
 
-  const initialChats = filteredHistory
-    .map((item) => ({
-      id: crypto.randomUUID(),
-      sender: "ai",
-      role: "ai",
-      content: item.question.content,
-      timestamp: new Date(item.question.createdAt),
-    }))
-    .concat(
-      filteredHistory.map((item) => ({
-        id: crypto.randomUUID(),
-        sender: "user",
-        role: "user",
-        content: item.answer ? item.answer.content || "" : "",
-        timestamp: new Date(item.answer ? item.answer.createdAt || "" : ""),
-      })),
-    ) as IChatMessage[];
-  initialChats.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
   return (
     <div className="mt-5 w-full pb-5">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4">
@@ -60,7 +39,7 @@ export default async function InterviewResultPage() {
         </div>
         <div className="flex flex-col gap-6 md:flex-row">
           <Panel className="flex flex-2 flex-col overflow-y-scroll p-5">
-            <ChatHistory chatMessages={initialChats} className="max-h-120" />
+            <ChatHistory chatMessages={history} className="max-h-120" />
           </Panel>
           <Skeleton className="flex flex-1 items-center justify-center gap-4 rounded-2xl border p-5 shadow">
             <Bot />
