@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import { getLatestVideo } from "@/app/lib/media/mediaStorage";
+
+import ChromaKeyVideo from "./ai-chroma-key";
 
 export default function RecentRecording() {
   const [url, setUrl] = useState<string | null>(null);
@@ -41,12 +44,13 @@ export default function RecentRecording() {
     );
 
   return (
-    <div>
+    <div className="bg-red-200">
+      <ChromaKeyVideo src={url} />
       <video
         src={url}
         controls
         preload="metadata"
-        className="w-full rounded-2xl bg-primary"
+        className="aspect-video"
         playsInline
       />
     </div>

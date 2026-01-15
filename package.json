@@ -21,6 +21,7 @@
     "turbo": "^2.6.3"
   },
   "dependencies": {
+    "@mediapipe/tasks-vision": "0.10.22-rc.20250304",
     "pnpm": "^10.28.0"
   }
 }

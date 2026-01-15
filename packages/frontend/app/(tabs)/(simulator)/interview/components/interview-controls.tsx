@@ -1,7 +1,8 @@
 "use client";
 
-import { Button } from "@/app/components/ui/button";
 import { Mic, MicOff, Video, VideoOff, MessageSquare, LogOut } from "lucide-react";
+
+import { Button } from "@/app/components/ui/button";
 
 interface InterviewControlsProps {
   onToggleChat: () => void;

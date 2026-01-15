@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MountainSnow } from "lucide-react";
 
-import AutoBreadcrumb from "@/app/components/auto_breadcrumb";
+import AutoBreadcrumb from "@/app/components/auto-breadcrumb";
 import Profile from "@/app/components/profile";
 
 import { logout } from "@/app/actions/auth";

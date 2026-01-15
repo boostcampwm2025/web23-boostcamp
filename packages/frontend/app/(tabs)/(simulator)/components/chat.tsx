@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 
-import ChatInput from "@/app/(tabs)/(simulator)/components/chat_input";
-import ChatHistory, { IChatMessage } from "@/app/components/chat_history";
+import ChatInput from "@/app/(tabs)/(simulator)/components/chat-input";
+import ChatHistory, { IChatMessage } from "@/app/components/chat-history";
 
 import { useMediaPermissions } from "@/app/hooks/use-media-permissions";
 import useMediaRecorder from "@/app/hooks/use-media-recorder";

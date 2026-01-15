@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import clsx from "clsx";
-import VideoTile from "./video_tile";
+
+import VideoTile from "./video-tile";
 
 interface VideoGridProps {
   className?: string;
