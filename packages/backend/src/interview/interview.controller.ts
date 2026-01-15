@@ -15,6 +15,8 @@ import {
 } from './dto/interview-answer-request.dto';
 import { InterviewAnswerResponse } from './dto/interview-answer-response.dto';
 import { InterviewChatHistoryResponse } from './dto/interview-chat-history-response.dto';
+import { InterviewQuestionRequest } from './dto/interview-question-request.dto';
+import { InterviewQuestionResponse } from './dto/interview-question-response.dto';
 
 @Controller('interview')
 export class InterviewController {
@@ -56,6 +58,7 @@ export class InterviewController {
     };
   }
 
+
   @Get('/:interviewId/chat/history')
   async getInterviewChatHistory(
 
@@ -64,5 +67,12 @@ export class InterviewController {
     // 인증이 없기 때문에 userId를 상수화
     const userId = '1';
     return this.interviewService.findInterviewChatHistory(userId, interviewId);
+  }
+
+  @Post('tech/question')
+  async getIntervalQuestion(
+    @Body() body: InterviewQuestionRequest,
+  ): Promise<InterviewQuestionResponse> {
+    return await this.interviewService.chatInterviewer(body.interviewId);
   }
 }

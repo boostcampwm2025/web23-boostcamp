@@ -12,8 +12,8 @@ export class Portfolio {
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'portfolios_id' })
   portfolioId: string;
 
-  @Column({ name: 'file_url', type: 'varchar', length: 255 })
-  fileUrl: string;
+  @Column({ name: 'content', type: 'text' })
+  content: string;
 
   @OneToOne(() => Document, (document) => document.portfolio)
   @JoinColumn({ name: 'documents_id' })

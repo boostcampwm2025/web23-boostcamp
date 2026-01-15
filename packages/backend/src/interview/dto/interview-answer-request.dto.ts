@@ -15,4 +15,3 @@ export class InterviewAnswerChatRequest {
   @IsNotEmpty()
   answer: string;
 }
-

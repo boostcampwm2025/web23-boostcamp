@@ -21,6 +21,13 @@ const colors = {
 
 winston.addColors(colors);
 
+// Define the interface for the log info
+interface WinstonLogInfo extends winston.Logform.TransformableInfo {
+  timestamp: string;
+  ms?: string;
+  context?: string;
+}
+
 export const winstonOptions: WinstonModuleOptions = {
   levels: levels,
   transports: [
@@ -36,18 +43,18 @@ export const winstonOptions: WinstonModuleOptions = {
               winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
               winston.format.ms(),
               winston.format.colorize({ all: true }),
-              winston.format.printf(
-                ({ timestamp, level, message, context, ms }) => {
-                  const yellow = '\x1b[38;5;228m';
-                  const reset = '\x1b[0m';
-                  const contextStr = context
-                    ? `${yellow}[${context}]${reset}`
-                    : `${yellow}[Application]${reset}`;
-                  const msStr = ms ? `${yellow}${ms}${reset}` : '';
+              winston.format.printf((info) => {
+                const { timestamp, level, message, context, ms } =
+                  info as WinstonLogInfo;
+                const yellow = '\x1b[38;5;228m';
+                const reset = '\x1b[0m';
+                const contextStr = context
+                  ? `${yellow}[${String(context)}]${reset}`
+                  : `${yellow}[Application]${reset}`;
+                const msStr = ms ? `${yellow}${ms}${reset}` : '';
 
-                  return `[WEB23] ${process.pid}  - ${timestamp}  ${level} ${contextStr} ${message} ${msStr}`;
-                },
-              ),
+                return `[WEB23] ${process.pid}  - ${timestamp}  ${level} ${contextStr} ${String(message)} ${msStr}`;
+              }),
             ),
     }),
   ],
