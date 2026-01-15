@@ -1,10 +1,8 @@
 "use client";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
 import { useMediaPermissions } from "@/app/hooks/use-media-permissions";
 import useMediaRecorder from "@/app/hooks/use-media-recorder";
-
 import VideoGrid from "../components/video-grid";
 import ChatPanel from "../../components/chat-panel";
 import { InterviewControls } from "../components/interview-controls";
@@ -19,6 +17,8 @@ export default function InterviewClient({
   const [isChatOpen, setIsChatOpen] = useState(true);
   const [isCamOn, setIsCamOn] = useState(false);
   const [isMicOn, setIsMicOn] = useState(false);
+  const [chats, setChats] = useState<IChatMessage[]>(initialChats);
+  const [isGenerating, setIsGenerating] = useState(false);
   const router = useRouter();
 
   const {
@@ -31,7 +31,6 @@ export default function InterviewClient({
   } = useMediaPermissions();
   const { startVideoRecording, stopVideoRecording } = useMediaRecorder(stream);
 
-  // 입장 시 (컴포넌트 마운트) 녹화 시작, 나갈 때 녹화 종료
   useEffect(() => {
     let mounted = true;
     let started = false;
@@ -41,9 +40,7 @@ export default function InterviewClient({
         await requestPermissions();
         return;
       }
-
       if (mounted && !started && stream) {
-        // 하나의 MediaRecorder로 비디오(및 오디오)를 녹화합니다.
         startVideoRecording();
         setIsCamOn(true);
         setIsMicOn(true);
@@ -52,43 +49,56 @@ export default function InterviewClient({
     };
 
     start();
-
     return () => {
       mounted = false;
-      // 녹화 중지 (비디오 recorder 하나로 처리)
       stopVideoRecording();
-      // 미디어 스트림 정리
       stopMediaStream();
     };
-  }, [
-    stream,
-    requestPermissions,
-    startVideoRecording,
-    stopVideoRecording,
-    stopMediaStream,
-  ]);
+  }, [stream, requestPermissions, startVideoRecording, stopVideoRecording, stopMediaStream]);
 
   useLayoutEffect(() => {
-    if (initialChats.length === 0) {
-      generateQuestion({
-        interviewId: "1",
-      });
-    }
-  });
+    const init = async () => {
+      // 1. 이미 데이터가 있거나 생성 중이면 절대 실행 안 함
+      if (chats.length > 0 || isGenerating) return;
+
+      setIsGenerating(true);
+      try {
+        const firstQuestion = await generateQuestion({ interviewId: "1" });
+        
+        // 2. 방어 코드: 응답 데이터가 유효한지 꼼꼼하게 체크
+        if (firstQuestion) {
+          const qContent = firstQuestion.question || firstQuestion.content;
+          
+          // 3. 내용이 있을 때만 상태 업데이트
+          if (qContent && typeof qContent === 'string') {
+            const rawDate = firstQuestion.createdAt || new Date();
+            const qCreatedAt = new Date(rawDate);
+            
+            // Invalid Date 체크 (날짜가 유효하지 않으면 현재 시간으로 대체)
+            const finalDate = isNaN(qCreatedAt.getTime()) ? new Date() : qCreatedAt;
+
+            setChats([{
+              id: crypto.randomUUID(),
+              content: qContent.trim(),
+              role: "ai",
+              sender: "Interviewer",
+              timestamp: finalDate
+            }]);
+          }
+        }
+      } catch (e) {
+        console.error("초기 질문 생성 중 에러 발생:", e);
+      } finally {
+        setIsGenerating(false);
+      }
+    };
+    init();
+  }, []);
 
   return (
     <div className="mt-5 flex h-full max-w-630 flex-col justify-center gap-5 py-2 xl:flex-row">
       <div className="relative w-full max-w-7xl xl:flex-2">
         <VideoGrid stream={stream} isCamOn={isCamOn} />
-        {/* <InterviewControls /> */}
-        {/* FIXME: 이 부분은 의논.. 그 채팅방 껏을 떄도 자막 보이게.. */}
-        {/* <div className="absolute bottom-4 left-4">
-          <div className="rounded-md bg-black/60 px-3 py-1 text-sm text-white">
-            면접관: React의 Virtual DOM 작동 원리에 대해 설명해 주실 수 있나요?
-          </div>
-        </div> */}
-
-        {/* control message show , mic on off, cam on off */}
         <InterviewControls
           onToggleChat={() => setIsChatOpen((prev) => !prev)}
           isCamOn={isCamOn}
@@ -99,7 +109,6 @@ export default function InterviewClient({
           resumeVideo={resumeVideoRecording}
           toggleMic={toggleMicTrack}
           onExit={() => {
-            // 녹화 중지 및 결과 페이지로 이동
             stopVideoRecording().finally(() => {
               stopMediaStream();
               router.push("/dashboard/result");
@@ -110,19 +119,13 @@ export default function InterviewClient({
       {isChatOpen && (
         <div className="flex-1">
           <ChatPanel
-            initialChats={initialChats}
+            initialChats={chats} // 실시간 업데이트되는 chats 상태 전달
+            setChats={setChats}
             onClose={() => setIsChatOpen(false)}
+            stream={stream}
           />
         </div>
       )}
-      {/* {!isChatOpen && (
-        <Button
-          className="fixed right-6 bottom-6 h-12 w-12 rounded-full shadow-lg"
-          onClick={() => setIsChatOpen(true)}
-        >
-          <MessageSquare className="size-6" />
-        </Button>
-      )} */}
     </div>
   );
 }

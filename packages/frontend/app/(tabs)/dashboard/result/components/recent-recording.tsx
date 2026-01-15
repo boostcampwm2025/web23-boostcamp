@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 
 import { getLatestVideo } from "@/app/lib/media/mediaStorage";
 
-import ChromaKeyVideo from "./ai-chroma-key";
-
 export default function RecentRecording() {
   const [url, setUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);

@@ -1,6 +1,6 @@
 import { Bot, Heart, HeartOff } from "lucide-react";
 
-import ChatHistory, { IChatMessage } from "@/app/components/chat-history";
+import ChatHistory from "@/app/components/chat-history";
 import { Skeleton } from "@/app/components/ui/skeleton";
 import { Button } from "@/app/components/ui/button";
 
