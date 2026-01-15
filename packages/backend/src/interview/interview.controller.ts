@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  Get,
+  Param,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -12,12 +14,13 @@ import {
   InterviewAnswerChatRequest,
 } from './dto/interview-answer-request.dto';
 import { InterviewAnswerResponse } from './dto/interview-answer-response.dto';
+import { InterviewChatHistoryResponse } from './dto/interview-chat-history-response.dto';
 import { InterviewQuestionRequest } from './dto/interview-question-request.dto';
 import { InterviewQuestionResponse } from './dto/interview-question-response.dto';
 
 @Controller('interview')
 export class InterviewController {
-  constructor(private readonly interviewService: InterviewService) {}
+  constructor(private readonly interviewService: InterviewService) { }
 
   @Post('answer/voice')
   @UseInterceptors(FileInterceptor('file'))
@@ -53,6 +56,17 @@ export class InterviewController {
     return {
       answer: answerResult,
     };
+  }
+
+
+  @Get('/:interviewId/chat/history')
+  async getInterviewChatHistory(
+
+    @Param('interviewId') interviewId: string
+  ): Promise<InterviewChatHistoryResponse> {
+    // 인증이 없기 때문에 userId를 상수화
+    const userId = '1';
+    return this.interviewService.findInterviewChatHistory(userId, interviewId);
   }
 
   @Post('tech/question')
