@@ -1,7 +1,8 @@
 import ChatHistory, { IChatMessage } from "@/app/components/chat_history";
 
 import Panel from "./components/panel";
-
+import Score from "./components/score";
+import RecentRecording from "./components/recent_recording";
 import { Bot, Heart, HeartOff } from "lucide-react";
 import Tip from "./components/tip";
 import { Button } from "@/app/components/ui/button";
@@ -66,7 +67,7 @@ export default function InterviewResultPage() {
             <Score />
           </Panel> */}
           <Panel className="flex-2 p-5">
-            <video src="..." className="rounded-2xl bg-primary"></video>
+            <RecentRecording />
           </Panel>
         </div>
         <div className="flex flex-col gap-6 md:flex-row">

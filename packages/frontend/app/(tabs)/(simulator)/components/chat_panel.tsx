@@ -11,12 +11,11 @@ import { MessageSquare, X } from "lucide-react";
 import Chat from "./chat";
 
 interface ChatPanel {
-  message: IChatMessage[];
   onClose: () => void;
   className?: string;
 }
 
-export default function ChatPanel({ message, onClose, className }: ChatPanel) {
+export default function ChatPanel({ onClose, className }: ChatPanel) {
   return (
     <Card className={cn("flex h-full flex-col", className)}>
       <CardHeader className="flex items-center justify-between border-b pb-2">
@@ -34,7 +33,7 @@ export default function ChatPanel({ message, onClose, className }: ChatPanel) {
         </Button>
       </CardHeader>
       <CardContent className="min-h-0 flex-1 overflow-y-auto">
-        <Chat chatMessages={message} />
+        <Chat />
       </CardContent>
     </Card>
   );
