@@ -1,3 +1,5 @@
+"use client";
+
 import { MessageSquare, X } from "lucide-react";
 
 import { Button } from "@/app/components/ui/button";
@@ -11,17 +13,22 @@ import { cn } from "@/app/lib/utils";
 
 import Chat from "./chat";
 import { IChatMessage } from "@/app/components/chat-history";
+import { Dispatch, SetStateAction } from "react";
 
 interface IChatPanel {
   onClose: () => void;
   className?: string;
-  initialChats?: IChatMessage[];
+  initialChats: IChatMessage[];
+  setChats: Dispatch<SetStateAction<IChatMessage[]>>;
+  stream: MediaStream | null;
 }
 
 export default function ChatPanel({
   onClose,
   className,
   initialChats,
+  setChats,
+  stream,
 }: IChatPanel) {
   return (
     <Card className={cn("flex h-full flex-col", className)}>
@@ -40,7 +47,7 @@ export default function ChatPanel({
         </Button>
       </CardHeader>
       <CardContent className="min-h-0 flex-1 overflow-y-auto">
-        <Chat initalChats={initialChats ?? []} />
+        <Chat initalChats={initialChats} setChats={setChats} stream={stream} />
       </CardContent>
     </Card>
   );

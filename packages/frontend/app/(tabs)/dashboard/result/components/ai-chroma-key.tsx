@@ -5,7 +5,6 @@ import Image from "next/image";
 
 import { FilesetResolver, ImageSegmenter } from "@mediapipe/tasks-vision";
 import { Slider } from "@/app/components/ui/slider";
-import { steps } from "motion";
 
 export default function AIChromaKey({ src }: { src: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
