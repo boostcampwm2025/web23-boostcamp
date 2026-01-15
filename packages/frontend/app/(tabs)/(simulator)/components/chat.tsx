@@ -8,12 +8,16 @@ import ChatHistory, { IChatMessage } from "@/app/components/chat-history";
 import { useMediaPermissions } from "@/app/hooks/use-media-permissions";
 import useMediaRecorder from "@/app/hooks/use-media-recorder";
 
-import { speakAnswer, sendAnswer } from "../interview/[id]/actions";
+import {
+  speakAnswer,
+  sendAnswer,
+  generateQuestion,
+} from "../interview/[id]/actions";
 
-export default function Chat() {
+export default function Chat({ initalChats }: { initalChats: IChatMessage[] }) {
   const [isRecording, setIsRecording] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [chatMessages, setChatMessages] = useState<IChatMessage[]>([]);
+  const [chatMessages, setChatMessages] = useState<IChatMessage[]>(initalChats);
 
   const { stream: mediaStream, requestPermissions: requestMediaPermissions } =
     useMediaPermissions();
@@ -23,7 +27,10 @@ export default function Chat() {
   async function handleVoiceToggle() {
     if (!isRecording) {
       if (!mediaStream) {
-        const audioPermissions = await requestMediaPermissions({audio: true});
+        const audioPermissions = await requestMediaPermissions({
+          audio: true,
+          video: true,
+        });
         if (!audioPermissions) {
           setError("오디오에 대한 권한이 거부되었습니다.");
           return;
@@ -47,11 +54,20 @@ export default function Chat() {
         return;
       }
       const { answer } = await speakAnswer({
-        interviewId: "simulator",
+        interviewId: "1",
         audio: blob,
       });
+
       if (answer) {
-        // TODO: 답변 처리
+        // FIXME: 임시로 작성해두었습니다.
+        await sendAnswer({
+          interviewId: "1",
+          answer: answer,
+        });
+        // TODO: 답변 처리 추가로 해야함.
+        await generateQuestion({
+          interviewId: "1",
+        });
       }
     } catch (error) {
       setError(`오디오 녹음 중지에 실패했습니다. : ${error}`);
@@ -72,7 +88,7 @@ export default function Chat() {
     }
   }, [startAudioRecording, mediaStream]); */
 
-  function onSendMessage(text: string) {
+  async function onSendMessage(text: string) {
     const newMessage: IChatMessage = {
       id: Date.now().toString(),
       content: text,
@@ -81,9 +97,12 @@ export default function Chat() {
       timestamp: new Date(),
     };
     setChatMessages((prevMessages) => [...prevMessages, newMessage]);
-    sendAnswer({
-      interviewId: "simulator",
+    await sendAnswer({
+      interviewId: "1",
       answer: text,
+    });
+    await generateQuestion({
+      interviewId: "1",
     });
   }
 

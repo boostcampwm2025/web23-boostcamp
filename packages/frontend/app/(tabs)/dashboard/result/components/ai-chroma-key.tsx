@@ -4,6 +4,8 @@ import { PauseIcon, PlayIcon } from "lucide-react";
 import Image from "next/image";
 
 import { FilesetResolver, ImageSegmenter } from "@mediapipe/tasks-vision";
+import { Slider } from "@/app/components/ui/slider";
+import { steps } from "motion";
 
 export default function AIChromaKey({ src }: { src: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -162,13 +164,11 @@ export default function AIChromaKey({ src }: { src: string }) {
 
       <div className="absolute right-0 bottom-0 left-0 z-20 flex flex-col gap-2 bg-linear-to-b from-black/80 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
         {/* 프로그래스 바 (Slider) */}
-        <input
-          type="range"
-          min={0}
-          max={duration || 100}
-          value={currentTime}
+        <Slider
+          value={[currentTime]}
+          max={duration || 0}
+          step={0.1}
           onChange={handleSeek}
-          className="h-1 w-full cursor-pointer appearance-none rounded-lg bg-gray-600 accent-red-500"
         />
 
         <div className="flex items-center justify-between text-white">

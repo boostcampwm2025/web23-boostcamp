@@ -10,11 +10,12 @@ export interface IChatMessage {
 
 interface IChatHistory {
   chatMessages: IChatMessage[];
+  className?: string;
 }
 
-export default function ChatHistory({ chatMessages }: IChatHistory) {
+export default function ChatHistory({ chatMessages, className }: IChatHistory) {
   return (
-    <div>
+    <div className={className}>
       {chatMessages.map((message) => (
         <div
           key={message.id}
