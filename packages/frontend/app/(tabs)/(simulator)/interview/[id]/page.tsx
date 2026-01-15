@@ -11,29 +11,10 @@ export default async function Page() {
   }); */
 
   const { history } = await getHistory({ interviewId: "1" });
-  console.log(history);
-  const filteredHistory = history.filter((item) => item.answer !== null);
-  const initialChats = filteredHistory
-    .map((item) => ({
-      id: crypto.randomUUID(),
-      sender: "ai",
-      role: "ai",
-      content: item.question.content,
-      timestamp: new Date(item.question.createdAt),
-    }))
-    .concat(
-      filteredHistory.map((item) => ({
-        id: crypto.randomUUID(),
-        sender: "user",
-        role: "user",
-        content: item.answer ? item.answer.content || "" : "",
-        timestamp: new Date(item.answer ? item.answer.createdAt || "" : ""),
-      })),
-    ) as IChatMessage[];
-  initialChats.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
   return (
     <div>
-      <InterviewClient initialChats={initialChats} />
+      <InterviewClient initialChats={history} />
     </div>
   );
 }

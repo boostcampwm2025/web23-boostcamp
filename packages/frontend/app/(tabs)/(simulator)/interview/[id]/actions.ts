@@ -1,5 +1,7 @@
 "use server";
 
+import { IChatMessage } from "@/app/components/chat-history";
+
 interface IAnswerResponse {
   answer: string;
 }
@@ -86,12 +88,35 @@ export async function getHistory({ interviewId }: { interviewId: string }) {
   if (!response.ok) {
     throw new Error("API 요청 실패");
   }
-  return (await response.json()) as {
+  const history = (await response.json()) as {
     history: {
       question: { content: string; createdAt: string };
       answer: { content: string; createdAt: string };
     }[];
   };
+
+  const filteredHistory = history.history.filter(
+    (item) => item.answer !== null,
+  );
+  const initialChats = filteredHistory
+    .map((item) => ({
+      id: crypto.randomUUID(),
+      sender: "ai",
+      role: "ai",
+      content: item.question.content,
+      timestamp: new Date(item.question.createdAt),
+    }))
+    .concat(
+      filteredHistory.map((item) => ({
+        id: crypto.randomUUID(),
+        sender: "user",
+        role: "user",
+        content: item.answer ? item.answer.content || "" : "",
+        timestamp: new Date(item.answer ? item.answer.createdAt || "" : ""),
+      })),
+    ) as IChatMessage[];
+  initialChats.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+  return { history: initialChats };
 }
 
 export async function generateQuestion({
