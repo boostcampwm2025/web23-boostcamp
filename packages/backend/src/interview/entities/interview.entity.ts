@@ -48,8 +48,8 @@ export class Interview {
   })
   likeStatus: LikeStatus;
 
-  @Column({ name: 'during_time', type: 'timestamp' })
-  duringTime: Date;
+  @Column({ name: 'during_time', type: 'bigint', nullable: true })
+  duringTime: number;
 
   @ManyToOne(() => User, (user) => user.interviews)
   @JoinColumn({ name: 'user_id' })
@@ -73,5 +73,17 @@ export class Interview {
     if (this.user.userId !== userId) {
       throw new ForbiddenException('인터뷰 소유자 이외의 접근입니다.');
     }
+  }
+
+  calculateDuringTime(endTime: Date): number {
+    if (this.duringTime) {
+      throw new ForbiddenException('이미 종료된 인터뷰입니다.');
+    }
+    const duration = endTime.getTime() - this.createdAt.getTime();
+    if (duration < 0) {
+      throw new ForbiddenException('종료 시간이 시작 시간보다 빠릅니다.');
+    }
+    this.duringTime = duration
+    return this.duringTime;
   }
 }
