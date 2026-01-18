@@ -17,6 +17,7 @@ import { InterviewAnswerResponse } from './dto/interview-answer-response.dto';
 import { InterviewChatHistoryResponse } from './dto/interview-chat-history-response.dto';
 import { InterviewQuestionRequest } from './dto/interview-question-request.dto';
 import { InterviewQuestionResponse } from './dto/interview-question-response.dto';
+import { InterviewStopRequest } from "./dto/interview-stop-request.dto";
 
 import { CreateInterviewRequestDto } from './dto/create-interview-request.dto';
 import { CreateInterviewResponseDto } from './dto/create-interview-response.dto';
@@ -68,6 +69,20 @@ export class InterviewController {
     return {
       answer: answerResult,
     };
+  }
+
+  @Post('/stop')
+  async stopInterview(
+    @Body() body: InterviewStopRequest,
+  ): Promise<void> {
+    // 인증이 없기 때문에 userId를 상수화
+    const userId = '1';
+    const endTime = new Date();
+    await this.interviewService.calculateInterviewTime(
+      userId,
+      body.interviewId,
+      endTime,
+    );
   }
 
 
