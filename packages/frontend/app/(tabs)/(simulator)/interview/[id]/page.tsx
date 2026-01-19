@@ -7,7 +7,7 @@ export default async function Page() {
 
   return (
     <div>
-      <InterviewClient initialChats={history} />
+      <InterviewClient history={history} />
     </div>
   );
 }

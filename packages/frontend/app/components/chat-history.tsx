@@ -17,7 +17,12 @@ export default function ChatHistory({ chatMessages, className }: IChatHistory) {
   // 데이터가 없을 때 방어 로직
   if (!chatMessages || chatMessages.length === 0) {
     return (
-      <div className={cn("flex items-center justify-center p-10 text-gray-400 text-xs", className)}>
+      <div
+        className={cn(
+          "flex items-center justify-center p-10 text-xs text-gray-400",
+          className,
+        )}
+      >
         채팅 내역이 없습니다.
       </div>
     );

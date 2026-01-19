@@ -3,11 +3,13 @@ import { Bot, Heart, HeartOff } from "lucide-react";
 import ChatHistory from "@/app/components/chat-history";
 import { Skeleton } from "@/app/components/ui/skeleton";
 import { Button } from "@/app/components/ui/button";
+import { buildChatHistory } from "@/app/lib/client/chat";
 
 import RecentRecording from "./components/recent-recording";
 import Panel from "./components/panel";
 import Tip from "./components/tip";
 import { getHistory } from "../../(simulator)/interview/[id]/actions";
+
 
 export default async function InterviewResultPage() {
   const { history } = await getHistory({ interviewId: "1" });
@@ -39,7 +41,10 @@ export default async function InterviewResultPage() {
         </div>
         <div className="flex flex-col gap-6 md:flex-row">
           <Panel className="flex flex-2 flex-col overflow-y-scroll p-5">
-            <ChatHistory chatMessages={history} className="max-h-120" />
+            <ChatHistory
+              chatMessages={buildChatHistory(history)}
+              className="max-h-120"
+            />
           </Panel>
           <Skeleton className="flex flex-1 items-center justify-center gap-4 rounded-2xl border p-5 shadow">
             <Bot />
