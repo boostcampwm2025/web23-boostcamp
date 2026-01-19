@@ -36,7 +36,21 @@ export class InterviewService {
     private readonly portfolioRepository: PortfolioRepository,
     private readonly coverLetterRepository: CoverLetterRepository,
     private readonly documentRepository: DocumentRepository,
-  ) {}
+  ) { }
+
+  async calculateInterviewTime(
+    userId: string,
+    interviewId: string,
+    endTime: Date,
+  ): Promise<void> {
+    const interview = await this.findExistingInterview(interviewId, [
+      'user',
+    ]);
+    interview.validateUser(userId);
+    interview.calculateDuringTime(endTime);
+
+    await this.interviewRepository.save(interview);
+  }
 
   async createTechInterview(
     userId: string,
@@ -47,7 +61,6 @@ export class InterviewService {
     interview.title = 'Tech Interview'; // 기본 타이틀
     interview.type = InterviewType.TECH;
     interview.likeStatus = LikeStatus.NONE;
-    interview.duringTime = new Date(); // 기본값으로 현재 시간 설정
     interview.user = { userId } as User; // 관계 설정을 위해 ID만 할당 (User entity 전체 로드 불필요 시)
 
     const savedInterview = await this.interviewRepository.save(interview);
