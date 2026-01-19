@@ -18,9 +18,21 @@ import { InterviewChatHistoryResponse } from './dto/interview-chat-history-respo
 import { InterviewQuestionRequest } from './dto/interview-question-request.dto';
 import { InterviewQuestionResponse } from './dto/interview-question-response.dto';
 
+import { CreateInterviewRequestDto } from './dto/create-interview-request.dto';
+import { CreateInterviewResponseDto } from './dto/create-interview-response.dto';
+
 @Controller('interview')
 export class InterviewController {
   constructor(private readonly interviewService: InterviewService) { }
+
+  @Post('tech/create')
+  async createTechInterview(
+    @Body() body: CreateInterviewRequestDto,
+  ): Promise<CreateInterviewResponseDto> {
+    // 인증이 없기 때문에 userId를 상수화
+    const userId = '1';
+    return await this.interviewService.createTechInterview(userId, body);
+  }
 
   @Post('answer/voice')
   @UseInterceptors(FileInterceptor('file'))
@@ -61,7 +73,6 @@ export class InterviewController {
 
   @Get('/:interviewId/chat/history')
   async getInterviewChatHistory(
-
     @Param('interviewId') interviewId: string
   ): Promise<InterviewChatHistoryResponse> {
     // 인증이 없기 때문에 userId를 상수화

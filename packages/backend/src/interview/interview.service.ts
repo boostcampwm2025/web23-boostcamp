@@ -16,6 +16,11 @@ import { Interview } from './entities/interview.entity';
 import { InterviewChatHistoryResponse } from './dto/interview-chat-history-response.dto';
 import { PortfolioRepository } from '../document/repositories/portfolio.repository';
 import { CoverLetterRepository } from '../document/repositories/cover-letter.repository';
+import { CreateInterviewResponseDto } from './dto/create-interview-response.dto';
+import { InterviewType, LikeStatus } from './entities/interview.entity';
+import { CreateInterviewRequestDto } from './dto/create-interview-request.dto';
+import { DocumentRepository } from '../document/repositories/document.repository';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class InterviewService {
@@ -30,7 +35,55 @@ export class InterviewService {
     private readonly interviewAIService: InterviewAIService,
     private readonly portfolioRepository: PortfolioRepository,
     private readonly coverLetterRepository: CoverLetterRepository,
+    private readonly documentRepository: DocumentRepository,
   ) {}
+
+  async createTechInterview(
+    userId: string,
+    dto: CreateInterviewRequestDto,
+  ): Promise<CreateInterviewResponseDto> {
+    // 1. Interview 엔티티 생성
+    const interview = new Interview();
+    interview.title = 'Tech Interview'; // 기본 타이틀
+    interview.type = InterviewType.TECH;
+    interview.likeStatus = LikeStatus.NONE;
+    interview.duringTime = new Date(); // 기본값으로 현재 시간 설정
+    interview.user = { userId } as User; // 관계 설정을 위해 ID만 할당 (User entity 전체 로드 불필요 시)
+
+    const savedInterview = await this.interviewRepository.save(interview);
+    const interviewId = savedInterview.interviewId;
+
+    // 2. 초기 데이터 (Portfolio/CoverLetter 등) 준비 및 Redis(KeySetStore) 저장
+    const documentsKey = `documents:${interviewId}`;
+
+    if (dto.documentIds && dto.documentIds.length > 0) {
+      const documents = await this.documentRepository.findByIds(
+        dto.documentIds,
+      );
+
+      documents.forEach((doc) => {
+        // DocumentType이 'PORTFOLIO', 'COVER' 등과 일치한다고 가정
+        // Redis 저장 포맷: TYPE:ID (예: PORTFOLIO:1)
+        this.keySetStore.addToSet(
+          documentsKey,
+          `${doc.type}:${doc.documentId}`,
+        );
+        this.logger.log(
+          `Added document to MemoryStore: ${doc.type}:${doc.documentId}`,
+        );
+      });
+    }
+
+    // 3. 첫 질문 생성
+    const firstQuestion = await this.chatInterviewer(interviewId);
+
+    return {
+      interviewId: interviewId,
+      questionId: firstQuestion.questionId,
+      question: firstQuestion.question,
+      createdAt: firstQuestion.createdAt,
+    };
+  }
 
   async answerWithVoice(
     userId: string,
@@ -108,9 +161,6 @@ export class InterviewService {
     this.logger.log('answers:', JSON.stringify(answers, null, 2));
 
     const documentsKey = `documents:${interviewId}`;
-
-    // 테스트를 위한 하드 코딩
-    this.keySetStore.addToSet(documentsKey, 'PORTFOLIO:1');
 
     const documentIds = this.keySetStore.getSet(documentsKey);
 
