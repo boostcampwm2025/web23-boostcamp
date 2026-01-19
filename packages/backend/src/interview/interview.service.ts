@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -109,6 +110,13 @@ export class InterviewService {
     ]);
     interview.validateUser(userId);
     const sttResult = await this.sttService.transform(file);
+
+    if (!sttResult) {
+      this.logger.warn(
+          `음성 파일을 STT 변환 했지만 빈 텍스트입니다. interviewId=${interviewId}`,
+      );
+      throw new BadRequestException('음성 파일 내용이 비어있습니다.');
+    }
 
     // interview의 cascade를 활용해 answer 엔티티를 삽입한다.
     const answer = new InterviewAnswer(sttResult);

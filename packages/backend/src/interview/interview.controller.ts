@@ -1,7 +1,9 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
+  Logger,
   Param,
   Post,
   UploadedFile,
@@ -24,6 +26,7 @@ import { CreateInterviewResponseDto } from './dto/create-interview-response.dto'
 
 @Controller('interview')
 export class InterviewController {
+  private readonly logger = new Logger(InterviewController.name);
   constructor(private readonly interviewService: InterviewService) { }
 
   @Post('tech/create')
@@ -41,6 +44,13 @@ export class InterviewController {
     @UploadedFile() file: Express.Multer.File,
     @Body() body: InterviewAnswerVoiceRequest,
   ): Promise<InterviewAnswerResponse> {
+    if (!file) {
+      this.logger.warn(
+          `answer/voice 요청에 음성 파일이 누락 되었습니다. - interviewId=${body.interviewId}`,
+      );
+      throw new BadRequestException('음성 파일이 없습니다.');
+    }
+
     // 인증이 없기 때문에 userId를 상수화
     const userId = '1';
     const answerResult = await this.interviewService.answerWithVoice(
