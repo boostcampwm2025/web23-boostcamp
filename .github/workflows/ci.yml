@@ -35,8 +35,14 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       # 1. 린트, 빌드, 테스트 한 번에 실행 (변경된 패키지만)
-      - name: Run Lint, Build & Test (Affected)
-        run: npx turbo run lint build test:ci --filter=...[origin/main]
+      - name: Run Lint & Build (Affected)
+        run: npx turbo run lint build --filter=...[origin/develop]
+
+      # 2. 테스트 (항상 실행 - 리포트 생성을 위해)
+      # 필터(...[origin/main])를 쓰면 변경사항 없을 때 테스트가 안 돌아가서 리포트 파일이 안 생깁니다.
+      # 그래서 리포트를 보려면 필터 없이(또는 backend 명시) 강제로 돌려야 합니다.
+      - name: Run Unit Tests
+        run: npx turbo run test:ci --filter=backend
         continue-on-error: true
 
       # 2. 테스트 결과 시각화
@@ -48,16 +54,7 @@ jobs:
           path: "packages/**/junit.xml"
           reporter: jest-junit
 
-      # 3. 도커 푸시 (인스턴스 생기기 전까지 비활성화)
-      - name: Docker Login & Push (Backend)
-        if: false
-        # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          echo "${{ secrets.NCP_SECRET_KEY }}" | docker login ${{ secrets.DOCKER_REGISTRY }} -u ${{ secrets.NCP_ACCESS_KEY }} --password-stdin
-          docker build -t ${{ secrets.DOCKER_REGISTRY }}/backend:latest -f ./packages/backend/Dockerfile .
-          docker push ${{ secrets.DOCKER_REGISTRY }}/backend:latest
-
-      # 4. 요약 현황판
+      # 3. 요약 현황판
       - name: 📊 CI Summary
         if: always()
         run: |
