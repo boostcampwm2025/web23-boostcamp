@@ -9,7 +9,7 @@ export class InterviewService {
   constructor(
     private readonly interviewRepository: InterviewRepository,
     private readonly sttService: SttService,
-  ) { }
+  ) {}
 
   async answerWithVoice(
     userId: string,

@@ -1,23 +1,28 @@
 "use client";
-import { useEffect, useLayoutEffect, useState } from "react";
+
+import { useLayoutEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+
 import { useMediaPermissions } from "@/app/hooks/use-media-permissions";
 import useMediaRecorder from "@/app/hooks/use-media-recorder";
+import { IChatMessage } from "@/app/components/chat-history";
+
 import VideoGrid from "../components/video-grid";
 import ChatPanel from "../../components/chat-panel";
 import { InterviewControls } from "../components/interview-controls";
-import { IChatMessage } from "@/app/components/chat-history";
-import { generateQuestion } from "./actions";
+
+import { generateQuestion, IHistoryItem } from "./actions";
+import { buildChatHistory } from "@/app/lib/client/chat";
 
 export default function InterviewClient({
-  initialChats,
+  history,
 }: {
-  initialChats: IChatMessage[];
+  history: IHistoryItem[];
 }) {
   const [isChatOpen, setIsChatOpen] = useState(true);
   const [isCamOn, setIsCamOn] = useState(false);
   const [isMicOn, setIsMicOn] = useState(false);
-  const [chats, setChats] = useState<IChatMessage[]>(initialChats);
+  const [chats, setChats] = useState<IChatMessage[]>(buildChatHistory(history));
   const [isGenerating, setIsGenerating] = useState(false);
   const router = useRouter();
 
@@ -31,13 +36,14 @@ export default function InterviewClient({
   } = useMediaPermissions();
   const { startVideoRecording, stopVideoRecording } = useMediaRecorder(stream);
 
-  useEffect(() => {
+  // FIXME: 이 부분은 이전 페이지에서 
+  useLayoutEffect(() => {
     let mounted = true;
     let started = false;
 
     const start = async () => {
       if (!stream) {
-        await requestPermissions();
+        await requestPermissions(); // 페이지 들어오기전에?
         return;
       }
       if (mounted && !started && stream) {
@@ -54,7 +60,13 @@ export default function InterviewClient({
       stopVideoRecording();
       stopMediaStream();
     };
-  }, [stream, requestPermissions, startVideoRecording, stopVideoRecording, stopMediaStream]);
+  }, [
+    stream,
+    requestPermissions,
+    startVideoRecording,
+    stopVideoRecording,
+    stopMediaStream,
+  ]);
 
   useLayoutEffect(() => {
     const init = async () => {
@@ -63,37 +75,30 @@ export default function InterviewClient({
 
       setIsGenerating(true);
       try {
-        const firstQuestion = await generateQuestion({ interviewId: "1" });
-        
+        const result = await generateQuestion({ interviewId: "1" });
         // 2. 방어 코드: 응답 데이터가 유효한지 꼼꼼하게 체크
-        if (firstQuestion) {
-          const qContent = firstQuestion.question || firstQuestion.content;
-          
+        if (result) {
           // 3. 내용이 있을 때만 상태 업데이트
-          if (qContent && typeof qContent === 'string') {
-            const rawDate = firstQuestion.createdAt || new Date();
-            const qCreatedAt = new Date(rawDate);
-            
-            // Invalid Date 체크 (날짜가 유효하지 않으면 현재 시간으로 대체)
-            const finalDate = isNaN(qCreatedAt.getTime()) ? new Date() : qCreatedAt;
-
-            setChats([{
-              id: crypto.randomUUID(),
-              content: qContent.trim(),
-              role: "ai",
-              sender: "Interviewer",
-              timestamp: finalDate
-            }]);
+          if (result.question && typeof result.question === "string") {
+            setChats([
+              {
+                id: result.questionId,
+                content: result.question.trim(),
+                role: "ai",
+                sender: "Interviewer",
+                timestamp: new Date(result.createdAt).toISOString(),
+              },
+            ]);
           }
         }
-      } catch (e) {
-        console.error("초기 질문 생성 중 에러 발생:", e);
+      } catch (error) {
+        throw new Error(`초기 질문 생성중 에러 발생 ${error}`);
       } finally {
         setIsGenerating(false);
       }
     };
     init();
-  }, []);
+  }, [chats, isGenerating]);
 
   return (
     <div className="mt-5 flex h-full max-w-630 flex-col justify-center gap-5 py-2 xl:flex-row">

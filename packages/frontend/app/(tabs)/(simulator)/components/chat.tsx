@@ -76,7 +76,7 @@ export default function Chat({
       const nextQ = await generateQuestion({ interviewId: "1" });
       
       if (nextQ) {
-        const qContent = nextQ.question || nextQ.content;
+        const qContent = nextQ.question;
         if (qContent) {
           appendMessage(qContent, "ai", "Interviewer");
         }
