@@ -134,4 +134,14 @@ export class InterviewController {
     const userId = '1';
     return await this.interviewService.getDuringTime(userId, interviewId);
   }
+
+  @Get('/:interviewId/feedback')
+  async getInterviewFeedback(
+      @Param('interviewId') interviewId: string
+  ): Promise<InterviewFeedbackResponse> {
+    // 인증이 없기 때문에 userId를 상수화
+    const userId = '1';
+    return this.interviewService.findInterviewFeedback(userId, interviewId);
+  }
+
 }
