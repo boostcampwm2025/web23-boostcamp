@@ -1,7 +1,9 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
+  Logger,
   Param,
   Post,
   UploadedFile,
@@ -17,6 +19,7 @@ import { InterviewAnswerResponse } from './dto/interview-answer-response.dto';
 import { InterviewChatHistoryResponse } from './dto/interview-chat-history-response.dto';
 import { InterviewQuestionRequest } from './dto/interview-question-request.dto';
 import { InterviewQuestionResponse } from './dto/interview-question-response.dto';
+import { InterviewDuringTimeResponse } from './dto/interview-during-time-response.dto';
 import { InterviewStopRequest } from "./dto/interview-stop-request.dto";
 
 import { CreateInterviewRequestDto } from './dto/create-interview-request.dto';
@@ -26,6 +29,7 @@ import { InterviewFeedbackResponse } from './dto/interview-feedback-response.dto
 
 @Controller('interview')
 export class InterviewController {
+  private readonly logger = new Logger(InterviewController.name);
   constructor(private readonly interviewService: InterviewService) { }
 
   @Post('tech/create')
@@ -43,6 +47,13 @@ export class InterviewController {
     @UploadedFile() file: Express.Multer.File,
     @Body() body: InterviewAnswerVoiceRequest,
   ): Promise<InterviewAnswerResponse> {
+    if (!file) {
+      this.logger.warn(
+          `answer/voice 요청에 음성 파일이 누락 되었습니다. - interviewId=${body.interviewId}`,
+      );
+      throw new BadRequestException('음성 파일이 없습니다.');
+    }
+
     // 인증이 없기 때문에 userId를 상수화
     const userId = '1';
     const answerResult = await this.interviewService.answerWithVoice(
@@ -115,4 +126,12 @@ export class InterviewController {
     );
   }
 
+  @Get(':interviewId/time')
+  async getDuringTime(
+    @Param('interviewId') interviewId: string,
+  ): Promise<InterviewDuringTimeResponse> {
+    // 인증이 없기 때문에 userId를 상수화
+    const userId = '1';
+    return await this.interviewService.getDuringTime(userId, interviewId);
+  }
 }

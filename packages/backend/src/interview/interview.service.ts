@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -14,6 +15,7 @@ import { SttService } from './stt.service';
 import { InterviewRepository } from './interview.repository';
 import { Interview } from './entities/interview.entity';
 import { InterviewChatHistoryResponse } from './dto/interview-chat-history-response.dto';
+import { InterviewDuringTimeResponse } from './dto/interview-during-time-response.dto';
 import { PortfolioRepository } from '../document/repositories/portfolio.repository';
 import { CoverLetterRepository } from '../document/repositories/cover-letter.repository';
 import { CreateInterviewResponseDto } from './dto/create-interview-response.dto';
@@ -53,6 +55,22 @@ export class InterviewService {
     interview.calculateDuringTime(endTime);
 
     await this.interviewRepository.save(interview);
+  }
+
+  async getDuringTime(
+    userId: string,
+    interviewId: string,
+  ): Promise<InterviewDuringTimeResponse> {
+    const interview = await this.findExistingInterview(interviewId, ['user']);
+    interview.validateUser(userId);
+
+    if (!interview.duringTime) {
+      throw new NotFoundException('인터뷰가 아직 종료되지 않았습니다.');
+    }
+
+    return {
+      duringTime: interview.duringTime
+    };
   }
 
   async createTechInterview(
@@ -112,6 +130,13 @@ export class InterviewService {
     ]);
     interview.validateUser(userId);
     const sttResult = await this.sttService.transform(file);
+
+    if (!sttResult) {
+      this.logger.warn(
+          `음성 파일을 STT 변환 했지만 빈 텍스트입니다. interviewId=${interviewId}`,
+      );
+      throw new BadRequestException('음성 파일 내용이 비어있습니다.');
+    }
 
     // interview의 cascade를 활용해 answer 엔티티를 삽입한다.
     const answer = new InterviewAnswer(sttResult);
