@@ -21,6 +21,8 @@ import { InterviewStopRequest } from "./dto/interview-stop-request.dto";
 
 import { CreateInterviewRequestDto } from './dto/create-interview-request.dto';
 import { CreateInterviewResponseDto } from './dto/create-interview-response.dto';
+import { CreateFeedbackRequest } from './dto/create-feedback-request.dto';
+import { InterviewFeedbackResponse } from './dto/interview-feedback-response.dto';
 
 @Controller('interview')
 export class InterviewController {
@@ -101,4 +103,16 @@ export class InterviewController {
   ): Promise<InterviewQuestionResponse> {
     return await this.interviewService.chatInterviewer(body.interviewId);
   }
+
+  @Post('/feedback')
+  async generateAiInterview(
+    @Body() body: CreateFeedbackRequest,
+  ): Promise<InterviewFeedbackResponse> {
+    const userId = '1';
+    return await this.interviewService.createInterviewFeedback(
+      userId,
+      body.interviewId
+    );
+  }
+
 }
