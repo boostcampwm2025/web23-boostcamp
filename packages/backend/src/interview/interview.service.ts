@@ -14,6 +14,7 @@ import { SttService } from './stt.service';
 import { InterviewRepository } from './interview.repository';
 import { Interview } from './entities/interview.entity';
 import { InterviewChatHistoryResponse } from './dto/interview-chat-history-response.dto';
+import { InterviewDuringTimeResponse } from './dto/interview-during-time-response.dto';
 import { PortfolioRepository } from '../document/repositories/portfolio.repository';
 import { CoverLetterRepository } from '../document/repositories/cover-letter.repository';
 import { CreateInterviewResponseDto } from './dto/create-interview-response.dto';
@@ -50,6 +51,22 @@ export class InterviewService {
     interview.calculateDuringTime(endTime);
 
     await this.interviewRepository.save(interview);
+  }
+
+  async getDuringTime(
+    userId: string,
+    interviewId: string,
+  ): Promise<InterviewDuringTimeResponse> {
+    const interview = await this.findExistingInterview(interviewId, ['user']);
+    interview.validateUser(userId);
+
+    if (!interview.duringTime) {
+      throw new NotFoundException('인터뷰가 아직 종료되지 않았습니다.');
+    }
+
+    return {
+      duringTime: interview.duringTime
+    };
   }
 
   async createTechInterview(
