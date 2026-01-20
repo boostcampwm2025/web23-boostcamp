@@ -51,6 +51,9 @@ export class Interview {
   @Column({ name: 'during_time', type: 'bigint', nullable: true })
   duringTime: number;
 
+  @Column({ name: 'score', type: 'varchar', length: 10, nullable: true })
+  score: string;
+
   @Column({ name: 'feedback', type: 'varchar', length: 1000, nullable: true })
   feedback: string;
 
