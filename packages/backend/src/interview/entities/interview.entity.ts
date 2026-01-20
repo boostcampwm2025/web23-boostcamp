@@ -51,6 +51,9 @@ export class Interview {
   @Column({ name: 'during_time', type: 'bigint', nullable: true })
   duringTime: number;
 
+  @Column({ name: 'feedback', type: 'varchar', length: 1000, nullable: true })
+  feedback: string;
+
   @ManyToOne(() => User, (user) => user.interviews)
   @JoinColumn({ name: 'user_id' })
   user: User;

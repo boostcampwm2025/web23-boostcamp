@@ -21,6 +21,8 @@ import { InterviewType, LikeStatus } from './entities/interview.entity';
 import { CreateInterviewRequestDto } from './dto/create-interview-request.dto';
 import { DocumentRepository } from '../document/repositories/document.repository';
 import { User } from '../user/entities/user.entity';
+import { InterviewFeedbackService } from "./interview-feedback.service";
+import { InterviewFeedbackResponse } from './dto/interview-feedback-response.dto';
 
 @Injectable()
 export class InterviewService {
@@ -36,6 +38,7 @@ export class InterviewService {
     private readonly portfolioRepository: PortfolioRepository,
     private readonly coverLetterRepository: CoverLetterRepository,
     private readonly documentRepository: DocumentRepository,
+    private readonly interviewFeedBackService: InterviewFeedbackService
   ) { }
 
   async calculateInterviewTime(
@@ -162,6 +165,24 @@ export class InterviewService {
       interview.answers,
       interview.questions,
     );
+  }
+
+  async createInterviewFeedback(userId: string, interviewId: string): Promise<InterviewFeedbackResponse> {
+    const interview = await this.findExistingInterview(interviewId, [
+      'answers',
+      'user',
+      'questions',
+    ]);
+    interview.validateUser(interview.user.userId);
+
+    const feedbackDto = await this.interviewFeedBackService.requestTechInterviewFeedBack(
+      interview.questions,
+      interview.answers,
+    );
+
+    interview.feedback = feedbackDto.feedback;
+    await this.interviewRepository.save(interview);
+    return feedbackDto;
   }
 
   async chatInterviewer(interviewId: string) {
