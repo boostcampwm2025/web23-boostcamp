@@ -101,4 +101,25 @@ export class InterviewController {
   ): Promise<InterviewQuestionResponse> {
     return await this.interviewService.chatInterviewer(body.interviewId);
   }
+
+  @Post('/feedback')
+  async generateAiInterview(
+    @Body() body: CreateFeedbackRequest,
+  ): Promise<InterviewFeedbackResponse> {
+    const userId = '1';
+    return await this.interviewService.createInterviewFeedback(
+      userId,
+      body.interviewId
+    );
+  }
+
+  @Get('/:interviewId/feedback')
+  async getInterviewFeedback(
+    @Param('interviewId') interviewId: string
+  ): Promise<InterviewFeedbackResponse> {
+    // 인증이 없기 때문에 userId를 상수화
+    const userId = '1';
+    return this.interviewService.findInterviewFeedback(userId, interviewId);
+  }
+
 }
