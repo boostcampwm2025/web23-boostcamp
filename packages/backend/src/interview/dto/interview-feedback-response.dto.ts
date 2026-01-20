@@ -2,7 +2,7 @@ import { IsNumber, IsString } from "class-validator";
 
 export class InterviewFeedbackResponse {
     @IsNumber()
-    score: number;
+    score: string;
 
     @IsString()
     feedback: string;

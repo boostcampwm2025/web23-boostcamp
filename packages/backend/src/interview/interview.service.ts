@@ -205,6 +205,7 @@ export class InterviewService {
       interview.answers,
     );
 
+    interview.score = feedbackDto.score;
     interview.feedback = feedbackDto.feedback;
     await this.interviewRepository.save(interview);
     return feedbackDto;
@@ -281,5 +282,19 @@ export class InterviewService {
     }
 
     throw new InternalServerErrorException('Failed to parse JSON response');
+  }
+
+  async findInterviewFeedback(
+      userId: string,
+      interviewId: string,
+  ): Promise<InterviewFeedbackResponse> {
+    const interview = await this.findExistingInterview(interviewId, [
+      'user',
+    ]);
+    interview.validateUser(userId);
+    return {
+      score: interview.score,
+      feedback: interview.feedback,
+    };
   }
 }
