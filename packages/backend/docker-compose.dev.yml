@@ -1,0 +1,40 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: web23-mysql-dev
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - '${DB_PORT}:${DB_PORT}'
+    volumes:
+      - mysql_data_dev:/var/lib/mysql
+    networks:
+      - web23-network-dev
+
+  backend:
+    image: ${DOCKER_USERNAME}/web23-backend:${IMAGE_TAG}
+    container_name: web23-backend-dev
+    # 프로덕션/테스트 환경이므로 소스코드 볼륨 마운트(- .:/app/...)를 제거합니다.
+    # 이미 빌드된 이미지를 그대로 사용합니다.
+    restart: always
+    environment:
+      - NODE_ENV=development
+    ports:
+      - '${PORT}:${PORT}'
+    env_file:
+      - ../../../cicd/web23-PSI/packages/backend/.env
+    depends_on:
+      - mysql
+    networks:
+      - web23-network-dev
+
+volumes:
+  mysql_data_dev:
+
+networks:
+  web23-network-dev:
+    driver: bridge
