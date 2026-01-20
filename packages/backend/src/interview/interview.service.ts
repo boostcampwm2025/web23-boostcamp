@@ -164,6 +164,25 @@ export class InterviewService {
     );
   }
 
+  async createInterviewFeedback(userId: string, interviewId: string): Promise<InterviewFeedbackResponse> {
+    const interview = await this.findExistingInterview(interviewId, [
+      'answers',
+      'user',
+      'questions',
+    ]);
+    interview.validateUser(interview.user.userId);
+
+    const feedbackDto = await this.interviewFeedBackService.requestTechInterviewFeedBack(
+      interview.questions,
+      interview.answers,
+    );
+
+    interview.feedback = feedbackDto.feedback;
+    interview.score = feedbackDto.score;
+    await this.interviewRepository.save(interview);
+    return feedbackDto;
+  }
+
   async chatInterviewer(interviewId: string) {
     const questions: InterviewQuestion[] =
       await this.questionRepository.findFiveByInterviewId(interviewId);
@@ -235,5 +254,19 @@ export class InterviewService {
     }
 
     throw new InternalServerErrorException('Failed to parse JSON response');
+  }
+
+  async findInterviewFeedback(
+    userId: string,
+    interviewId: string,
+  ): Promise<InterviewFeedbackResponse> {
+    const interview = await this.findExistingInterview(interviewId, [
+      'user',
+    ]);
+    interview.validateUser(userId);
+    return {
+      score: interview.score,
+      feedback: interview.feedback,
+    };
   }
 }
