@@ -1,9 +1,9 @@
-import { IsNumber, IsString } from "class-validator";
+import { IsNumber, IsString } from 'class-validator';
 
 export class InterviewFeedbackResponse {
-    @IsNumber()
-    score: number;
+  @IsNumber()
+  score: string;
 
-    @IsString()
-    feedback: string;
+  @IsString()
+  feedback: string;
 }

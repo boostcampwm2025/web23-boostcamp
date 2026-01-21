@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: WinstonModule.createLogger(winstonOptions),
   });
-  
+
   // 개발 환경 등에서 자동 시딩 실행
   const seedService = app.get(SeedService);
   await seedService.seed();

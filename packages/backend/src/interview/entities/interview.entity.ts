@@ -51,6 +51,9 @@ export class Interview {
   @Column({ name: 'during_time', type: 'bigint', nullable: true })
   duringTime: number;
 
+  @Column({ name: 'score', type: 'varchar', length: 10, nullable: true })
+  score: string;
+
   @Column({ name: 'feedback', type: 'varchar', length: 1000, nullable: true })
   feedback: string;
 
@@ -86,7 +89,7 @@ export class Interview {
     if (duration < 0) {
       throw new ForbiddenException('종료 시간이 시작 시간보다 빠릅니다.');
     }
-    this.duringTime = duration
+    this.duringTime = duration;
     return this.duringTime;
   }
 }
