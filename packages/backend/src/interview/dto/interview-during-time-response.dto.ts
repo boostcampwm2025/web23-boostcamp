@@ -1,3 +1,4 @@
 export class InterviewDuringTimeResponse {
-    duringTime: number;
+  createdAt: Date;
+  duringTime: number;
 }

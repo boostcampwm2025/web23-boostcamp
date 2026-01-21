@@ -55,7 +55,7 @@ export class InterviewService {
     await this.interviewRepository.save(interview);
   }
 
-  async getDuringTime(
+  async getInterviewTime(
     userId: string,
     interviewId: string,
   ): Promise<InterviewDuringTimeResponse> {
@@ -67,7 +67,8 @@ export class InterviewService {
     }
 
     return {
-      duringTime: interview.duringTime
+      createdAt: interview.createdAt,
+      duringTime: interview.duringTime,
     };
   }
 
@@ -131,7 +132,7 @@ export class InterviewService {
 
     if (!sttResult) {
       this.logger.warn(
-          `음성 파일을 STT 변환 했지만 빈 텍스트입니다. interviewId=${interviewId}`,
+        `음성 파일을 STT 변환 했지만 빈 텍스트입니다. interviewId=${interviewId}`,
       );
       throw new BadRequestException('음성 파일 내용이 비어있습니다.');
     }

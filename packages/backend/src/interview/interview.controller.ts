@@ -19,13 +19,8 @@ import { InterviewAnswerResponse } from './dto/interview-answer-response.dto';
 import { InterviewChatHistoryResponse } from './dto/interview-chat-history-response.dto';
 import { InterviewQuestionRequest } from './dto/interview-question-request.dto';
 import { InterviewQuestionResponse } from './dto/interview-question-response.dto';
-<<<<<<< HEAD
 import { InterviewDuringTimeResponse } from './dto/interview-during-time-response.dto';
-import { InterviewStopRequest } from "./dto/interview-stop-request.dto";
-=======
 import { InterviewStopRequest } from './dto/interview-stop-request.dto';
->>>>>>> 45019e5 (fix: 린트 에러 수정)
-
 import { CreateInterviewRequestDto } from './dto/create-interview-request.dto';
 import { CreateInterviewResponseDto } from './dto/create-interview-response.dto';
 import { CreateFeedbackRequest } from './dto/create-feedback-request.dto';
@@ -33,12 +28,8 @@ import { InterviewFeedbackResponse } from './dto/interview-feedback-response.dto
 
 @Controller('interview')
 export class InterviewController {
-<<<<<<< HEAD
   private readonly logger = new Logger(InterviewController.name);
-  constructor(private readonly interviewService: InterviewService) { }
-=======
   constructor(private readonly interviewService: InterviewService) {}
->>>>>>> 45019e5 (fix: 린트 에러 수정)
 
   @Post('tech/create')
   async createTechInterview(
@@ -57,7 +48,7 @@ export class InterviewController {
   ): Promise<InterviewAnswerResponse> {
     if (!file) {
       this.logger.warn(
-          `answer/voice 요청에 음성 파일이 누락 되었습니다. - interviewId=${body.interviewId}`,
+        `answer/voice 요청에 음성 파일이 누락 되었습니다. - interviewId=${body.interviewId}`,
       );
       throw new BadRequestException('음성 파일이 없습니다.');
     }
@@ -137,7 +128,7 @@ export class InterviewController {
   ): Promise<InterviewDuringTimeResponse> {
     // 인증이 없기 때문에 userId를 상수화
     const userId = '1';
-    return await this.interviewService.getDuringTime(userId, interviewId);
+    return await this.interviewService.getInterviewTime(userId, interviewId);
   }
 
   @Get('/:interviewId/feedback')
