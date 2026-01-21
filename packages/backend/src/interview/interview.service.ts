@@ -23,7 +23,7 @@ import { InterviewType, LikeStatus } from './entities/interview.entity';
 import { CreateInterviewRequestDto } from './dto/create-interview-request.dto';
 import { DocumentRepository } from '../document/repositories/document.repository';
 import { User } from '../user/entities/user.entity';
-import { InterviewFeedbackService } from "./interview-feedback.service";
+import { InterviewFeedbackService } from './interview-feedback.service';
 import { InterviewFeedbackResponse } from './dto/interview-feedback-response.dto';
 
 @Injectable()
@@ -40,17 +40,15 @@ export class InterviewService {
     private readonly portfolioRepository: PortfolioRepository,
     private readonly coverLetterRepository: CoverLetterRepository,
     private readonly documentRepository: DocumentRepository,
-    private readonly interviewFeedBackService: InterviewFeedbackService
-  ) { }
+    private readonly interviewFeedBackService: InterviewFeedbackService,
+  ) {}
 
   async calculateInterviewTime(
     userId: string,
     interviewId: string,
     endTime: Date,
   ): Promise<void> {
-    const interview = await this.findExistingInterview(interviewId, [
-      'user',
-    ]);
+    const interview = await this.findExistingInterview(interviewId, ['user']);
     interview.validateUser(userId);
     interview.calculateDuringTime(endTime);
 
@@ -192,7 +190,10 @@ export class InterviewService {
     );
   }
 
-  async createInterviewFeedback(userId: string, interviewId: string): Promise<InterviewFeedbackResponse> {
+  async createInterviewFeedback(
+    userId: string,
+    interviewId: string,
+  ): Promise<InterviewFeedbackResponse> {
     const interview = await this.findExistingInterview(interviewId, [
       'answers',
       'user',
@@ -200,10 +201,11 @@ export class InterviewService {
     ]);
     interview.validateUser(userId);
 
-    const feedbackDto = await this.interviewFeedBackService.requestTechInterviewFeedBack(
-      interview.questions,
-      interview.answers,
-    );
+    const feedbackDto =
+      await this.interviewFeedBackService.requestTechInterviewFeedBack(
+        interview.questions,
+        interview.answers,
+      );
 
     interview.score = feedbackDto.score;
     interview.feedback = feedbackDto.feedback;
@@ -285,12 +287,10 @@ export class InterviewService {
   }
 
   async findInterviewFeedback(
-      userId: string,
-      interviewId: string,
+    userId: string,
+    interviewId: string,
   ): Promise<InterviewFeedbackResponse> {
-    const interview = await this.findExistingInterview(interviewId, [
-      'user',
-    ]);
+    const interview = await this.findExistingInterview(interviewId, ['user']);
     interview.validateUser(userId);
     return {
       score: interview.score,

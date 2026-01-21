@@ -1,4 +1,3 @@
-
 import { Injectable, Logger } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import * as fs from 'fs';
@@ -19,7 +18,7 @@ export class SeedService {
     try {
       this.logger.log('Clearing existing data...');
       this.logger.log('Executing raw SQL seeds...');
-      
+
       // SQL 파일 읽기
       // npm run start 실행 시 CWD(현재 작업 디렉토리)가 packages/backend라고 가정
       const seedFilePath = path.join(process.cwd(), 'db', 'seeds.sql');
@@ -37,11 +36,11 @@ export class SeedService {
       // multipleStatements가 활성화되지 않았다면 분리해야 함.
       // 표준적인 `;\n` 또는 `;\r\n` 또는 줄 끝의 `;`로 분리 가정.
       // 제공된 SQL은 줄 끝에 `VALUES (...);` 형태를 띰.
-      
+
       const statements = sql
         .split(/;\s*[\r\n]+/) // 세미콜론과 그 뒤의 개행 문자로 분리
-        .map(s => s.trim())
-        .filter(s => s.length > 0);
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
 
       for (const statement of statements) {
         await queryRunner.query(statement);
@@ -53,7 +52,7 @@ export class SeedService {
       this.logger.error('Seeding failed', err);
       // rollback은 트랜잭션이 이미 커밋되었거나 깨진 경우 실패할 수 있음
       if (queryRunner.isTransactionActive) {
-         await queryRunner.rollbackTransaction();
+        await queryRunner.rollbackTransaction();
       }
       // 시작 시 "자동 실행 모드"라면 프로세스를 종료하고 싶지 않을 수 있음
       // 하지만 검증 단계에서는 실패 여부를 알아야 함.

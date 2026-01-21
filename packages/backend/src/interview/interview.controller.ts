@@ -19,8 +19,12 @@ import { InterviewAnswerResponse } from './dto/interview-answer-response.dto';
 import { InterviewChatHistoryResponse } from './dto/interview-chat-history-response.dto';
 import { InterviewQuestionRequest } from './dto/interview-question-request.dto';
 import { InterviewQuestionResponse } from './dto/interview-question-response.dto';
+<<<<<<< HEAD
 import { InterviewDuringTimeResponse } from './dto/interview-during-time-response.dto';
 import { InterviewStopRequest } from "./dto/interview-stop-request.dto";
+=======
+import { InterviewStopRequest } from './dto/interview-stop-request.dto';
+>>>>>>> 45019e5 (fix: 린트 에러 수정)
 
 import { CreateInterviewRequestDto } from './dto/create-interview-request.dto';
 import { CreateInterviewResponseDto } from './dto/create-interview-response.dto';
@@ -29,8 +33,12 @@ import { InterviewFeedbackResponse } from './dto/interview-feedback-response.dto
 
 @Controller('interview')
 export class InterviewController {
+<<<<<<< HEAD
   private readonly logger = new Logger(InterviewController.name);
   constructor(private readonly interviewService: InterviewService) { }
+=======
+  constructor(private readonly interviewService: InterviewService) {}
+>>>>>>> 45019e5 (fix: 린트 에러 수정)
 
   @Post('tech/create')
   async createTechInterview(
@@ -85,9 +93,7 @@ export class InterviewController {
   }
 
   @Post('/stop')
-  async stopInterview(
-    @Body() body: InterviewStopRequest,
-  ): Promise<void> {
+  async stopInterview(@Body() body: InterviewStopRequest): Promise<void> {
     // 인증이 없기 때문에 userId를 상수화
     const userId = '1';
     const endTime = new Date();
@@ -98,10 +104,9 @@ export class InterviewController {
     );
   }
 
-
   @Get('/:interviewId/chat/history')
   async getInterviewChatHistory(
-    @Param('interviewId') interviewId: string
+    @Param('interviewId') interviewId: string,
   ): Promise<InterviewChatHistoryResponse> {
     // 인증이 없기 때문에 userId를 상수화
     const userId = '1';
@@ -122,7 +127,7 @@ export class InterviewController {
     const userId = '1';
     return await this.interviewService.createInterviewFeedback(
       userId,
-      body.interviewId
+      body.interviewId,
     );
   }
 
@@ -137,11 +142,10 @@ export class InterviewController {
 
   @Get('/:interviewId/feedback')
   async getInterviewFeedback(
-      @Param('interviewId') interviewId: string
+    @Param('interviewId') interviewId: string,
   ): Promise<InterviewFeedbackResponse> {
     // 인증이 없기 때문에 userId를 상수화
     const userId = '1';
     return this.interviewService.findInterviewFeedback(userId, interviewId);
   }
-
 }

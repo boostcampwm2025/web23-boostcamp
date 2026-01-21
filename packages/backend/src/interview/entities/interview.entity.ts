@@ -89,7 +89,7 @@ export class Interview {
     if (duration < 0) {
       throw new ForbiddenException('종료 시간이 시작 시간보다 빠릅니다.');
     }
-    this.duringTime = duration
+    this.duringTime = duration;
     return this.duringTime;
   }
 }

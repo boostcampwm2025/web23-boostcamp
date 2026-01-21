@@ -12,7 +12,7 @@ import { InterviewAIService } from './interview-ai.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from '../user/user.module';
 import { DocumentModule } from '../document/document.module';
-import {InterviewFeedbackService} from "./interview-feedback.service";
+import { InterviewFeedbackService } from './interview-feedback.service';
 
 @Module({
   imports: [UserModule, DocumentModule, TypeOrmModule.forFeature([])],
