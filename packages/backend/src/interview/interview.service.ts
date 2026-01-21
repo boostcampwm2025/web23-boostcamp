@@ -198,7 +198,7 @@ export class InterviewService {
       'user',
       'questions',
     ]);
-    interview.validateUser(interview.user.userId);
+    interview.validateUser(userId);
 
     const feedbackDto = await this.interviewFeedBackService.requestTechInterviewFeedBack(
       interview.questions,
