@@ -1,8 +1,9 @@
 "use client";
 
-import { useMediaPermissions } from "@/app/hooks/use-media-permissions";
-import { Aperture, CircleCheck } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { Aperture, CircleAlert, CircleCheck } from "lucide-react";
+
+import { useMediaPermissions } from "@/app/hooks/use-media-permissions";
 
 export default function VideoStatus() {
   const {
@@ -33,16 +34,14 @@ export default function VideoStatus() {
 
   return (
     <div>
-      <div className="relative overflow-hidden rounded-3xl">
+      <div className="relative aspect-video overflow-hidden rounded-3xl bg-primary/20">
         <div className="absolute top-5 left-5 flex items-center gap-2 rounded-2xl border bg-white/30 px-3 py-1 backdrop-blur-md">
           <Aperture className="size-3" />
           <span className="text-sm font-semibold uppercase">
             preview activate
           </span>
         </div>
-        <div className="video flex justify-center bg-primary/20">
-          <video ref={videoRef} autoPlay muted />
-        </div>
+        <video ref={videoRef} autoPlay muted />
       </div>
       <div className="mt-4 grid grid-cols-2 gap-3">
         <div className="flex justify-between rounded-xl border p-4">
@@ -50,11 +49,11 @@ export default function VideoStatus() {
             camera
           </p>
           {!hasVideoPermission ? (
-            <span className="text-sm font-semibold text-red-500">off</span>
+            <CircleAlert className="size-5 text-red-500" />
           ) : isVideoEnabled ? (
             <CircleCheck className="size-5 text-primary" />
           ) : (
-            <span className="text-sm font-semibold text-red-500">off</span>
+            <CircleAlert className="size-5 text-red-500" />
           )}
         </div>
         <div className="flex justify-between rounded-xl border p-4">
@@ -62,11 +61,11 @@ export default function VideoStatus() {
             mic
           </p>
           {!hasAudioPermission ? (
-            <span className="text-sm font-semibold text-red-500">off</span>
+            <CircleAlert className="size-5 text-red-500" />
           ) : isAudioEnabled ? (
             <CircleCheck className="size-5 text-primary" />
           ) : (
-            <span className="text-sm font-semibold text-red-500">off</span>
+            <CircleAlert className="size-5 text-red-500" />
           )}
         </div>
       </div>
