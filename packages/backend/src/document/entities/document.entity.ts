@@ -43,6 +43,8 @@ export class Document {
   })
   portfolio: Portfolio;
 
-  @OneToOne(() => CoverLetter, (coverLetter) => coverLetter.document)
+  @OneToOne(() => CoverLetter, (coverLetter) => coverLetter.document, {
+    cascade: true,
+  })
   coverLetter: CoverLetter;
 }
