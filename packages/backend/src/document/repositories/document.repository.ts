@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, EntityManager } from 'typeorm';
 import { Document, DocumentType } from '../entities/document.entity';
-import { Portfolio } from '../entities/portfolio.entity';
+
 import { SortType } from '../dto/document-summary.request.dto';
 
 @Injectable()
@@ -77,28 +77,10 @@ export class DocumentRepository extends Repository<Document> {
     return await queryBuilder.getManyAndCount();
   }
 
-  async deletePortfolioDocument(userId: string, documentId: string) {
-    await this.dataSource.transaction(async (manager) => {
-      const documentRepo = manager.getRepository(Document);
-      const portfolioRepo = manager.getRepository(Portfolio);
-
-      const document = await documentRepo.findOne({
-        where: {
-          documentId,
-          user: { userId },
-          type: DocumentType.PORTFOLIO,
-        },
-        relations: { portfolio: true },
-      });
-
-      if (!document) {
-        throw new NotFoundException('등록되지 않은 문서입니다');
-      }
-
-      if (document.portfolio) {
-        await portfolioRepo.delete(document.portfolio.portfolioId);
-      }
-      await documentRepo.delete(document.documentId);
+  async findByIdAndUserId(documentId: string, userId: string): Promise<Document | null> {
+    return await this.findOne({
+      where: { documentId, user: { userId } },
+      relations: { portfolio: true },
     });
   }
 }
