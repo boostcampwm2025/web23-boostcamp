@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState, useEffect } from "react";
 
-import { saveVideo, saveAudio } from "@/app/lib/media/mediaStorage";
+import { saveVideo, saveAudio } from "@/app/lib/client/media/mediaStorage"
 
 export const useMediaRecorder = (stream?: MediaStream | null) => {
   const mediaRecorderRefVideo = useRef<MediaRecorder | null>(null);
@@ -23,7 +23,7 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
       let mr: MediaRecorder | null = null;
       try {
         mr = new MediaRecorder(stream, {
-          mimeType: "video/webm;codecs=vp9,flac",
+          mimeType: "video/webm;codecs=vp9,opus",
         });
       } catch (error) {
         try {

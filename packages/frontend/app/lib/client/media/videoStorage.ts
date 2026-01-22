@@ -8,15 +8,15 @@ const DB_CONFIG = {
 export interface MediaRecord {
   id: string;
   blob: Blob;
-  type: 'video' | 'audio';
+  type: "video" | "audio";
   updatedAt: number;
 }
 
 /**
  * IndexedDB 연결 및 초기화 (내부 전용)
  */
-const getDB = (): Promise<IDBDatabase> => {
-  return new Promise((resolve, reject) => {
+const getDB = () => {
+  return new Promise<IDBDatabase>((resolve, reject) => {
     const request = indexedDB.open(DB_CONFIG.name, DB_CONFIG.version);
 
     request.onupgradeneeded = () => {
@@ -34,7 +34,7 @@ const getDB = (): Promise<IDBDatabase> => {
 /**
  * 미디어(비디오/오디오) Blob 저장
  */
-export const saveMedia = async (blob: Blob, type: 'video' | 'audio'): Promise<void> => {
+export const saveMedia = async (blob: Blob, type: "video" | "audio") => {
   const db = await getDB();
   const transaction = db.transaction(DB_CONFIG.store, "readwrite");
   const store = transaction.objectStore(DB_CONFIG.store);
@@ -50,13 +50,13 @@ export const saveMedia = async (blob: Blob, type: 'video' | 'audio'): Promise<vo
 /**
  * 녹화된 비디오 Blob 저장 (하위 호환성 유지)
  */
-export const saveRecordedVideo = async (blob: Blob): Promise<void> => {
-  return saveMedia(blob, 'video');
+export const saveRecordedVideo = async (blob: Blob) => {
+  return saveMedia(blob, "video");
 };
 
-export const getLatestMedia = async (): Promise<Blob | null> => {
+export const getLatestMedia = async () => {
   const db = await getDB();
-  return new Promise((resolve) => {
+  return new Promise<Blob | null>((resolve) => {
     const transaction = db.transaction(DB_CONFIG.store, "readonly");
     const request = transaction.objectStore(DB_CONFIG.store).get(DB_CONFIG.key);
 
@@ -68,6 +68,6 @@ export const getLatestMedia = async (): Promise<Blob | null> => {
 /**
  * 최신 비디오 조회 (하위 호환성 유지)
  */
-export const fetchLatestVideo = async (): Promise<Blob | null> => {
+export const fetchLatestVideo = async () => {
   return getLatestMedia();
 };

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getLatestVideo } from "@/app/lib/media/mediaStorage";
+
+import { fetchLatestVideo } from "@/app/lib/client/media/videoStorage";
 
 export default function RecentRecording() {
   const [url, setUrl] = useState<string | null>(null);
@@ -12,7 +13,7 @@ export default function RecentRecording() {
 
     (async () => {
       try {
-        const blob = await getLatestVideo();
+        const blob = await fetchLatestVideo();
         if (!blob) {
           return;
         }
@@ -41,12 +42,14 @@ export default function RecentRecording() {
     );
 
   return (
-    <div>
+    <div className="bg-red-200">
+      {/*       <ChromaKeyVideo src={url} />
+       */}
       <video
         src={url}
         controls
         preload="metadata"
-        className="w-full rounded-2xl bg-primary"
+        className="aspect-video"
         playsInline
       />
     </div>
