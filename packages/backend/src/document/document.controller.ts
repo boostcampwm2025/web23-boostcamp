@@ -12,7 +12,7 @@ export class DocumentController {
     @Body() body: CreatePortfolioTextRequestDto,
   ): Promise<CreatePortfolioTextResponseDto> {
     const userId = '1';
-    return this.documentService.createPortfolioWithText(
+    return await this.documentService.createPortfolioWithText(
       userId,
       body.title,
       body.content,
