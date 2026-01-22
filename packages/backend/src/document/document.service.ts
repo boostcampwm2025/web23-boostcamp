@@ -106,4 +106,9 @@ export class DocumentService {
       totalPage: totalPage,
     };
   }
+
+  async deletePortfolio(userId: string, documentId: string) {
+    const user = await this.userService.findExistingUser(userId);
+    await this.documentRepository.deletePortfolioDocument(user.userId, documentId);
+  }
 }
