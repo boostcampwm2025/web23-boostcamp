@@ -23,4 +23,24 @@ export class DocumentRepository extends Repository<Document> {
       },
     });
   }
+
+  async findDocumentsPage(
+      userId: string,
+      page: number,
+      take: number,
+      type: DocumentType | undefined,
+      sort: SortType,
+  ): Promise<[Document[], number]> {
+    const skip = page * take;
+
+    const queryBuilder = this.createQueryBuilder('document');
+    queryBuilder.where('document.user_id = :userId', { userId });
+    if (type) {
+      queryBuilder.andWhere('document.type = :type', { type });
+    }
+
+    queryBuilder.orderBy('document.createdAt', sort).skip(skip).take(take);
+
+    return await queryBuilder.getManyAndCount();
+  }
 }

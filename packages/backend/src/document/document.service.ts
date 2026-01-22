@@ -70,4 +70,38 @@ export class DocumentService {
       createdAt: document.createdAt,
     };
   }
+
+  async listDocuments(
+      userId: string,
+      page: number,
+      take: number,
+      type: DocumentType | undefined,
+      sort: SortType,
+  ): Promise<DocumentSummaryListResponse> {
+    const [documents, count] = await this.documentRepository.findDocumentsPage(
+        userId,
+        page,
+        take,
+        type,
+        sort,
+    );
+
+    // 전체 페이지네이션 계산을 위해 올림을 사용
+    const totalPage = Math.ceil(count / take);
+
+    const documentList = documents.map((doc) => {
+      return {
+        documentId: doc.documentId,
+        title: doc.title,
+        type: doc.type,
+        createdAt: doc.createdAt,
+        modifiedAt: doc.modifiedAt,
+      };
+    });
+
+    return {
+      documents: documentList,
+      totalPage: totalPage,
+    }
+  }
 }
