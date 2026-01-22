@@ -4,7 +4,7 @@ import { CreatePortfolioTextRequestDto } from './dto/create-portfolio-text-reque
 import { CreatePortfolioTextResponseDto } from './dto/create-portfolio-text-response.dto';
 import { ViewPortfolioResponseDto } from './dto/view-portfolio-response.dto';
 
-@Controller('documents')
+@Controller('document')
 export class DocumentController {
   constructor(private readonly documentService: DocumentService) {}
 
