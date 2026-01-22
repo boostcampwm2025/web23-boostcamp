@@ -10,9 +10,8 @@ interface InterviewControlsProps {
   setIsCamOn: (val: boolean) => void;
   isMicOn: boolean;
   setIsMicOn: (val: boolean) => void;
-  pauseVideo: () => void;
-  resumeVideo: () => void;
-  toggleMic: (enabled: boolean) => void;
+  toggleVideo: (enabled: boolean) => void;
+  toggleAudio: (enabled: boolean) => void;
   onExit: () => void;
 }
 
@@ -22,29 +21,22 @@ export function InterviewControls({
   setIsCamOn,
   isMicOn,
   setIsMicOn,
-  pauseVideo,
-  resumeVideo,
-  toggleMic,
+  toggleVideo,
+  toggleAudio,
   onExit,
 }: InterviewControlsProps) {
   // 마이크 토글 (녹화 중 음소거/활성화)
   const handleMicToggle = () => {
     const newMicState = !isMicOn;
     setIsMicOn(newMicState);
-    toggleMic(newMicState);
+    toggleAudio(newMicState);
   };
 
   // 카메라 토글 (트랙만 끄고 켜기)
   const handleCamToggle = async () => {
-    if (isCamOn) {
-      // 카메라만 일시 중지
-      pauseVideo();
-      setIsCamOn(false);
-    } else {
-      // 카메라 재개
-      resumeVideo();
-      setIsCamOn(true);
-    }
+    const newCamState = !isCamOn;
+    setIsCamOn(newCamState);
+    toggleVideo(newCamState);
   };
 
   return (

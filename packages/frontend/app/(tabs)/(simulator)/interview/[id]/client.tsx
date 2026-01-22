@@ -1,18 +1,18 @@
 "use client";
 
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { useMediaPermissions } from "@/app/hooks/use-media-permissions";
 import useMediaRecorder from "@/app/hooks/use-media-recorder";
 import { IChatMessage } from "@/app/components/chat-history";
+import { buildChatHistory } from "@/app/lib/client/chat";
 
 import VideoGrid from "../components/video-grid";
 import ChatPanel from "../../components/chat-panel";
 import { InterviewControls } from "../components/interview-controls";
 
 import { generateQuestion, IHistoryItem } from "./actions";
-import { buildChatHistory } from "@/app/lib/client/chat";
 
 export default function InterviewClient({
   history,
@@ -27,30 +27,48 @@ export default function InterviewClient({
   const router = useRouter();
 
   const {
-    stream,
+    videoStream,
+    audioStream,
     requestPermissions,
     stopMediaStream,
-    pauseVideoRecording,
-    resumeVideoRecording,
-    toggleMicTrack,
+    toggleVideo,
+    toggleAudio,
   } = useMediaPermissions();
-  const { startVideoRecording, stopVideoRecording } = useMediaRecorder(stream);
 
-  // FIXME: 이 부분은 이전 페이지에서 
+  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
+
+  useEffect(() => {
+    if (videoStream || audioStream) {
+      const combinedStream = new MediaStream([
+        ...(videoStream?.getTracks() ?? []),
+        ...(audioStream?.getTracks() ?? []),
+      ]);
+      setMediaStream(combinedStream);
+    }
+  }, [videoStream, audioStream]);
+
+  const {
+    startVideoRecording,
+    stopVideoRecording,
+    startAudioRecording,
+    stopAudioRecording,
+  } = useMediaRecorder(mediaStream);
+
+  // FIXME: 이 부분은 이전 페이지에서
   useLayoutEffect(() => {
     let mounted = true;
-    let started = false;
 
     const start = async () => {
-      if (!stream) {
-        await requestPermissions(); // 페이지 들어오기전에?
+      if (!videoStream && !audioStream) {
+        await requestPermissions({ video: true, audio: true });
         return;
       }
-      if (mounted && !started && stream) {
+
+      if (mounted && mediaStream) {
         startVideoRecording();
+        startAudioRecording();
         setIsCamOn(true);
         setIsMicOn(true);
-        started = true;
       }
     };
 
@@ -58,13 +76,18 @@ export default function InterviewClient({
     return () => {
       mounted = false;
       stopVideoRecording();
+      stopAudioRecording();
       stopMediaStream();
     };
   }, [
-    stream,
+    mediaStream,
+    videoStream,
+    audioStream,
     requestPermissions,
     startVideoRecording,
     stopVideoRecording,
+    startAudioRecording,
+    stopAudioRecording,
     stopMediaStream,
   ]);
 
@@ -103,21 +126,22 @@ export default function InterviewClient({
   return (
     <div className="mt-5 flex h-full max-w-630 flex-col justify-center gap-5 py-2 xl:flex-row">
       <div className="relative w-full max-w-7xl xl:flex-2">
-        <VideoGrid stream={stream} isCamOn={isCamOn} />
+        <VideoGrid stream={mediaStream} isCamOn={isCamOn} />
         <InterviewControls
           onToggleChat={() => setIsChatOpen((prev) => !prev)}
           isCamOn={isCamOn}
           setIsCamOn={setIsCamOn}
           isMicOn={isMicOn}
           setIsMicOn={setIsMicOn}
-          pauseVideo={pauseVideoRecording}
-          resumeVideo={resumeVideoRecording}
-          toggleMic={toggleMicTrack}
+          toggleVideo={toggleVideo}
+          toggleAudio={toggleAudio}
           onExit={() => {
-            stopVideoRecording().finally(() => {
-              stopMediaStream();
-              router.push("/dashboard/result");
-            });
+            Promise.all([stopVideoRecording(), stopAudioRecording()]).finally(
+              () => {
+                stopMediaStream();
+                router.push("/dashboard/result");
+              },
+            );
           }}
         />
       </div>
@@ -127,7 +151,7 @@ export default function InterviewClient({
             initialChats={chats} // 실시간 업데이트되는 chats 상태 전달
             setChats={setChats}
             onClose={() => setIsChatOpen(false)}
-            stream={stream}
+            stream={mediaStream}
           />
         </div>
       )}
