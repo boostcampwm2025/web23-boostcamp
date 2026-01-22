@@ -24,7 +24,7 @@ export class DocumentController {
     );
   }
 
-  @Post('coverletter/create')
+  @Post('cover-letter/create')
   async createCoverLetter(
     @Body() body: CreateCoverLetterRequestDto,
   ): Promise<CreateCoverLetterResponseDto> {
