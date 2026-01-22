@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PortfolioRepository } from './repositories/portfolio.repository';
 import { DocumentRepository } from './repositories/document.repository';
 import { UserRepository } from '../user/user.repository';
@@ -11,9 +7,9 @@ import { Portfolio } from './entities/portfolio.entity';
 @Injectable()
 export class DocumentService {
   constructor(
-    readonly userRepository: UserRepository,
-    readonly documentRepository: DocumentRepository,
-    readonly portfolioRepository: PortfolioRepository,
+    private readonly userRepository: UserRepository,
+    private readonly documentRepository: DocumentRepository,
+    private readonly portfolioRepository: PortfolioRepository,
   ) {}
 
   async createPortfolioWithText(
