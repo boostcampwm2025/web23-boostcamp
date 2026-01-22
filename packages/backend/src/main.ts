@@ -4,12 +4,22 @@ import { WinstonModule } from 'nest-winston';
 import { winstonOptions } from './common/logger/winston.config';
 
 import { SeedService } from './seed/seed.service';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: WinstonModule.createLogger(winstonOptions),
   });
-
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  );
   // 개발 환경 등에서 자동 시딩 실행
   const seedService = app.get(SeedService);
   await seedService.seed();
