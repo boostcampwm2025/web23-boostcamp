@@ -11,15 +11,15 @@ const DB_CONFIG = {
 export interface MediaRecord {
   id: string;
   blob: Blob;
-  type: 'video' | 'audio';
+  type: "video" | "audio";
   updatedAt: number;
 }
 
 /**
  * IndexedDB 연결 및 초기화
  */
-const getDB = (): Promise<IDBDatabase> => {
-  return new Promise((resolve, reject) => {
+const getDB = () => {
+  return new Promise<IDBDatabase>((resolve, reject) => {
     const request = indexedDB.open(DB_CONFIG.name, DB_CONFIG.version);
 
     request.onupgradeneeded = () => {
@@ -37,12 +37,12 @@ const getDB = (): Promise<IDBDatabase> => {
 /**
  * 미디어(비디오/오디오) Blob 저장
  */
-export const saveMedia = async (blob: Blob, type: 'video' | 'audio'): Promise<void> => {
+export const saveMedia = async (blob: Blob, type: "video" | "audio") => {
   const db = await getDB();
   const transaction = db.transaction(DB_CONFIG.store, "readwrite");
   const store = transaction.objectStore(DB_CONFIG.store);
 
-  const key = type === 'video' ? DB_CONFIG.keys.video : DB_CONFIG.keys.audio;
+  const key = type === "video" ? DB_CONFIG.keys.video : DB_CONFIG.keys.audio;
 
   store.put({
     id: key,
@@ -55,22 +55,22 @@ export const saveMedia = async (blob: Blob, type: 'video' | 'audio'): Promise<vo
 /**
  * 비디오 저장
  */
-export const saveVideo = async (blob: Blob): Promise<void> => {
-  return saveMedia(blob, 'video');
+export const saveVideo = async (blob: Blob) => {
+  return saveMedia(blob, "video");
 };
 
 /**
  * 오디오 저장
  */
-export const saveAudio = async (blob: Blob): Promise<void> => {
-  return saveMedia(blob, 'audio');
+export const saveAudio = async (blob: Blob) => {
+  return saveMedia(blob, "audio");
 };
 
-export const getLatestMedia = async (type: 'video' | 'audio'): Promise<Blob | null> => {
+export const getLatestMedia = async (type: "video" | "audio") => {
   const db = await getDB();
-  return new Promise((resolve) => {
+  return new Promise<Blob | null>((resolve) => {
     const transaction = db.transaction(DB_CONFIG.store, "readonly");
-    const key = type === 'video' ? DB_CONFIG.keys.video : DB_CONFIG.keys.audio;
+    const key = type === "video" ? DB_CONFIG.keys.video : DB_CONFIG.keys.audio;
     const request = transaction.objectStore(DB_CONFIG.store).get(key);
 
     request.onsuccess = () => resolve(request.result?.blob || null);
@@ -81,13 +81,13 @@ export const getLatestMedia = async (type: 'video' | 'audio'): Promise<Blob | nu
 /**
  * 비디오 조회
  */
-export const getLatestVideo = async (): Promise<Blob | null> => {
-  return getLatestMedia('video');
+export const getLatestVideo = async () => {
+  return getLatestMedia("video");
 };
 
 /**
  * 오디오 조회
  */
-export const getLatestAudio = async (): Promise<Blob | null> => {
-  return getLatestMedia('audio');
+export const getLatestAudio = async () => {
+  return getLatestMedia("audio");
 };
