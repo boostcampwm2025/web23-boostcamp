@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 import { IChatMessage } from "@/app/components/chat-history";
@@ -14,6 +14,9 @@ import {
 
 export const useInterviewControls = (history: IHistoryItem[] = []) => {
   const router = useRouter();
+
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+
   const [isChatOpen, setIsChatOpen] = useState(true);
   const [chats, setChats] = useState<IChatMessage[]>(buildChatHistory(history));
   const [isGenerating, setIsGenerating] = useState(false);
@@ -31,15 +34,34 @@ export const useInterviewControls = (history: IHistoryItem[] = []) => {
     isAudioEnabled,
   } = useMediaPermissions();
 
-  /**  video audio stream을 media stream 으로 변환하는 함수입니다. */
-  const mediaStream = useMemo(() => {
-    if (videoStream || audioStream) {
-      return new MediaStream([
-        ...(videoStream?.getTracks() ?? []),
-        ...(audioStream?.getTracks() ?? []),
-      ]);
+  useEffect(() => {
+    if (!mediaStreamRef.current && typeof window !== "undefined") {
+      mediaStreamRef.current = new MediaStream();
     }
-    return null;
+  }, []);
+
+  useEffect(() => {
+    if (!mediaStreamRef.current) return;
+
+    const stream = mediaStreamRef.current;
+
+    // video track
+    if (videoStream) {
+      videoStream.getTracks().forEach((track) => {
+        if (!stream.getTracks().includes(track)) {
+          stream.addTrack(track);
+        }
+      });
+    }
+
+    // audio track
+    if (audioStream) {
+      audioStream.getTracks().forEach((track) => {
+        if (!stream.getTracks().includes(track)) {
+          stream.addTrack(track);
+        }
+      });
+    }
   }, [videoStream, audioStream]);
 
   ////////// Media recording //////////
@@ -49,12 +71,10 @@ export const useInterviewControls = (history: IHistoryItem[] = []) => {
     startAudioRecording,
     stopAudioRecording,
     isRecording,
-  } = useMediaRecorder(mediaStream);
+  } = useMediaRecorder(mediaStreamRef.current);
 
   // Initialize media permissions and start recording
   useEffect(() => {
-    let mounted = true;
-
     const start = async () => {
       if (!videoStream && !audioStream) {
         const videoResult = await requestVideo();
@@ -74,22 +94,15 @@ export const useInterviewControls = (history: IHistoryItem[] = []) => {
 
         return;
       }
-
-      if (mounted && mediaStream) {
-        startVideoRecording();
-        startAudioRecording();
-      }
     };
 
     start();
     return () => {
-      mounted = false;
       stopVideoRecording();
       stopAudioRecording();
       stopMediaStream();
     };
   }, [
-    mediaStream,
     videoStream,
     audioStream,
     requestVideo,
@@ -100,6 +113,16 @@ export const useInterviewControls = (history: IHistoryItem[] = []) => {
     stopAudioRecording,
     stopMediaStream,
   ]);
+
+  useEffect(() => {
+    startVideoRecording();
+    startAudioRecording();
+
+    return () => {
+      stopVideoRecording();
+      stopAudioRecording();
+    };
+  }, []);
 
   ////////// Initialize chat with first question //////////
   useEffect(() => {
@@ -158,7 +181,7 @@ export const useInterviewControls = (history: IHistoryItem[] = []) => {
 
   return {
     // Stream states
-    mediaStream,
+    mediaStream: mediaStreamRef.current,
     isVideoEnabled,
     isAudioEnabled,
     isRecording,

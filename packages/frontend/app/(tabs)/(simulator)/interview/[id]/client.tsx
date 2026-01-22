@@ -17,22 +17,20 @@ export default function InterviewClient({
   return (
     <div className="mt-5 flex h-full max-w-630 flex-col justify-center gap-5 py-2 xl:flex-row">
       <div className="relative w-full max-w-7xl xl:flex-2">
-        <VideoGrid
-          stream={interviewControls.mediaStream}
-          isCamOn={interviewControls.isVideoEnabled}
-        />
-        <InterviewControls
+        <VideoGrid />
+        {/*   <InterviewControls
           onToggleChat={interviewControls.toggleChat}
           onExit={interviewControls.handleExit}
           isVideoEnabled={interviewControls.isVideoEnabled}
           isAudioEnabled={interviewControls.isAudioEnabled}
           onToggleVideo={interviewControls.handleCamToggle}
           onToggleAudio={interviewControls.handleMicToggle}
-        />
+        /> */}
       </div>
       {interviewControls.isChatOpen && (
         <div className="flex-1">
           <ChatPanel
+            {...interviewControls}
             initialChats={interviewControls.chats}
             setChats={interviewControls.setChats}
             onClose={() => interviewControls.toggleChat(false)}

@@ -5,25 +5,12 @@ import clsx from "clsx";
 
 import VideoTile from "./video-tile";
 
-interface VideoGridProps {
+interface IVideoGridProps {
   className?: string;
-  isCamOn: boolean;
   stream?: MediaStream | null;
 }
 
-export default function VideoGrid({
-  className,
-  isCamOn,
-  stream,
-}: VideoGridProps) {
-  const userVideoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    if (userVideoRef.current && stream) {
-      userVideoRef.current.srcObject = stream;
-    }
-  }, [stream]);
-
+export default function VideoGrid({ className }: IVideoGridProps) {
   return (
     <div
       className={clsx(
@@ -31,7 +18,7 @@ export default function VideoGrid({
         className,
       )}
     >
-      <VideoTile label="You" ref={userVideoRef} isOn={isCamOn} />
+      <VideoTile label="You" isOn={false} />
       <VideoTile label="Interviewer 1" />
       <VideoTile label="Interviewer 2" />
       <div className="col-span-3">
