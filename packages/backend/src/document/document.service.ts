@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { DocumentRepository } from './repositories/document.repository';
 import { UserRepository } from '../user/user.repository';
 import { PortfolioRepository } from './repositories/portfolio.repository';
@@ -109,6 +109,22 @@ export class DocumentService {
 
   async deletePortfolio(userId: string, documentId: string) {
     const user = await this.userService.findExistingUser(userId);
-    await this.documentRepository.deletePortfolioDocument(user.userId, documentId);
+    const document = await this.documentRepository.findByIdAndUserId(documentId, user.userId);
+
+    if (!document) {
+      this.logger.warn(
+        `등록되지 않은 문서입니다. documentId=${documentId}`,
+      );
+      throw new NotFoundException('문서를 찾을 수 없습니다.');
+    }
+
+    const deletedDocument = await this.documentRepository.remove(document);
+    if (!deletedDocument) {
+      this.logger.warn(
+        `문서 삭제에 실패했습니다. documentId=${documentId}`,
+      );
+      throw new InternalServerErrorException('문서 삭제에 실패했습니다.');
+    }
+    return true;
   }
 }
