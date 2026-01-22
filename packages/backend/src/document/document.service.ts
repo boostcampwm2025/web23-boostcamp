@@ -1,16 +1,16 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { DocumentRepository } from './repositories/document.repository';
-import { UserRepository } from '../user/user.repository';
 import { DataSource } from 'typeorm';
 import { Portfolio } from './entities/portfolio.entity';
-import { Document, DocumentType } from './entities/document.entity'; // Import 필요
+import { Document, DocumentType } from './entities/document.entity';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class DocumentService {
   private readonly logger = new Logger(DocumentService.name);
 
   constructor(
-    private readonly userRepository: UserRepository,
+    private readonly userService: UserService,
     private readonly dataSource: DataSource,
     private readonly documentRepository: DocumentRepository,
   ) {}
@@ -20,11 +20,7 @@ export class DocumentService {
     title: string,
     content: string,
   ) {
-    const user = await this.userRepository.findById(userId);
-    if (!user) {
-      this.logger.warn(`User not found: userId=${userId}`);
-      throw new NotFoundException('등록되지 않은 유저입니다.');
-    }
+    const user = await this.userService.findExistingUser(userId);
 
     // [수정 1] transaction 실행 결과를 변수(savedDocument)로 받음 + await 필수
     const savedDocument = await this.dataSource.transaction(async (manager) => {
@@ -51,14 +47,10 @@ export class DocumentService {
   }
 
   async viewPortfolio(userId: string, documentId: string) {
-    const user = await this.userRepository.findById(userId);
-    if (!user) {
-      this.logger.warn(`User not found: userId=${userId}`);
-      throw new NotFoundException('등록되지 않은 유저입니다.');
-    }
+    const user = await this.userService.findExistingUser(userId);
 
     const document = await this.documentRepository.findOneWithPortfolioById(
-      userId,
+      user.userId,
       documentId,
     );
 
