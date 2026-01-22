@@ -39,4 +39,20 @@ export class DocumentRepository extends Repository<Document> {
       return document;
     });
   }
+
+  async findOneWithPortfolioById(
+    userId: string,
+    documentId: string,
+  ): Promise<Document | null> {
+    return await this.findOne({
+      where: {
+        documentId,
+        user: { userId },
+        type: DocumentType.PORTFOLIO,
+      },
+      relations: {
+        portfolio: true,
+      },
+    });
+  }
 }
