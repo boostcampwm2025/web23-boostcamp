@@ -4,6 +4,8 @@ import { DataSource } from 'typeorm';
 import { Portfolio } from './entities/portfolio.entity';
 import { Document, DocumentType } from './entities/document.entity';
 import { UserService } from '../user/user.service';
+import {DocumentSummaryListResponse} from "./dto/document-summary.response.dto";
+import {SortType} from "./dto/document-summary.request.dto";
 
 @Injectable()
 export class DocumentService {
