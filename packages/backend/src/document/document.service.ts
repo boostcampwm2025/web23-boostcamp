@@ -1,15 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PortfolioRepository } from './repositories/portfolio.repository';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { DocumentRepository } from './repositories/document.repository';
 import { UserRepository } from '../user/user.repository';
-import { Portfolio } from './entities/portfolio.entity';
 
 @Injectable()
 export class DocumentService {
+  private readonly logger = new Logger(DocumentService.name);
+
   constructor(
     private readonly userRepository: UserRepository,
     private readonly documentRepository: DocumentRepository,
-    private readonly portfolioRepository: PortfolioRepository,
   ) {}
 
   async createPortfolioWithText(
@@ -19,25 +18,22 @@ export class DocumentService {
   ) {
     const user = await this.userRepository.findById(userId);
     if (!user) {
+      this.logger.warn(`User not found: userId=${userId}`);
       throw new NotFoundException('등록되지 않은 유저입니다.');
     }
 
     const document = await this.documentRepository.createPortfolioDocument(
       title,
       userId,
-    );
-
-    const portfolio: Portfolio = await this.portfolioRepository.save({
       content,
-      document: { documentId: document.documentId },
-    });
+    );
 
     return {
       documentId: document.documentId,
       type: document.type,
-      portfolioId: portfolio.portfolioId,
+      portfolioId: document.portfolio.portfolioId,
       title: document.title,
-      content: portfolio.content,
+      content: document.portfolio.content,
       createdAt: document.createdAt,
     };
   }
