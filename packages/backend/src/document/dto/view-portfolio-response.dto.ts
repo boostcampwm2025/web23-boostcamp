@@ -1,6 +1,6 @@
 import { DocumentType } from '../entities/document.entity';
 
-export class CreatePortfolioTextResponseDto {
+export class ViewPortfolioResponseDto {
   documentId: string;
   type: DocumentType;
   portfolioId: string;
