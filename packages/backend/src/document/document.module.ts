@@ -4,6 +4,7 @@ import { DocumentService } from './document.service';
 import { PortfolioRepository } from './repositories/portfolio.repository';
 import { CoverLetterRepository } from './repositories/cover-letter.repository';
 import { DocumentRepository } from './repositories/document.repository';
+import { UserRepository } from '../user/user.repository';
 
 @Module({
   controllers: [DocumentController],
@@ -12,6 +13,7 @@ import { DocumentRepository } from './repositories/document.repository';
     PortfolioRepository,
     CoverLetterRepository,
     DocumentRepository,
+    UserRepository,
   ],
   exports: [PortfolioRepository, CoverLetterRepository, DocumentRepository],
 })

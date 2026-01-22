@@ -34,7 +34,9 @@ export class Document {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @OneToOne(() => Portfolio, (portfolio) => portfolio.document)
+  @OneToOne(() => Portfolio, (portfolio) => portfolio.document, {
+    cascade: true,
+  })
   portfolio: Portfolio;
 
   @OneToOne(() => CoverLetter, (coverLetter) => coverLetter.document)
