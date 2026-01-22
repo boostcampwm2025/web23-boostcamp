@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Document, DocumentType } from '../entities/document.entity';
-import {SortType} from "../dto/document-summary.request.dto";
+import { SortType } from '../dto/document-summary.request.dto';
 
 @Injectable()
 export class DocumentRepository extends Repository<Document> {
@@ -26,11 +26,11 @@ export class DocumentRepository extends Repository<Document> {
   }
 
   async findDocumentsPage(
-      userId: string,
-      page: number,
-      take: number,
-      type: DocumentType | undefined,
-      sort: SortType,
+    userId: string,
+    page: number,
+    take: number,
+    type: DocumentType | undefined,
+    sort: SortType,
   ): Promise<[Document[], number]> {
     const skip = page * take;
 

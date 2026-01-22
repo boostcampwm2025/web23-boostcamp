@@ -4,8 +4,8 @@ import { DataSource } from 'typeorm';
 import { Portfolio } from './entities/portfolio.entity';
 import { Document, DocumentType } from './entities/document.entity';
 import { UserService } from '../user/user.service';
-import {DocumentSummaryListResponse} from "./dto/document-summary.response.dto";
-import {SortType} from "./dto/document-summary.request.dto";
+import { DocumentSummaryListResponse } from './dto/document-summary.response.dto';
+import { SortType } from './dto/document-summary.request.dto';
 
 @Injectable()
 export class DocumentService {
@@ -74,11 +74,11 @@ export class DocumentService {
   }
 
   async listDocuments(
-      userId: string,
-      page: number,
-      take: number,
-      type: DocumentType | undefined,
-      sort: SortType,
+    userId: string,
+    page: number,
+    take: number,
+    type: DocumentType | undefined,
+    sort: SortType,
   ): Promise<DocumentSummaryListResponse> {
     // 프론트의 페이지 시작은 1이지만 백엔드에선 0부터이다. 이를 맞추기 위해 값을 1 빼서 조정한다.
     const adjustedPage = Math.max(0, page - 1);
@@ -106,6 +106,6 @@ export class DocumentService {
     return {
       documents: documentList,
       totalPage: totalPage,
-    }
+    };
   }
 }
