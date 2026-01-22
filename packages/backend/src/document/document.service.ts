@@ -80,12 +80,14 @@ export class DocumentService {
       type: DocumentType | undefined,
       sort: SortType,
   ): Promise<DocumentSummaryListResponse> {
+    // 프론트의 페이지 시작은 1이지만 백엔드에선 0부터이다. 이를 맞추기 위해 값을 1 빼서 조정한다.
+    const adjustedPage = Math.max(0, page - 1);
     const [documents, count] = await this.documentRepository.findDocumentsPage(
-        userId,
-        page,
-        take,
-        type,
-        sort,
+      userId,
+      adjustedPage,
+      take,
+      type,
+      sort,
     );
 
     // 전체 페이지네이션 계산을 위해 올림을 사용

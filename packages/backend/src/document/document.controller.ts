@@ -34,8 +34,7 @@ export class DocumentController {
       @Query() dto: DocumentSummaryRequest,
   ): Promise<DocumentSummaryListResponse> {
     const userId = '1';
-    // 프론트의 페이지 시작은 1이지만 백엔드에선 0부터이다. 이를 맞추기 위해 1 빼준다.
-    dto.page = Math.max(0, dto.page - 1);
+
     const { page, take, type, sort } = dto;
     return await this.documentService.listDocuments(
         userId,
