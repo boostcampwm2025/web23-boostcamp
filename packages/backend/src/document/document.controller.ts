@@ -3,7 +3,7 @@ import { DocumentService } from './document.service';
 import { CreatePortfolioTextRequestDto } from './dto/create-portfolio-text-request.dto';
 import { CreatePortfolioTextResponseDto } from './dto/create-portfolio-text-response.dto';
 
-@Controller('documents')
+@Controller('document')
 export class DocumentController {
   constructor(private readonly documentService: DocumentService) {}
 
