@@ -39,10 +39,12 @@ export class Document {
   user: User;
 
   @OneToOne(() => Portfolio, (portfolio) => portfolio.document, {
-    cascade: true,
+    cascade: ['insert', 'update'],
   })
   portfolio: Portfolio;
 
-  @OneToOne(() => CoverLetter, (coverLetter) => coverLetter.document)
+  @OneToOne(() => CoverLetter, (coverLetter) => coverLetter.document, {
+    cascade: ['insert', 'update'],
+  })
   coverLetter: CoverLetter;
 }
