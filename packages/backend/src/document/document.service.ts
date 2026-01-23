@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { DocumentRepository } from './repositories/document.repository';
 import { DataSource } from 'typeorm';
 import { Portfolio } from './entities/portfolio.entity';
@@ -6,6 +6,9 @@ import { Document, DocumentType } from './entities/document.entity';
 import { UserService } from '../user/user.service';
 import { DocumentSummaryListResponse } from './dto/document-summary.response.dto';
 import { SortType } from './dto/document-summary.request.dto';
+import { CoverLetter } from './entities/cover-letter.entity';
+import { CoverLetterQuestionAnswer } from './entities/cover-letter-question-answer.entity';
+import { CoverLetterQnA } from './dto/create-cover-letter-request.dto';
 
 @Injectable()
 export class DocumentService {
@@ -48,10 +51,65 @@ export class DocumentService {
     };
   }
 
+  async createCoverLetter(
+    userId: string,
+    title: string,
+    content: CoverLetterQnA[],
+  ) {
+    const user = await this.userService.findExistingUser(userId);
+
+    const savedDocument = await this.dataSource.transaction(async (manager) => {
+      const coverLetter = new CoverLetter();
+      coverLetter.questionAnswers = content.map((qa) => {
+        const questionAnswer = new CoverLetterQuestionAnswer();
+        questionAnswer.question = qa.question;
+        questionAnswer.answer = qa.answer;
+        return questionAnswer;
+      });
+
+      const document = new Document();
+      document.title = title;
+      document.type = DocumentType.COVER;
+      document.user = user;
+      document.coverLetter = coverLetter;
+
+      return await manager.save(Document, document);
+    });
+
+    return {
+      documentId: savedDocument.documentId,
+      coverletterId: savedDocument.coverLetter.coverLetterId,
+      type: savedDocument.type,
+      title: savedDocument.title,
+      content: savedDocument.coverLetter.questionAnswers.map((qa) => ({
+        question: qa.question,
+        answer: qa.answer,
+      })),
+      createdAt: savedDocument.createdAt,
+    };
+  }
+
+  async deleteCoverLetter(userId: string, documentId: string) {
+    const user = await this.userService.findExistingUser(userId);
+    const document = await this.documentRepository.findCoverLetterDocumentByDocumentIdAndUserId(
+      user.userId,
+      documentId,
+    );
+
+    if (!document) {
+      throw new NotFoundException('문서를 찾을 수 없습니다.');
+    }
+
+    const deletedDocument = await this.documentRepository.remove(document);
+    if (!deletedDocument) {
+      throw new InternalServerErrorException('문서 삭제에 실패했습니다.');
+    }
+  }
+
   async viewPortfolio(userId: string, documentId: string) {
     const user = await this.userService.findExistingUser(userId);
 
-    const document = await this.documentRepository.findOneWithPortfolioById(
+    const document = await this.documentRepository.findOneWithPortfolioByDocumentIdAndUserId(
       user.userId,
       documentId,
     );
@@ -107,5 +165,24 @@ export class DocumentService {
       documents: documentList,
       totalPage: totalPage,
     };
+  }
+
+  async deletePortfolio(userId: string, documentId: string) {
+    const user = await this.userService.findExistingUser(userId);
+    const document = await this.documentRepository.findPortfolioDocumentByDocumentIdAndUserId(
+      user.userId,
+      documentId,
+    );
+
+    if (!document) {
+      this.logger.warn(`등록되지 않은 문서입니다. documentId=${documentId}`);
+      throw new NotFoundException('문서를 찾을 수 없습니다.');
+    }
+
+    const deletedDocument = await this.documentRepository.remove(document);
+    if (!deletedDocument) {
+      this.logger.warn(`문서 삭제에 실패했습니다. documentId=${documentId}`);
+      throw new InternalServerErrorException('문서 삭제에 실패했습니다.');
+    }
   }
 }
