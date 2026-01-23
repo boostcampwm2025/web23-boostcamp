@@ -9,7 +9,33 @@ export class DocumentRepository extends Repository<Document> {
     super(Document, dataSource.createEntityManager());
   }
 
-  async findOneWithPortfolioById(
+  async findPortfolioDocumentByDocumentIdAndUserId(
+    userId: string,
+    documentId: string,
+  ): Promise<Document | null> {
+    return await this.findOne({
+      where: {
+        documentId,
+        user: { userId },
+        type: DocumentType.PORTFOLIO,
+      },
+    });
+  }
+
+  async findCoverLetterDocumentByDocumentIdAndUserId(
+    userId: string,
+    documentId: string,
+  ): Promise<Document | null> {
+    return await this.findOne({
+      where: {
+        documentId,
+        user: { userId },
+        type: DocumentType.COVER,
+      },
+    });
+  }
+
+  async findOneWithPortfolioByDocumentIdAndUserId(
     userId: string,
     documentId: string,
   ): Promise<Document | null> {
