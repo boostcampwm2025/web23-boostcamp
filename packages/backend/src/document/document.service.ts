@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { DocumentRepository } from './repositories/document.repository';
 import { DataSource } from 'typeorm';
 import { Portfolio } from './entities/portfolio.entity';
@@ -6,6 +6,9 @@ import { Document, DocumentType } from './entities/document.entity';
 import { UserService } from '../user/user.service';
 import { DocumentSummaryListResponse } from './dto/document-summary.response.dto';
 import { SortType } from './dto/document-summary.request.dto';
+import { CoverLetter } from './entities/cover-letter.entity';
+import { CoverLetterQuestionAnswer } from './entities/cover-letter-question-answer.entity';
+import { CoverLetterQnA } from './dto/create-cover-letter-request.dto';
 
 @Injectable()
 export class DocumentService {
@@ -45,6 +48,96 @@ export class DocumentService {
       title: savedDocument.title,
       content: savedDocument.portfolio.content,
       createdAt: savedDocument.createdAt,
+    };
+  }
+
+  async createCoverLetter(
+    userId: string,
+    title: string,
+    content: CoverLetterQnA[],
+  ) {
+    const user = await this.userService.findExistingUser(userId);
+
+    const savedDocument = await this.dataSource.transaction(async (manager) => {
+      const coverLetter = new CoverLetter();
+      coverLetter.questionAnswers = content.map((qa) => {
+        const questionAnswer = new CoverLetterQuestionAnswer();
+        questionAnswer.question = qa.question;
+        questionAnswer.answer = qa.answer;
+        questionAnswer.coverLetter = coverLetter; // Explicitly map inverse relation
+        return questionAnswer;
+      });
+
+      const document = new Document();
+      document.title = title;
+      document.type = DocumentType.COVER;
+      document.user = user;
+      
+      // 1. Save Document first (to get ID)
+      const savedDocument = await manager.save(Document, document);
+
+      // 2. Save CoverLetter explicitly with relationship
+      coverLetter.document = savedDocument;
+      const savedCoverLetter = await manager.save(CoverLetter, coverLetter);
+
+      // 3. Save QuestionAnswers explicitly (to guarantee separate insert if cascade fails)
+      const qas = coverLetter.questionAnswers.map((qa) => {
+        qa.coverLetter = savedCoverLetter;
+        return qa;
+      });
+      const savedQAs = await manager.save(CoverLetterQuestionAnswer, qas);
+      
+      // Update the document object with the saved coverLetter for return value
+      savedDocument.coverLetter = savedCoverLetter;
+      savedDocument.coverLetter.questionAnswers = savedQAs;
+
+      return savedDocument;
+    });
+
+    return {
+      documentId: savedDocument.documentId,
+      coverletterId: savedDocument.coverLetter.coverLetterId,
+      type: savedDocument.type,
+      title: savedDocument.title,
+      // Ensure we map from the savedCoverLetter which definitely has the QAs if cascade worked on it
+      content: savedDocument.coverLetter.questionAnswers.map((qa) => ({
+        question: qa.question,
+        answer: qa.answer,
+      })),
+      createdAt: savedDocument.createdAt,
+    };
+  }
+
+  async viewCoverLetter(userId: string, documentId: string) {
+    const user = await this.userService.findExistingUser(userId);
+
+    const document = await this.documentRepository.findOneWithCoverLetterByDocumentIdAndUserId(
+      user.userId,
+      documentId,
+    );
+
+    if (!document) {
+      this.logger.warn(
+        `등록되지 않은 자기소개서입니다. documentId=${documentId}`,
+      );
+      throw new NotFoundException('등록되지 않은 문서입니다');
+    }
+
+    if (!document.coverLetter) {
+        this.logger.error(`CoverLetter data missing for documentId=${documentId}`);
+        throw new InternalServerErrorException('자기소개서 데이터가 없습니다.');
+    }
+
+    return {
+      documentId: document.documentId,
+      coverletterId: document.coverLetter.coverLetterId,
+      type: document.type,
+      title: document.title,
+      content: document.coverLetter.questionAnswers.map((qa) => ({
+        question: qa.question,
+        answer: qa.answer,
+      })),
+      createdAt: document.createdAt,
     };
   }
 
@@ -107,5 +200,41 @@ export class DocumentService {
       documents: documentList,
       totalPage: totalPage,
     };
+  }
+
+  async deleteCoverLetter(userId: string, documentId: string) {
+    const user = await this.userService.findExistingUser(userId);
+    const document = await this.documentRepository.findOneWithCoverLetterByDocumentIdAndUserId(
+      user.userId,
+      documentId,
+    );
+
+    if (!document) {
+      throw new NotFoundException('문서를 찾을 수 없습니다.');
+    }
+
+    const deletedDocument = await this.documentRepository.remove(document);
+    if (!deletedDocument) {
+      throw new InternalServerErrorException('문서 삭제에 실패했습니다.');
+    }
+  }
+
+  async deletePortfolio(userId: string, documentId: string) {
+    const user = await this.userService.findExistingUser(userId);
+    const document = await this.documentRepository.findOneWithPortfolioById(
+      user.userId,
+      documentId,
+    );
+
+    if (!document) {
+      this.logger.warn(`등록되지 않은 문서입니다. documentId=${documentId}`);
+      throw new NotFoundException('문서를 찾을 수 없습니다.');
+    }
+
+    const deletedDocument = await this.documentRepository.remove(document);
+    if (!deletedDocument) {
+      this.logger.warn(`문서 삭제에 실패했습니다. documentId=${documentId}`);
+      throw new InternalServerErrorException('문서 삭제에 실패했습니다.');
+    }
   }
 }
