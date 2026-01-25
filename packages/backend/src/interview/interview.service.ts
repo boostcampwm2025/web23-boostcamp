@@ -25,6 +25,8 @@ import { DocumentRepository } from '../document/repositories/document.repository
 import { User } from '../user/entities/user.entity';
 import { InterviewFeedbackService } from './interview-feedback.service';
 import { InterviewFeedbackResponse } from './dto/interview-feedback-response.dto';
+import { InterviewSummaryListResponse } from './dto/interview-summary.response.dto';
+import { SortType } from './dto/interview-summary.request.dto';
 
 @Injectable()
 export class InterviewService {
@@ -41,7 +43,7 @@ export class InterviewService {
     private readonly coverLetterRepository: CoverLetterRepository,
     private readonly documentRepository: DocumentRepository,
     private readonly interviewFeedBackService: InterviewFeedbackService,
-  ) {}
+  ) { }
 
   async calculateInterviewTime(
     userId: string,
@@ -296,6 +298,40 @@ export class InterviewService {
     return {
       score: interview.score,
       feedback: interview.feedback,
+    };
+  }
+
+  async listInterviews(
+    userId: string,
+    page: number,
+    take: number,
+    type: InterviewType | undefined,
+    sort: SortType,
+  ): Promise<InterviewSummaryListResponse> {
+    const adjustedPage = Math.max(0, page - 1);
+    const [interviews, count] =
+      await this.interviewRepository.findInterviewsPage(
+        userId,
+        adjustedPage,
+        take,
+        type,
+        sort,
+      );
+
+    const totalPage = Math.ceil(count / take);
+
+    const interviewList = interviews.map((interview) => {
+      return {
+        interviewId: interview.interviewId,
+        title: interview.title,
+        type: interview.type,
+        createdAt: interview.createdAt,
+      };
+    });
+
+    return {
+      interviews: interviewList,
+      totalPage: totalPage,
     };
   }
 }
