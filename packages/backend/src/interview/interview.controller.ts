@@ -8,6 +8,7 @@ import {
   Post,
   UploadedFile,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { InterviewService } from './interview.service';
@@ -25,11 +26,13 @@ import { CreateInterviewRequestDto } from './dto/create-interview-request.dto';
 import { CreateInterviewResponseDto } from './dto/create-interview-response.dto';
 import { CreateFeedbackRequest } from './dto/create-feedback-request.dto';
 import { InterviewFeedbackResponse } from './dto/interview-feedback-response.dto';
+import { InterviewSummaryRequest } from './dto/interview-summary.request.dto';
+import { InterviewSummaryListResponse } from './dto/interview-summary.response.dto';
 
 @Controller('interview')
 export class InterviewController {
   private readonly logger = new Logger(InterviewController.name);
-  constructor(private readonly interviewService: InterviewService) {}
+  constructor(private readonly interviewService: InterviewService) { }
 
   @Post('tech/create')
   async createTechInterview(
@@ -138,5 +141,20 @@ export class InterviewController {
     // 인증이 없기 때문에 userId를 상수화
     const userId = '1';
     return this.interviewService.findInterviewFeedback(userId, interviewId);
+  }
+
+  @Get()
+  async getInterviewList(
+    @Query() dto: InterviewSummaryRequest,
+  ): Promise<InterviewSummaryListResponse> {
+    const userId = '1';
+    const { page, take, type, sort } = dto;
+    return await this.interviewService.listInterviews(
+      userId,
+      page,
+      take,
+      type,
+      sort,
+    );
   }
 }
