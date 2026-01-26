@@ -66,7 +66,7 @@ jobs:
             docker-compose -f packages/backend/docker-compose.dev.yml up -d --remove-orphans
             
             # 6. 정리 (이전 버전 이미지 삭제)
-            docker image prune -f
+            docker image prune -a
 
             END_TIME=$(date +%s)
             DURATION=$((END_TIME - START_TIME))
