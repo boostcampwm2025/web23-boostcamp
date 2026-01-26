@@ -24,7 +24,9 @@ export class InterviewQuestion {
   @UpdateDateColumn({ name: 'modified_at' })
   modifiedAt: Date;
 
-  @ManyToOne(() => Interview, (interview) => interview.questions)
+  @ManyToOne(() => Interview, (interview) => interview.questions, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'interview_id' })
   interview: Interview;
 
