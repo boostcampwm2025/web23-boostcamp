@@ -50,6 +50,65 @@ export class DocumentService {
       createdAt: savedDocument.createdAt,
     };
   }
+  
+  async viewPortfolio(userId: string, documentId: string) {
+    const user = await this.userService.findExistingUser(userId);
+
+    const document = await this.documentRepository.findOneWithPortfolioByDocumentIdAndUserId(
+      user.userId,
+      documentId,
+    );
+
+    if (!document) {
+      this.logger.warn(
+        `등록되지 않은 포트폴리오입니다. documentId=${documentId}`,
+      );
+      throw new NotFoundException('등록되지 않은 문서입니다');
+    }
+
+    return {
+      documentId: document.documentId,
+      type: document.type,
+      portfolioId: document.portfolio.portfolioId,
+      title: document.title,
+      content: document.portfolio.content,
+      createdAt: document.createdAt,
+    };
+  }
+  
+  async deletePortfolio(userId: string, documentId: string) {
+    const user = await this.userService.findExistingUser(userId);
+    const document = await this.documentRepository.findPortfolioDocumentByDocumentIdAndUserId(
+      user.userId,
+      documentId,
+    );
+
+    if (!document) {
+      this.logger.warn(`등록되지 않은 문서입니다. documentId=${documentId}`);
+      throw new NotFoundException('문서를 찾을 수 없습니다.');
+    }
+
+    const deletedDocument = await this.documentRepository.remove(document);
+    if (!deletedDocument) {
+      this.logger.warn(`문서 삭제에 실패했습니다. documentId=${documentId}`);
+      throw new InternalServerErrorException('문서 삭제에 실패했습니다.');
+    }
+      const document = await this.documentRepository.findOneWithPortfolioById(
+        user.userId,
+        documentId,
+      );
+
+      if (!document) {
+        this.logger.warn(`등록되지 않은 문서입니다. documentId=${documentId}`);
+        throw new NotFoundException('문서를 찾을 수 없습니다.');
+      }
+
+      const deletedDocument = await this.documentRepository.remove(document);
+      if (!deletedDocument) {
+        this.logger.warn(`문서 삭제에 실패했습니다. documentId=${documentId}`);
+        throw new InternalServerErrorException('문서 삭제에 실패했습니다.');
+      }
+  }
 
   async createCoverLetter(
     userId: string,
@@ -89,29 +148,21 @@ export class DocumentService {
     };
   }
 
-  async viewPortfolio(userId: string, documentId: string) {
+  async deleteCoverLetter(userId: string, documentId: string) {
     const user = await this.userService.findExistingUser(userId);
-
-    const document = await this.documentRepository.findOneWithPortfolioById(
+    const document = await this.documentRepository.findCoverLetterDocumentByDocumentIdAndUserId(
       user.userId,
       documentId,
     );
 
     if (!document) {
-      this.logger.warn(
-        `등록되지 않은 포트폴리오입니다. documentId=${documentId}`,
-      );
-      throw new NotFoundException('등록되지 않은 문서입니다');
+      throw new NotFoundException('문서를 찾을 수 없습니다.');
     }
 
-    return {
-      documentId: document.documentId,
-      type: document.type,
-      portfolioId: document.portfolio.portfolioId,
-      title: document.title,
-      content: document.portfolio.content,
-      createdAt: document.createdAt,
-    };
+    const deletedDocument = await this.documentRepository.remove(document);
+    if (!deletedDocument) {
+      throw new InternalServerErrorException('문서 삭제에 실패했습니다.');
+    }
   }
 
   async listDocuments(
@@ -148,24 +199,5 @@ export class DocumentService {
       documents: documentList,
       totalPage: totalPage,
     };
-  }
-
-  async deletePortfolio(userId: string, documentId: string) {
-    const user = await this.userService.findExistingUser(userId);
-      const document = await this.documentRepository.findOneWithPortfolioById(
-        user.userId,
-        documentId,
-      );
-
-      if (!document) {
-        this.logger.warn(`등록되지 않은 문서입니다. documentId=${documentId}`);
-        throw new NotFoundException('문서를 찾을 수 없습니다.');
-      }
-
-      const deletedDocument = await this.documentRepository.remove(document);
-      if (!deletedDocument) {
-        this.logger.warn(`문서 삭제에 실패했습니다. documentId=${documentId}`);
-        throw new InternalServerErrorException('문서 삭제에 실패했습니다.');
-      }
   }
 }

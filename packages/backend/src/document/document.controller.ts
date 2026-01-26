@@ -1,12 +1,12 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
-  HttpCode,
   Param,
   Post,
   Query,
+  Delete,
+  HttpCode,
 } from '@nestjs/common';
 import { DocumentService } from './document.service';
 import { CreatePortfolioTextRequestDto } from './dto/create-portfolio-text-request.dto';
@@ -32,6 +32,21 @@ export class DocumentController {
       body.content,
     );
   }
+  
+  @Get(':documentId/portfolio')
+  async viewPortfolio(
+    @Param('documentId') documentId: string,
+  ): Promise<ViewPortfolioResponseDto> {
+    const userId = '1';
+    return await this.documentService.viewPortfolio(userId, documentId);
+  }
+
+  @Delete(':documentId/portfolio')
+  @HttpCode(204)
+  async deletePortfolio(@Param('documentId') documentId: string) {
+    const userId = '1';
+    await this.documentService.deletePortfolio(userId, documentId);
+  }
 
   @Post('cover-letter/create')
   async createCoverLetter(
@@ -45,12 +60,11 @@ export class DocumentController {
     );
   }
 
-  @Get(':documentId/portfolio')
-  async viewPortfolio(
-    @Param('documentId') documentId: string,
-  ): Promise<ViewPortfolioResponseDto> {
+  @Delete(':documentId/cover-letter')
+  @HttpCode(204)
+  async deleteCoverLetter(@Param('documentId') documentId: string) {
     const userId = '1';
-    return await this.documentService.viewPortfolio(userId, documentId);
+    await this.documentService.deleteCoverLetter(userId, documentId);
   }
 
   @Get()
@@ -68,13 +82,3 @@ export class DocumentController {
       sort,
     );
   }
-
-  @Delete(':documentId/portfolio')
-  @HttpCode(204)
-  async deletePortfolio(
-    @Param('documentId') documentId: string,
-  ): Promise<void> {
-    const userId = '1';
-    await this.documentService.deletePortfolio(userId, documentId);
-  }
-}
