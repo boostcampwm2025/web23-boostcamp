@@ -4,10 +4,12 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
   Delete,
   HttpCode,
 } from '@nestjs/common';
+
 import { DocumentService } from './document.service';
 import { CreatePortfolioTextRequestDto } from './dto/create-portfolio-text-request.dto';
 import { CreatePortfolioTextResponseDto } from './dto/create-portfolio-text-response.dto';
@@ -17,6 +19,9 @@ import { DocumentSummaryListResponse } from './dto/document-summary.response.dto
 import { DocumentSummaryRequest } from './dto/document-summary.request.dto';
 import { CreateCoverLetterRequestDto } from './dto/create-cover-letter-request.dto';
 import { CreateCoverLetterResponseDto } from './dto/create-cover-letter-response.dto';
+import { UpdateCoverLetterRequestDto } from './dto/update-cover-letter-request.dto';
+import { UpdateCoverLetterResponseDto } from './dto/update-cover-letter-response.dto';
+
 
 @Controller('document')
 export class DocumentController {
@@ -75,6 +80,20 @@ export class DocumentController {
     const userId = '1';
     await this.documentService.deleteCoverLetter(userId, documentId);
   }
+
+  @Put(':documentId/cover-letter')
+  async updateCoverLetter(
+    @Param('documentId') documentId: string,
+    @Body() body: UpdateCoverLetterRequestDto,
+  ): Promise<UpdateCoverLetterResponseDto> {
+    const userId = '1';
+    return await this.documentService.updateCoverLetter(
+      userId,
+      documentId,
+      body,
+    );
+  }
+
 
   @Get()
   async getDocumentList(
