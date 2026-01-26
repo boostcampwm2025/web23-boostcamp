@@ -68,7 +68,6 @@ export async function sendAnswer({
   }
 
   const data = (await response.json()) as IAnswerResponse;
-  console.log(data);
   return data;
 }
 

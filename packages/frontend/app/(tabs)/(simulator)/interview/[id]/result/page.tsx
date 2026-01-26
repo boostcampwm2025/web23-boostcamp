@@ -14,7 +14,7 @@ export default function InterviewResultPage() {
   useEffect(() => {
     const handleLoadLatest = async () => {
       const blob = await getLatestVideo();
-      console.log(blob);
+
       if (!blob) return;
 
       setVideoUrl((prev) => getObjectUrl(blob, prev));
