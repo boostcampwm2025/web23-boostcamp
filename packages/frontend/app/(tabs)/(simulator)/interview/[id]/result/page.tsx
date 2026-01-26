@@ -1,33 +1,77 @@
-"use client";
+import { Heart, HeartOff } from "lucide-react";
 
-import { getLatestVideo } from "@/app/lib/client/media-storage";
-import { useEffect, useState } from "react";
+import ChatHistory from "@/app/components/chat-history";
+import { Button } from "@/app/components/ui/button";
+import { buildChatHistory } from "@/app/lib/client/chat";
 
-export default function InterviewResultPage() {
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+import RecentRecording from "@/app/(tabs)/dashboard/result/components/recent-recording";
+import Panel from "@/app/(tabs)/dashboard/result/components/panel";
+import Tip from "@/app/(tabs)/dashboard/result/components/tip";
+import Score from "@/app/(tabs)/dashboard/result/components/score";
+import AISummary from "@/app/(tabs)/dashboard/result/components/ai-summary";
+import {
+  getFeedback,
+  startFeedback,
+} from "@/app/(tabs)/dashboard/result/actions";
+import { getHistory } from "../actions";
 
-  const getObjectUrl = (blob: Blob, prevUrl: string | null) => {
-    if (prevUrl) URL.revokeObjectURL(prevUrl);
-    return URL.createObjectURL(blob);
-  };
-
-  useEffect(() => {
-    const handleLoadLatest = async () => {
-      const blob = await getLatestVideo();
-      console.log(blob);
-      if (!blob) return;
-
-      setVideoUrl((prev) => getObjectUrl(blob, prev));
-    };
-    (async () => {
-      await handleLoadLatest();
-    })();
-  }, []);
+export default async function InterviewResultPage() {
+  const { history } = await getHistory({ interviewId: "1" });
+  const feedbackResult = await getFeedback({ interviewId: "1" });
+  await startFeedback();
 
   return (
-    <div>
-      Interview Result Page
-      <video src={videoUrl || "/"} controls></video>
+    <div className="mt-5 w-full pb-5">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3>Interview Results</h3>
+            <span className="text-sm text-black/60">
+              Summary of your recent interview performance
+            </span>
+          </div>
+          <div>
+            <h6 className="text-sm">6일전</h6>
+          </div>
+        </div>
+        <div className="flex flex-col gap-6 md:flex-row">
+          <Panel className="flex-[1] p-5">
+            <Score score={+feedbackResult.score} />
+          </Panel>
+          <Panel className="flex-[2] p-5">
+            <RecentRecording />
+          </Panel>
+        </div>
+        <div className="flex flex-col gap-6 md:flex-row">
+          <Panel className="flex flex-2 flex-col overflow-y-scroll p-5">
+            <ChatHistory
+              chatMessages={buildChatHistory(history)}
+              className="max-h-120"
+            />
+          </Panel>
+          <Panel className="flex-1 p-5">
+            <AISummary summary={feedbackResult.content} />
+          </Panel>
+        </div>
+        <div className="flex flex-col gap-6 md:flex-row">
+          <Panel className="flex-1 bg-primary/5 p-5">
+            <Tip />
+          </Panel>
+        </div>
+        <div className="mt-12 flex w-full items-center justify-between">
+          <span className="text-sm text-black/60">
+            Did you find this feedback helpful?
+          </span>
+          <div className="flex gap-2">
+            <Button className="cursor-pointer">
+              <Heart className="text-white" />
+            </Button>
+            <Button className="cursor-pointer">
+              <HeartOff className="text-white" />
+            </Button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
