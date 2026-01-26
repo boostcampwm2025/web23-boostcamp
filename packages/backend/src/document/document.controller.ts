@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { DocumentService } from './document.service';
 import { CreatePortfolioTextRequestDto } from './dto/create-portfolio-text-request.dto';
 import { CreatePortfolioTextResponseDto } from './dto/create-portfolio-text-response.dto';
@@ -29,6 +38,7 @@ export class DocumentController {
     const userId = '1';
     return await this.documentService.viewPortfolio(userId, documentId);
   }
+
   @Get()
   async getDocumentList(
     @Query() dto: DocumentSummaryRequest,
@@ -43,5 +53,14 @@ export class DocumentController {
       type,
       sort,
     );
+  }
+
+  @Delete(':documentId/portfolio')
+  @HttpCode(204)
+  async deletePortfolio(
+    @Param('documentId') documentId: string,
+  ): Promise<void> {
+    const userId = '1';
+    await this.documentService.deletePortfolio(userId, documentId);
   }
 }
