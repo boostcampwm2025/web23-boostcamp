@@ -49,7 +49,7 @@ export default function VideoStatus() {
             camera
           </p>
           {!hasVideoPermission ? (
-            <CircleAlert className="size-5 text-red-500" />
+<CircleAlert className="size-5 text-red-500" />
           ) : isVideoEnabled ? (
             <CircleCheck className="size-5 text-primary" />
           ) : (
@@ -61,7 +61,7 @@ export default function VideoStatus() {
             mic
           </p>
           {!hasAudioPermission ? (
-            <CircleAlert className="size-5 text-red-500" />
+<CircleAlert className="size-5 text-red-500" />
           ) : isAudioEnabled ? (
             <CircleCheck className="size-5 text-primary" />
           ) : (
