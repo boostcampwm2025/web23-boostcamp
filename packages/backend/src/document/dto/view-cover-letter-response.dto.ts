@@ -1,11 +1,13 @@
 import { DocumentType } from '../entities/document.entity';
-import { CoverLetterQnA } from './create-cover-letter-request.dto';
 
-export class CreateCoverLetterResponseDto {
+export class ViewCoverLetterResponseDto {
   documentId: string;
   coverLetterId: string;
   type: DocumentType;
   title: string;
-  content: CoverLetterQnA[];
+  content: {
+    question: string;
+    answer: string;
+  }[];
   createdAt: Date;
 }

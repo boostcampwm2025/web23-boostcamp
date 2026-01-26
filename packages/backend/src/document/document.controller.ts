@@ -12,6 +12,7 @@ import { DocumentService } from './document.service';
 import { CreatePortfolioTextRequestDto } from './dto/create-portfolio-text-request.dto';
 import { CreatePortfolioTextResponseDto } from './dto/create-portfolio-text-response.dto';
 import { ViewPortfolioResponseDto } from './dto/view-portfolio-response.dto';
+import { ViewCoverLetterResponseDto } from './dto/view-cover-letter-response.dto';
 import { DocumentSummaryListResponse } from './dto/document-summary.response.dto';
 import { DocumentSummaryRequest } from './dto/document-summary.request.dto';
 import { CreateCoverLetterRequestDto } from './dto/create-cover-letter-request.dto';
@@ -32,7 +33,7 @@ export class DocumentController {
       body.content,
     );
   }
-  
+
   @Get(':documentId/portfolio')
   async viewPortfolio(
     @Param('documentId') documentId: string,
@@ -60,6 +61,14 @@ export class DocumentController {
     );
   }
 
+  @Get(':documentId/cover-letter')
+  async viewCoverLetter(
+    @Param('documentId') documentId: string,
+  ): Promise<ViewCoverLetterResponseDto> {
+    const userId = '1';
+    return await this.documentService.viewCoverLetter(userId, documentId);
+  }
+
   @Delete(':documentId/cover-letter')
   @HttpCode(204)
   async deleteCoverLetter(@Param('documentId') documentId: string) {
@@ -82,3 +91,4 @@ export class DocumentController {
       sort,
     );
   }
+}

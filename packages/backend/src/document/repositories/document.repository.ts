@@ -51,6 +51,24 @@ export class DocumentRepository extends Repository<Document> {
     });
   }
 
+  async findOneWithCoverLetterByDocumentIdAndUserId(
+    userId: string,
+    documentId: string,
+  ): Promise<Document | null> {
+    return await this.findOne({
+      where: {
+        documentId,
+        user: { userId },
+        type: DocumentType.COVER,
+      },
+      relations: {
+        coverLetter: {
+          questionAnswers: true,
+        },
+      },
+    });
+  }
+
   async findDocumentsPage(
     userId: string,
     page: number,

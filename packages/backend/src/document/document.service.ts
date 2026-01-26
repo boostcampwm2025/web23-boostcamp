@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { DocumentRepository } from './repositories/document.repository';
 import { DataSource } from 'typeorm';
 import { Portfolio } from './entities/portfolio.entity';
@@ -26,8 +31,6 @@ export class DocumentService {
     content: string,
   ) {
     const user = await this.userService.findExistingUser(userId);
-
-    // [수정 1] transaction 실행 결과를 변수(savedDocument)로 받음 + await 필수
     const savedDocument = await this.dataSource.transaction(async (manager) => {
       const portfolio = new Portfolio();
       portfolio.content = content;
@@ -50,14 +53,15 @@ export class DocumentService {
       createdAt: savedDocument.createdAt,
     };
   }
-  
+
   async viewPortfolio(userId: string, documentId: string) {
     const user = await this.userService.findExistingUser(userId);
 
-    const document = await this.documentRepository.findOneWithPortfolioByDocumentIdAndUserId(
-      user.userId,
-      documentId,
-    );
+    const document =
+      await this.documentRepository.findOneWithPortfolioByDocumentIdAndUserId(
+        user.userId,
+        documentId,
+      );
 
     if (!document) {
       this.logger.warn(
@@ -75,13 +79,14 @@ export class DocumentService {
       createdAt: document.createdAt,
     };
   }
-  
+
   async deletePortfolio(userId: string, documentId: string) {
     const user = await this.userService.findExistingUser(userId);
-    const document = await this.documentRepository.findPortfolioDocumentByDocumentIdAndUserId(
-      user.userId,
-      documentId,
-    );
+    const document =
+      await this.documentRepository.findOneWithPortfolioByDocumentIdAndUserId(
+        user.userId,
+        documentId,
+      );
 
     if (!document) {
       this.logger.warn(`등록되지 않은 문서입니다. documentId=${documentId}`);
@@ -93,21 +98,6 @@ export class DocumentService {
       this.logger.warn(`문서 삭제에 실패했습니다. documentId=${documentId}`);
       throw new InternalServerErrorException('문서 삭제에 실패했습니다.');
     }
-      const document = await this.documentRepository.findOneWithPortfolioById(
-        user.userId,
-        documentId,
-      );
-
-      if (!document) {
-        this.logger.warn(`등록되지 않은 문서입니다. documentId=${documentId}`);
-        throw new NotFoundException('문서를 찾을 수 없습니다.');
-      }
-
-      const deletedDocument = await this.documentRepository.remove(document);
-      if (!deletedDocument) {
-        this.logger.warn(`문서 삭제에 실패했습니다. documentId=${documentId}`);
-        throw new InternalServerErrorException('문서 삭제에 실패했습니다.');
-      }
   }
 
   async createCoverLetter(
@@ -123,6 +113,7 @@ export class DocumentService {
         const questionAnswer = new CoverLetterQuestionAnswer();
         questionAnswer.question = qa.question;
         questionAnswer.answer = qa.answer;
+        questionAnswer.coverLetter = coverLetter;
         return questionAnswer;
       });
 
@@ -130,14 +121,27 @@ export class DocumentService {
       document.title = title;
       document.type = DocumentType.COVER;
       document.user = user;
-      document.coverLetter = coverLetter;
 
-      return await manager.save(Document, document);
+      const savedDocument = await manager.save(Document, document);
+
+      coverLetter.document = savedDocument;
+      const savedCoverLetter = await manager.save(CoverLetter, coverLetter);
+
+      const qas = coverLetter.questionAnswers.map((qa) => {
+        qa.coverLetter = savedCoverLetter;
+        return qa;
+      });
+      const savedQAs = await manager.save(CoverLetterQuestionAnswer, qas);
+
+      savedDocument.coverLetter = savedCoverLetter;
+      savedDocument.coverLetter.questionAnswers = savedQAs;
+
+      return savedDocument;
     });
 
     return {
       documentId: savedDocument.documentId,
-      coverletterId: savedDocument.coverLetter.coverLetterId,
+      coverLetterId: savedDocument.coverLetter.coverLetterId,
       type: savedDocument.type,
       title: savedDocument.title,
       content: savedDocument.coverLetter.questionAnswers.map((qa) => ({
@@ -148,12 +152,49 @@ export class DocumentService {
     };
   }
 
+  async viewCoverLetter(userId: string, documentId: string) {
+    const user = await this.userService.findExistingUser(userId);
+
+    const document =
+      await this.documentRepository.findOneWithCoverLetterByDocumentIdAndUserId(
+        user.userId,
+        documentId,
+      );
+
+    if (!document) {
+      this.logger.warn(
+        `등록되지 않은 자기소개서입니다. documentId=${documentId}`,
+      );
+      throw new NotFoundException('등록되지 않은 문서입니다');
+    }
+
+    if (!document.coverLetter) {
+      this.logger.error(
+        `CoverLetter data missing for documentId=${documentId}`,
+      );
+      throw new InternalServerErrorException('자기소개서 데이터가 없습니다.');
+    }
+
+    return {
+      documentId: document.documentId,
+      coverLetterId: document.coverLetter.coverLetterId,
+      type: document.type,
+      title: document.title,
+      content: document.coverLetter.questionAnswers.map((qa) => ({
+        question: qa.question,
+        answer: qa.answer,
+      })),
+      createdAt: document.createdAt,
+    };
+  }
+
   async deleteCoverLetter(userId: string, documentId: string) {
     const user = await this.userService.findExistingUser(userId);
-    const document = await this.documentRepository.findCoverLetterDocumentByDocumentIdAndUserId(
-      user.userId,
-      documentId,
-    );
+    const document =
+      await this.documentRepository.findCoverLetterDocumentByDocumentIdAndUserId(
+        user.userId,
+        documentId,
+      );
 
     if (!document) {
       throw new NotFoundException('문서를 찾을 수 없습니다.');
