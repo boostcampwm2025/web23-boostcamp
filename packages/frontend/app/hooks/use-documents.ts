@@ -15,8 +15,18 @@ interface DocumentResponse {
 
 // 서버가 응답하지 않을 때 보여줄 임시 데이터
 const FALLBACK_MOCK_DATA: DocumentItem[] = [
-  { id: "mock-1", type: "COVER_LETTER", title: "[서버연결실패] 2024 하반기 공통 자소서", date: "2024.05.12" },
-  { id: "mock-2", type: "PORTFOLIO", title: "[서버연결실패] FE 아키텍트 포트폴리오", date: "2024.04.28" },
+  {
+    id: "mock-1",
+    type: "COVER_LETTER",
+    title: "[DEV] 2024 하반기 공통 자소서",
+    date: "2024.05.12",
+  },
+  {
+    id: "mock-2",
+    type: "PORTFOLIO",
+    title: "[DEV] FE 아키텍트 포트폴리오",
+    date: "2024.04.28",
+  },
 ];
 
 export function useDocuments(userId: string) {
@@ -25,17 +35,22 @@ export function useDocuments(userId: string) {
 
   useEffect(() => {
     if (!userId) return;
-
     const loadDocs = async () => {
       try {
         setIsLoading(true);
-        
+        // 개발 모드면 서버 호출을 생략
+        if (process.env.NODE_ENV === "development") {
+          setDocuments(FALLBACK_MOCK_DATA);
+          setIsLoading(false);
+          return;
+        }
+
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/documents?userId=${userId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/document?userId=${userId}`,
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
-          }
+          },
         );
 
         if (!res.ok) throw new Error("서류 목록 조회 실패");
@@ -46,13 +61,16 @@ export function useDocuments(userId: string) {
           id: item.documentId,
           type: item.type === "COVER" ? "COVER_LETTER" : "PORTFOLIO",
           title: item.title,
-          description: "", 
+          description: "",
           date: item.createdAt.split("T")[0].replace(/-/g, "."),
         }));
 
         setDocuments(mapped);
       } catch (err) {
-        console.error("API 호출 실패, Mock 데이터로 대체합니다:", err);
+        console.error(
+          "API 호출 실패 또는 DEV 모드 — Mock 데이터로 대체합니다:",
+          err,
+        );
         setDocuments(FALLBACK_MOCK_DATA);
       } finally {
         setIsLoading(false);
