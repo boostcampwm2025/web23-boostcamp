@@ -13,10 +13,14 @@ export class CoverLetter {
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'cover_letters_id' })
   coverLetterId: string;
 
-  @OneToOne(() => Document, (document) => document.coverLetter)
+  @OneToOne(() => Document, (document) => document.coverLetter, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'documents_id' })
   document: Document;
 
-  @OneToMany(() => CoverLetterQuestionAnswer, (qa) => qa.coverLetter)
+  @OneToMany(() => CoverLetterQuestionAnswer, (qa) => qa.coverLetter, {
+    cascade: [`insert`, `update`],
+  })
   questionAnswers: CoverLetterQuestionAnswer[];
 }

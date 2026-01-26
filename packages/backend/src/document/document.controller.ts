@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Query, Delete, HttpCode } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Delete,
+  HttpCode,
+} from '@nestjs/common';
 import { DocumentService } from './document.service';
 import { CreatePortfolioTextRequestDto } from './dto/create-portfolio-text-request.dto';
 import { CreatePortfolioTextResponseDto } from './dto/create-portfolio-text-response.dto';
@@ -24,6 +33,21 @@ export class DocumentController {
       body.content,
     );
   }
+  
+  @Get(':documentId/portfolio')
+  async viewPortfolio(
+    @Param('documentId') documentId: string,
+  ): Promise<ViewPortfolioResponseDto> {
+    const userId = '1';
+    return await this.documentService.viewPortfolio(userId, documentId);
+  }
+
+  @Delete(':documentId/portfolio')
+  @HttpCode(204)
+  async deletePortfolio(@Param('documentId') documentId: string) {
+    const userId = '1';
+    await this.documentService.deletePortfolio(userId, documentId);
+  }
 
   @Post('cover-letter/create')
   async createCoverLetter(
@@ -37,20 +61,6 @@ export class DocumentController {
     );
   }
 
-  @Delete(':documentId/cover-letter')
-  @HttpCode(204)
-  async deleteCoverLetter(@Param('documentId') documentId: string) {
-    const userId = '1';
-    await this.documentService.deleteCoverLetter(userId, documentId);
-  }
-
-  @Delete(':documentId/portfolio')
-  @HttpCode(204)
-  async deletePortfolio(@Param('documentId') documentId: string) {
-    const userId = '1';
-    await this.documentService.deletePortfolio(userId, documentId);
-  }
-
   @Get(':documentId/cover-letter')
   async viewCoverLetter(
     @Param('documentId') documentId: string,
@@ -58,14 +68,14 @@ export class DocumentController {
     const userId = '1';
     return await this.documentService.viewCoverLetter(userId, documentId);
   }
-
-  @Get(':documentId/portfolio')
-  async viewPortfolio(
-    @Param('documentId') documentId: string,
-  ): Promise<ViewPortfolioResponseDto> {
+  
+  @Delete(':documentId/cover-letter')
+  @HttpCode(204)
+  async deleteCoverLetter(@Param('documentId') documentId: string) {
     const userId = '1';
-    return await this.documentService.viewPortfolio(userId, documentId);
+    await this.documentService.deleteCoverLetter(userId, documentId);
   }
+
   @Get()
   async getDocumentList(
     @Query() dto: DocumentSummaryRequest,
@@ -81,4 +91,3 @@ export class DocumentController {
       sort,
     );
   }
-}

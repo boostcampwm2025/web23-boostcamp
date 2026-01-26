@@ -21,7 +21,9 @@ export class CoverLetterQuestionAnswer {
   @Column({ type: 'varchar', length: 255 })
   answer: string;
 
-  @ManyToOne(() => CoverLetter, (coverLetter) => coverLetter.questionAnswers)
+  @ManyToOne(() => CoverLetter, (coverLetter) => coverLetter.questionAnswers, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'cover_letter_id' })
   coverLetter: CoverLetter;
 }
