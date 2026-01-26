@@ -9,6 +9,8 @@ import {
   UploadedFile,
   UseInterceptors,
   Query,
+  Delete,
+  HttpCode,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { InterviewService } from './interview.service';
@@ -32,7 +34,7 @@ import { InterviewSummaryListResponse } from './dto/interview-summary.response.d
 @Controller('interview')
 export class InterviewController {
   private readonly logger = new Logger(InterviewController.name);
-  constructor(private readonly interviewService: InterviewService) { }
+  constructor(private readonly interviewService: InterviewService) {}
 
   @Post('tech/create')
   async createTechInterview(
@@ -156,5 +158,14 @@ export class InterviewController {
       type,
       sort,
     );
+  }
+
+  @Delete(':interviewId')
+  @HttpCode(204)
+  async deleteInterview(
+    @Param('interviewId') interviewId: string,
+  ): Promise<void> {
+    const userId = '1';
+    await this.interviewService.deleteInterview(userId, interviewId);
   }
 }
