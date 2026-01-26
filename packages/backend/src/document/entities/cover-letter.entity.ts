@@ -17,6 +17,8 @@ export class CoverLetter {
   @JoinColumn({ name: 'documents_id' })
   document: Document;
 
-  @OneToMany(() => CoverLetterQuestionAnswer, (qa) => qa.coverLetter)
+  @OneToMany(() => CoverLetterQuestionAnswer, (qa) => qa.coverLetter, {
+    cascade: true,
+  })
   questionAnswers: CoverLetterQuestionAnswer[];
 }

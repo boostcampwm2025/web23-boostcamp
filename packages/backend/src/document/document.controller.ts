@@ -14,6 +14,8 @@ import { CreatePortfolioTextResponseDto } from './dto/create-portfolio-text-resp
 import { ViewPortfolioResponseDto } from './dto/view-portfolio-response.dto';
 import { DocumentSummaryListResponse } from './dto/document-summary.response.dto';
 import { DocumentSummaryRequest } from './dto/document-summary.request.dto';
+import { CreateCoverLetterRequestDto } from './dto/create-cover-letter-request.dto';
+import { CreateCoverLetterResponseDto } from './dto/create-cover-letter-response.dto';
 
 @Controller('document')
 export class DocumentController {
@@ -25,6 +27,18 @@ export class DocumentController {
   ): Promise<CreatePortfolioTextResponseDto> {
     const userId = '1';
     return await this.documentService.createPortfolioWithText(
+      userId,
+      body.title,
+      body.content,
+    );
+  }
+
+  @Post('cover-letter/create')
+  async createCoverLetter(
+    @Body() body: CreateCoverLetterRequestDto,
+  ): Promise<CreateCoverLetterResponseDto> {
+    const userId = '1';
+    return await this.documentService.createCoverLetter(
       userId,
       body.title,
       body.content,
