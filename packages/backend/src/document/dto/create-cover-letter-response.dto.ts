@@ -3,7 +3,7 @@ import { CoverLetterQnA } from './create-cover-letter-request.dto';
 
 export class CreateCoverLetterResponseDto {
   documentId: string;
-  coverletterId: string;
+  coverLetterId: string;
   type: DocumentType;
   title: string;
   content: CoverLetterQnA[];

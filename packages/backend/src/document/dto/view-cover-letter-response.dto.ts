@@ -2,7 +2,7 @@ import { DocumentType } from '../entities/document.entity';
 
 export class ViewCoverLetterResponseDto {
   documentId: string;
-  coverletterId: string;
+  coverLetterId: string;
   type: DocumentType;
   title: string;
   content: {
