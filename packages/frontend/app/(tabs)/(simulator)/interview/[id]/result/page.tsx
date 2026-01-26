@@ -4,16 +4,13 @@ import ChatHistory from "@/app/components/chat-history";
 import { Button } from "@/app/components/ui/button";
 import { buildChatHistory } from "@/app/lib/client/chat";
 
-import RecentRecording from "@/app/(tabs)/dashboard/result/components/recent-recording";
-import Panel from "@/app/(tabs)/dashboard/result/components/panel";
-import Tip from "@/app/(tabs)/dashboard/result/components/tip";
-import Score from "@/app/(tabs)/dashboard/result/components/score";
-import AISummary from "@/app/(tabs)/dashboard/result/components/ai-summary";
-import {
-  getFeedback,
-  startFeedback,
-} from "@/app/(tabs)/dashboard/result/actions";
+import RecentRecording from "./components/recent-recording";
+import { getFeedback, startFeedback } from "./actions";
 import { getHistory } from "../actions";
+import Panel from "./components/panel";
+import Score from "./components/score";
+import AISummary from "./components/ai-summary";
+import Tip from "./components/tip";
 
 export default async function InterviewResultPage() {
   const { history } = await getHistory({ interviewId: "1" });
