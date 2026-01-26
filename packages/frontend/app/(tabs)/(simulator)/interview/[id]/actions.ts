@@ -117,6 +117,13 @@ export async function generateQuestion({
 }: {
   interviewId: string;
 }) {
+  return {
+    questionId: "sample-question-id",
+    question: "이것은 샘플 질문입니다.",
+    createdAt: new Date(),
+    isLast: false,
+  };
+
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/interview/tech/question`,
     {

@@ -93,6 +93,7 @@ const stopMediaRecorderSafely = async (
     }
 
     mediaRecorder.onstop = async () => {
+      console.log(`${errorContext} MediaRecorder onstop 이벤트 처리 시작`);
       const blob = new Blob(chunksRef.current, {
         type: blobType,
       });
@@ -108,6 +109,7 @@ const stopMediaRecorderSafely = async (
     };
 
     try {
+      console.log("mediaRecorder state:", mediaRecorder.state);
       mediaRecorder.stop();
     } catch (error) {
       console.warn("MediaRecorder 중지 중 오류", error);
@@ -168,6 +170,7 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
   const stopVideoRecording = useCallback<
     () => Promise<Blob | null>
   >(async () => {
+    console.log("stopVideoRecording 호출");
     const blob = await stopMediaRecorderSafely(
       mediaRecorderRefVideo.current,
       chunksRefVideo,
@@ -177,6 +180,7 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
       setLastBlob,
       "비디오",
     );
+    console.log("stopVideoRecording 완료");
 
     mediaRecorderRefVideo.current = null;
     return blob;

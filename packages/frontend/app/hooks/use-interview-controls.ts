@@ -4,212 +4,192 @@ import { useRouter } from "next/navigation";
 import { IChatMessage } from "@/app/components/chat-history";
 import { buildChatHistory } from "@/app/lib/client/chat";
 
-import { useMediaPermissions } from "./use-media-permissions";
 import useMediaRecorder from "./use-media-recorder";
-
 import {
   generateQuestion,
   IHistoryItem,
 } from "../(tabs)/(simulator)/interview/[id]/actions";
 
-export const useInterviewControls = (history: IHistoryItem[] = []) => {
+export const useInterviewControls = (
+  interviewId: string,
+  history: IHistoryItem[] = [],
+) => {
   const router = useRouter();
-
-  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const videoElRef = useRef<HTMLVideoElement | null>(null);
+  const chatInitRef = useRef(false);
 
   const [isChatOpen, setIsChatOpen] = useState(true);
   const [chats, setChats] = useState<IChatMessage[]>(buildChatHistory(history));
   const [isGenerating, setIsGenerating] = useState(false);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [log, setLog] = useState<string>("");
+  const [isVideoEnabled, setIsVideoEnabled] = useState(true);
+  const [isAudioEnabled, setIsAudioEnabled] = useState(true);
 
-  // Media permissions and streams
   const {
-    videoStream,
-    audioStream,
-    requestVideo,
-    requestAudio,
-    stopMediaStream,
-    toggleVideo,
-    toggleAudio,
-    isVideoEnabled,
-    isAudioEnabled,
-  } = useMediaPermissions();
-
-  useEffect(() => {
-    if (!mediaStreamRef.current && typeof window !== "undefined") {
-      mediaStreamRef.current = new MediaStream();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!mediaStreamRef.current) return;
-
-    const stream = mediaStreamRef.current;
-
-    // video track
-    if (videoStream) {
-      videoStream.getTracks().forEach((track) => {
-        if (!stream.getTracks().includes(track)) {
-          stream.addTrack(track);
-        }
-      });
-    }
-
-    // audio track
-    if (audioStream) {
-      audioStream.getTracks().forEach((track) => {
-        if (!stream.getTracks().includes(track)) {
-          stream.addTrack(track);
-        }
-      });
-    }
-  }, [videoStream, audioStream]);
-
-  ////////// Media recording //////////
-  const {
+    isRecording,
     startVideoRecording,
     stopVideoRecording,
     startAudioRecording,
     stopAudioRecording,
-    isRecording,
-  } = useMediaRecorder(mediaStreamRef.current);
+  } = useMediaRecorder(stream);
 
-  // Initialize media permissions and start recording
+  const appendLog = useCallback((message: string) => {
+    setLog(
+      (prev) => `${new Date().toLocaleTimeString()} - ${message}\n${prev}`,
+    );
+  }, []);
+
+  // 스트림 정지 유틸리티
+  const stopAllTracks = useCallback(() => {
+    if (stream) {
+      stream.getTracks().forEach((track) => {
+        track.stop();
+        appendLog(`트랙 정지: ${track.kind}`);
+      });
+      setStream(null);
+    }
+  }, [stream, appendLog]);
+
   useEffect(() => {
-    const start = async () => {
-      if (!videoStream && !audioStream) {
-        const videoResult = await requestVideo();
-        const audioResult = await requestAudio();
+    let isMounted = true;
 
-        if (!videoResult) {
-          console.warn("Video permission failed or not available");
-        }
-        if (!audioResult) {
-          console.warn("Audio permission failed or not available");
-        }
+    const initStream = async () => {
+      try {
+        const mediaStream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+          video: true,
+        });
 
-        if (!videoResult && !audioResult) {
-          console.error("Both video and audio permissions failed");
+        if (!isMounted) {
+          mediaStream.getTracks().forEach((t) => t.stop());
           return;
         }
 
-        return;
+        setStream(mediaStream);
+        appendLog("MediaStream 생성 성공");
+
+        if (videoElRef.current) {
+          videoElRef.current.srcObject = mediaStream;
+        }
+      } catch (error) {
+        appendLog(`getUserMedia 실패: ${error}`);
       }
     };
 
-    start();
-    return () => {
-      stopVideoRecording();
-      stopAudioRecording();
-      stopMediaStream();
-    };
-  }, [
-    videoStream,
-    audioStream,
-    requestVideo,
-    requestAudio,
-    startVideoRecording,
-    stopVideoRecording,
-    startAudioRecording,
-    stopAudioRecording,
-    stopMediaStream,
-  ]);
-
-  useEffect(() => {
-    startVideoRecording();
-    startAudioRecording();
+    initStream();
 
     return () => {
-      stopVideoRecording();
-      stopAudioRecording();
+      isMounted = false;
     };
-  }, []);
+  }, [appendLog, interviewId]);
 
-  ////////// Initialize chat with first question //////////
   useEffect(() => {
-    const init = async () => {
-      if (chats.length > 0 || isGenerating) return;
+    if (
+      stream &&
+      videoElRef.current &&
+      videoElRef.current.srcObject !== stream
+    ) {
+      videoElRef.current.srcObject = stream;
+      appendLog("비디오 엘리먼트 스트림 재연결");
+    }
+  }, [stream, appendLog]);
 
+  useEffect(() => {
+    if (chatInitRef.current || chats.length > 0) {
+      return;
+    }
+
+    const loadInitialQuestion = async () => {
+      chatInitRef.current = true;
       setIsGenerating(true);
       try {
-        const result = await generateQuestion({ interviewId: "1" });
-        if (result) {
-          if (result.question && typeof result.question === "string") {
-            setChats([
-              {
-                id: result.questionId,
-                content: result.question.trim(),
-                role: "ai",
-                sender: "Interviewer",
-                timestamp: new Date(result.createdAt).toISOString(),
-              },
-            ]);
-          }
+        const result = await generateQuestion({ interviewId });
+        if (result?.question) {
+          setChats([
+            {
+              id: result.questionId,
+              content: result.question.trim(),
+              role: "ai",
+              sender: "Interviewer",
+              timestamp: new Date(result.createdAt).toISOString(),
+            },
+          ]);
+          appendLog("초기 질문 로드 완료");
         }
       } catch (error) {
-        throw new Error(`초기 질문 생성중 에러 발생 ${error}`);
+        appendLog(`초기 질문 실패: ${error}`);
+        chatInitRef.current = false; // 실패 시 재시도 가능하게
       } finally {
         setIsGenerating(false);
       }
     };
-    init();
-  }, [chats, isGenerating]);
 
-  ////////// Control functions //////////
+    loadInitialQuestion();
+  }, [chats.length, appendLog, interviewId]);
 
+  useEffect(() => {
+    if (!stream) return;
+
+    startVideoRecording();
+    startAudioRecording();
+    appendLog("자동 녹화 시작");
+
+    return () => {
+      stopVideoRecording();
+      stopAudioRecording();
+    };
+  }, [
+    stream,
+    startVideoRecording,
+    startAudioRecording,
+    stopVideoRecording,
+    stopAudioRecording,
+    appendLog,
+  ]);
+
+  // 인터페이스 함수들
   const handleMicToggle = useCallback(() => {
+    if (!stream) {
+      return;
+    }
     const newState = !isAudioEnabled;
-    toggleAudio(newState);
-  }, [isAudioEnabled, toggleAudio]);
+    stream.getAudioTracks().forEach((t) => (t.enabled = newState));
+    setIsAudioEnabled(newState);
+  }, [stream, isAudioEnabled]);
 
   const handleCamToggle = useCallback(() => {
+    if (!stream) {
+      return;
+    }
     const newState = !isVideoEnabled;
-    toggleVideo(newState);
-  }, [isVideoEnabled, toggleVideo]);
+    stream.getVideoTracks().forEach((t) => (t.enabled = newState));
+    setIsVideoEnabled(newState);
+  }, [stream, isVideoEnabled]);
 
   const handleExit = useCallback(
-    async (path?: string) => {
-      await Promise.all([stopVideoRecording(), stopAudioRecording()]);
-      stopMediaStream();
-      router.push(path ?? "/dashboard/result");
+    (href: string) => {
+      stopAllTracks();
+      router.push(href);
     },
-    [stopVideoRecording, stopAudioRecording, stopMediaStream, router],
+    [stopAllTracks, router],
   );
 
-  const toggleChat = useCallback((newState?: boolean) => {
-    setIsChatOpen((prev) => (newState !== undefined ? newState : !prev));
-  }, []);
-
   return {
-    // Stream states
-    mediaStream: mediaStreamRef.current,
+    stream,
     isVideoEnabled,
     isAudioEnabled,
-    isRecording,
     isChatOpen,
-
-    // Chat state
     chats,
     setChats,
     isGenerating,
-
-    // Control functions
+    isRecording,
+    log,
+    videoElRef,
     handleMicToggle,
     handleCamToggle,
+    toggleChat: (state?: boolean) => setIsChatOpen((prev) => state ?? !prev),
     handleExit,
-    toggleChat,
-
-    // Raw toggle functions (for backward compatibility)
-    toggleVideo,
-    toggleAudio,
-
-    // Recording controls
-    startRecording: () => {
-      startVideoRecording();
-      startAudioRecording();
-    },
-    stopRecording: () => {
-      stopVideoRecording();
-      stopAudioRecording();
-    },
+    appendLog,
   };
 };

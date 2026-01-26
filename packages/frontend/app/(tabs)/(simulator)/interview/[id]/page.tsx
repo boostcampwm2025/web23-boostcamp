@@ -1,11 +1,5 @@
 "use server";
 
-import { ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
-
-import { Button } from "@/app/components/ui/button";
-import { getHistory } from "./actions";
-import VideoStatus from "./components/video-status";
-import Link from "next/link";
 import InterviewClient from "./client";
 
 export default async function Page() {

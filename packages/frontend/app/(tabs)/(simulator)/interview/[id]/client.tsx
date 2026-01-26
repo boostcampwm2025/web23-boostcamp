@@ -2,9 +2,6 @@
 
 import { useInterviewControls } from "@/app/hooks/use-interview-controls";
 import VideoGrid from "../components/video-grid";
-import ChatPanel from "../../components/chat-panel";
-import { InterviewControls } from "../components/interview-controls";
-
 import { IHistoryItem } from "./actions";
 
 export default function InterviewClient({
@@ -12,12 +9,11 @@ export default function InterviewClient({
 }: {
   history: IHistoryItem[];
 }) {
-  const interviewControls = useInterviewControls(history);
-
+  const { handleExit, stream } = useInterviewControls("1", history);
   return (
     <div className="mt-5 flex h-full max-w-630 flex-col justify-center gap-5 py-2 xl:flex-row">
       <div className="relative w-full max-w-7xl xl:flex-2">
-        <VideoGrid />
+        <VideoGrid stream={stream} />
         {/*   <InterviewControls
           onToggleChat={interviewControls.toggleChat}
           onExit={interviewControls.handleExit}
@@ -27,7 +23,7 @@ export default function InterviewClient({
           onToggleAudio={interviewControls.handleMicToggle}
         /> */}
       </div>
-      {interviewControls.isChatOpen && (
+      {/*  {interviewControls.isChatOpen && (
         <div className="flex-1">
           <ChatPanel
             {...interviewControls}
@@ -37,7 +33,8 @@ export default function InterviewClient({
             stream={interviewControls.mediaStream}
           />
         </div>
-      )}
+      )} */}
+      <button onClick={() => handleExit("/interview/1/result")}>button</button>
     </div>
   );
 }

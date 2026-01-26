@@ -10,7 +10,8 @@ interface IVideoGridProps {
   stream?: MediaStream | null;
 }
 
-export default function VideoGrid({ className }: IVideoGridProps) {
+export default function VideoGrid({ className, stream }: IVideoGridProps) {
+  console.log(stream);
   return (
     <div
       className={clsx(
@@ -18,11 +19,11 @@ export default function VideoGrid({ className }: IVideoGridProps) {
         className,
       )}
     >
-      <VideoTile label="You" isOn={false} />
+      <VideoTile label="You" isOn={true} stream={stream} />
       <VideoTile label="Interviewer 1" />
       <VideoTile label="Interviewer 2" />
       <div className="col-span-3">
-        <VideoTile isSpeaker label="Speaker" />
+        <VideoTile isSpeaker label="Speaker"></VideoTile>
       </div>
     </div>
   );
