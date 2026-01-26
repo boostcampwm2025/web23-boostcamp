@@ -13,6 +13,6 @@ export async function getInterviews() {
       method: "GET",
       cache: "no-store",
     })
-  ).json()) as { interviews: IInterview[]; totalPages: number };
+  ).json()) as { interviews: IInterview[] };
   return json;
 }

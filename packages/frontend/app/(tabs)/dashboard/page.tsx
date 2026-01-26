@@ -1,22 +1,25 @@
 import { unstable_cache as nextCache } from "next/cache";
-import { ChevronRight, ClipboardList, Clock, Sparkle } from "lucide-react";
-
-import IconBox from "@/app/components/ui/icon-box";
 
 import { getInterviews } from "./actions";
 import InterviewList from "./components/interview-list";
+import InterviewStartBox from "./components/interview-start-box";
 
 const getCachedInterviews = nextCache(getInterviews, [
   "interviews_dashboard_page",
 ]);
 
 export default async function Page() {
-  const { interviews, totalPages } = await getCachedInterviews();
-  console.log(interviews, totalPages);
+  const { interviews } = await getCachedInterviews();
+
   return (
     <div>
       <main className="mx-auto max-w-180">
-        <InterviewList interviews={interviews} />
+        <div className="mt-12">
+          <InterviewStartBox />
+        </div>
+        <div className="mt-12">
+          <InterviewList interviews={interviews} />
+        </div>
       </main>
     </div>
   );
