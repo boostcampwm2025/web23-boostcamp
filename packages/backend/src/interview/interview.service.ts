@@ -43,7 +43,7 @@ export class InterviewService {
     private readonly coverLetterRepository: CoverLetterRepository,
     private readonly documentRepository: DocumentRepository,
     private readonly interviewFeedBackService: InterviewFeedbackService,
-  ) { }
+  ) {}
 
   async calculateInterviewTime(
     userId: string,
@@ -299,6 +299,12 @@ export class InterviewService {
       score: interview.score,
       feedback: interview.feedback,
     };
+  }
+
+  async deleteInterview(userId: string, interviewId: string): Promise<void> {
+    const interview = await this.findExistingInterview(interviewId, ['user']);
+    interview.validateUser(userId);
+    await this.interviewRepository.remove(interview);
   }
 
   async listInterviews(
