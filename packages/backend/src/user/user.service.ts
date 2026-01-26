@@ -6,7 +6,7 @@ import { UserRepository } from './user.repository';
 export class UserService {
   private readonly logger = new Logger('UserService');
 
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly userRepository: UserRepository) { }
 
   async findExistingUser(userId: string): Promise<User> {
     const user = await this.userRepository.findById(userId);
@@ -15,5 +15,21 @@ export class UserService {
       throw new NotFoundException('존재하지않는 사용자입니다.');
     }
     return user;
+  }
+
+  async findOneBySub(sub: string): Promise<User | null> {
+    return await this.userRepository.findBySub(sub);
+  }
+
+  async registerUser(
+    email: string,
+    profileUrl: string,
+    sub: string,
+  ): Promise<User> {
+    const user = new User();
+    user.userEmail = email;
+    user.profileUrl = profileUrl;
+    user.sub = sub;
+    return await this.userRepository.save(user);
   }
 }
