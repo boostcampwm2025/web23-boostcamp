@@ -32,6 +32,14 @@ export class DocumentController {
       body.content,
     );
   }
+  
+  @Get(':documentId/portfolio')
+  async viewPortfolio(
+    @Param('documentId') documentId: string,
+  ): Promise<ViewPortfolioResponseDto> {
+    const userId = '1';
+    return await this.documentService.viewPortfolio(userId, documentId);
+  }
 
   @Delete(':documentId/portfolio')
   @HttpCode(204)
@@ -59,13 +67,6 @@ export class DocumentController {
     await this.documentService.deleteCoverLetter(userId, documentId);
   }
 
-  @Get(':documentId/portfolio')
-  async viewPortfolio(
-    @Param('documentId') documentId: string,
-  ): Promise<ViewPortfolioResponseDto> {
-    const userId = '1';
-    return await this.documentService.viewPortfolio(userId, documentId);
-  }
   @Get()
   async getDocumentList(
     @Query() dto: DocumentSummaryRequest,
@@ -81,4 +82,3 @@ export class DocumentController {
       sort,
     );
   }
-}

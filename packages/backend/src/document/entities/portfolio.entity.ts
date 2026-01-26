@@ -15,7 +15,9 @@ export class Portfolio {
   @Column({ name: 'content', type: 'text' })
   content: string;
 
-  @OneToOne(() => Document, (document) => document.portfolio, {onDelete: 'CASCADE'})
+  @OneToOne(() => Document, (document) => document.portfolio, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'documents_id' })
   document: Document;
 }
