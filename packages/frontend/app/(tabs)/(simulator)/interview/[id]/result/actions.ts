@@ -1,8 +1,8 @@
 "use server";
 
 interface IFeedback {
-  score: string | number;
-  content: string;
+  score: string;
+  feedback: string;
 }
 
 export async function getFeedback({
@@ -12,8 +12,8 @@ export async function getFeedback({
 }): Promise<IFeedback> {
   if (process.env.NODE_ENV === "development") {
     return {
-      score: 84,
-      content:
+      score: "84",
+      feedback:
         "[DEV] The candidate gave concise answers with clear impact. Focus on adding more metrics and structure (STAR).",
     };
   }
@@ -23,29 +23,25 @@ export async function getFeedback({
     { headers: { "Content-Type": "application/json" }, cache: "no-store" },
   );
   if (!res.ok) throw new Error("피드백 조회 실패");
+
   return (await res.json()) as IFeedback;
 }
 
-export async function startFeedback() {
+export async function startFeedback({ interviewId }: { interviewId?: string }) {
   if (process.env.NODE_ENV === "development") {
     await new Promise((r) => setTimeout(r, 200));
-    return { started: true };
+    return {
+      score: "84",
+      feedback:
+        "[DEV] The candidate gave concise answers with clear impact. Focus on adding more metrics and structure (STAR).",
+    };
   }
 
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/interview/feedback`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ interviewId: "1" }),
-    },
-  );
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/feedback/start`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  });
 
-  console.log(response);
-
-  if (!response.ok) {
-    throw new Error("API 요청 실패");
-  }
-
-  return await response.json();
+  if (!res.ok) throw new Error("피드백 시작 실패");
+  return (await res.json()) as IFeedback;
 }

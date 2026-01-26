@@ -1,4 +1,5 @@
 import { Heart, HeartOff } from "lucide-react";
+import { unstable_cache as nextCache } from "next/cache";
 
 import ChatHistory from "@/app/components/chat-history";
 import { Button } from "@/app/components/ui/button";
@@ -12,10 +13,24 @@ import Score from "./components/score";
 import AISummary from "./components/ai-summary";
 import Tip from "./components/tip";
 
+const getCachedHistory = nextCache(getHistory, [
+  "interview_result_history",
+  "1",
+]);
+
+const getCachedFeedback = nextCache(getFeedback, [
+  "interview_result_feedback",
+  "1",
+]);
+
 export default async function InterviewResultPage() {
-  await startFeedback();
-  const { history } = await getHistory({ interviewId: "1" });
-  const feedbackResult = await getFeedback({ interviewId: "1" });
+  const { history } = await getCachedHistory({ interviewId: "1" });
+  let feedbackResult = { score: "0", feedback: "" };
+
+  feedbackResult = await getCachedFeedback({ interviewId: "1" });
+  if (!feedbackResult.score || !feedbackResult.feedback) {
+    feedbackResult = await startFeedback({ interviewId: "1" });
+  }
 
   return (
     <div className="mt-5 w-full pb-5">
@@ -32,10 +47,10 @@ export default async function InterviewResultPage() {
           </div>
         </div>
         <div className="flex flex-col gap-6 md:flex-row">
-          <Panel className="flex-[1] p-5">
+          <Panel className="flex-1 p-5">
             <Score score={+feedbackResult.score} />
           </Panel>
-          <Panel className="flex-[2] p-5">
+          <Panel className="flex-2 p-5">
             <RecentRecording />
           </Panel>
         </div>
@@ -47,7 +62,7 @@ export default async function InterviewResultPage() {
             />
           </Panel>
           <Panel className="flex-1 p-5">
-            <AISummary summary={feedbackResult.content} />
+            <AISummary summary={feedbackResult.feedback} />
           </Panel>
         </div>
         <div className="flex flex-col gap-6 md:flex-row">

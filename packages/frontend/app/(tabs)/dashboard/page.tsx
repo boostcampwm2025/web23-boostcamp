@@ -1,18 +1,22 @@
 import { SidebarProvider } from "@/app/components/ui/sidebar";
 
-import { AppSidebar } from "./components/app-sidebar";
+import { unstable_cache as nextCache } from "next/cache";
+import { getInterviews } from "./actions";
+import { Card } from "@/app/components/ui/card";
 
-export default function Page() {
+const getCachedInterviews = nextCache(getInterviews, [
+  "interviews_dashboard_page",
+]);
+
+export default async function Page() {
+  const { interviews, totalPages } = await getCachedInterviews();
+
   return (
     <div>
-      <SidebarProvider>
-        <AppSidebar />
-        <main>
-          <div className="mx-auto mt-20 grid max-w-7xl grid-cols-1 gap-4 md:max-w-2xl lg:grid-cols-12 2xl:max-w-428">
-            Dashboard Content
-          </div>
-        </main>
-      </SidebarProvider>
+      <main>
+        <div className="mx-auto">Dashboard Content</div>
+        <Card />
+      </main>
     </div>
   );
 }

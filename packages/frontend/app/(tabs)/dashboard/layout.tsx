@@ -7,10 +7,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <main>
       <Header />
-      <SidebarProvider>
-        <AppSidebar />
-        <main className="h-full w-full">{children}</main>
-      </SidebarProvider>
+
+      <main className="h-full w-full">{children}</main>
     </main>
   );
 }
