@@ -11,7 +11,6 @@ interface IVideoGridProps {
 }
 
 export default function VideoGrid({ className, stream }: IVideoGridProps) {
-  console.log(stream);
   return (
     <div
       className={clsx(
