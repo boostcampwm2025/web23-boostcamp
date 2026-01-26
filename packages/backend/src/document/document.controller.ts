@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Patch,
   Query,
   Delete,
   HttpCode,
@@ -11,12 +12,13 @@ import {
 import { DocumentService } from './document.service';
 import { CreatePortfolioTextRequestDto } from './dto/create-portfolio-text-request.dto';
 import { CreatePortfolioTextResponseDto } from './dto/create-portfolio-text-response.dto';
-import { ViewPortfolioResponseDto } from './dto/view-portfolio-response.dto';
+import { PortfolioDetailResponseDto } from './dto/portfolio-detail-response.dto';
 import { ViewCoverLetterResponseDto } from './dto/view-cover-letter-response.dto';
 import { DocumentSummaryListResponse } from './dto/document-summary.response.dto';
 import { DocumentSummaryRequest } from './dto/document-summary.request.dto';
 import { CreateCoverLetterRequestDto } from './dto/create-cover-letter-request.dto';
 import { CreateCoverLetterResponseDto } from './dto/create-cover-letter-response.dto';
+import { UpdatePortfolioRequestDto } from './dto/update-portfolio-request.dto';
 
 @Controller('document')
 export class DocumentController {
@@ -37,9 +39,23 @@ export class DocumentController {
   @Get(':documentId/portfolio')
   async viewPortfolio(
     @Param('documentId') documentId: string,
-  ): Promise<ViewPortfolioResponseDto> {
+  ): Promise<PortfolioDetailResponseDto> {
     const userId = '1';
     return await this.documentService.viewPortfolio(userId, documentId);
+  }
+
+  @Patch(':documentId/portfolio')
+  async updatePortfolio(
+    @Param('documentId') documentId: string,
+    @Body() body: UpdatePortfolioRequestDto,
+  ): Promise<PortfolioDetailResponseDto> {
+    const userId = '1';
+    return await this.documentService.updatePortfolio(
+      userId,
+      documentId,
+      body.title,
+      body.content,
+    );
   }
 
   @Delete(':documentId/portfolio')
