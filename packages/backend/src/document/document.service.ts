@@ -186,6 +186,7 @@ export class DocumentService {
         answer: qa.answer,
       })),
       createdAt: document.createdAt,
+      modifiedAt: document.modifiedAt,
     };
   }
 
