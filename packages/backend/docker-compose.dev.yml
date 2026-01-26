@@ -26,7 +26,7 @@ services:
     ports:
       - '${PORT}:${PORT}'
     env_file:
-      - ../../../cicd/web23-PSI/packages/backend/.env
+      - .env
     depends_on:
       - mysql
     networks:
