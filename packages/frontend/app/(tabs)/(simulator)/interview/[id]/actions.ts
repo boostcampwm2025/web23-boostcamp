@@ -85,29 +85,7 @@ export async function sendAnswer({
   return data;
 }
 
-export async function createInterview() {
-  if (process.env.NODE_ENV === "development") {
-    await new Promise((r) => setTimeout(r, 100));
-    return { interviewId: `dev-${Date.now()}` };
-  }
-
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/interview/tech/create`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  );
-  if (!response.ok) {
-    throw new Error("API 요청 실패");
-  }
-  return await response.json();
-}
-
 export async function getHistory({ interviewId }: { interviewId: string }) {
-  // 개발 환경에서는 빈 히스토리(또는 샘플)를 반환합니다.
   if (process.env.NODE_ENV === "development") {
     const now = new Date();
     const h1 = new Date(now.getTime() - 1000 * 60 * 60 * 3);

@@ -40,8 +40,8 @@ export default function InterviewCreatePage() {
   const sortedDocs = useMemo(() => {
     return [...documents].sort(
       (a, b) =>
-        new Date(b.date.replace(/\./g, "-")).getTime() -
-        new Date(a.date.replace(/\./g, "-")).getTime(),
+        new Date(b.createdAt.replace(/\./g, "-")).getTime() -
+        new Date(a.createdAt.replace(/\./g, "-")).getTime(),
     );
   }, [documents]);
 
@@ -63,11 +63,10 @@ export default function InterviewCreatePage() {
 
       const requestBody = isTech
         ? {
-            simulationTitle: title,
-            documentsIds: [
+            documentIds: [
               selectedDocs.COVER_LETTER,
               selectedDocs.PORTFOLIO,
-            ].filter(Boolean),
+            ].filter((id): id is string => Boolean(id)),
           }
         : {
             simulationTitle: title,
@@ -179,9 +178,9 @@ export default function InterviewCreatePage() {
             {sortedDocs.length > 0 ? (
               sortedDocs.map((doc) => (
                 <DocumentCard
-                  key={doc.id}
+                  key={doc.documentId}
                   doc={doc}
-                  isSelected={selectedDocs[doc.type] === doc.id}
+                  isSelected={selectedDocs[doc.type] === doc.documentId}
                   onSelect={(id) => handleSelect(id, doc.type)}
                 />
               ))

@@ -13,9 +13,9 @@ import AISummary from "./components/ai-summary";
 import Tip from "./components/tip";
 
 export default async function InterviewResultPage() {
+  await startFeedback();
   const { history } = await getHistory({ interviewId: "1" });
   const feedbackResult = await getFeedback({ interviewId: "1" });
-  await startFeedback();
 
   return (
     <div className="mt-5 w-full pb-5">

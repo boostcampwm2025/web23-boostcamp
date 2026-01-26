@@ -10,22 +10,24 @@ interface ApiDocumentItem {
 }
 
 interface DocumentResponse {
-  list: ApiDocumentItem[];
+  documents: ApiDocumentItem[];
 }
 
 // 서버가 응답하지 않을 때 보여줄 임시 데이터
 const FALLBACK_MOCK_DATA: DocumentItem[] = [
   {
-    id: "mock-1",
+    documentId: "mock-1",
     type: "COVER_LETTER",
     title: "[DEV] 2024 하반기 공통 자소서",
-    date: "2024.05.12",
+    createdAt: "2024.05.12",
+    modifiedAt: "2024.05.12",
   },
   {
-    id: "mock-2",
+    documentId: "mock-2",
     type: "PORTFOLIO",
     title: "[DEV] FE 아키텍트 포트폴리오",
-    date: "2024.04.28",
+    createdAt: "2024.04.28",
+    modifiedAt: "2024.04.28",
   },
 ];
 
@@ -46,7 +48,7 @@ export function useDocuments(userId: string) {
         }
 
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/document?userId=${userId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/document?page=1&take=10`,
           {
             method: "GET",
             headers: { "Content-Type": "application/json" },
@@ -56,15 +58,13 @@ export function useDocuments(userId: string) {
         if (!res.ok) throw new Error("서류 목록 조회 실패");
 
         const data: DocumentResponse = await res.json();
-
-        const mapped: DocumentItem[] = data.list.map((item) => ({
-          id: item.documentId,
+        const mapped: DocumentItem[] = data.documents.map((item) => ({
+          documentId: item.documentId,
           type: item.type === "COVER" ? "COVER_LETTER" : "PORTFOLIO",
           title: item.title,
-          description: "",
-          date: item.createdAt.split("T")[0].replace(/-/g, "."),
+          createdAt: item.createdAt.split("T")[0].replace(/-/g, "."),
+          modifiedAt: item.createdAt.split("T")[0].replace(/-/g, "."),
         }));
-
         setDocuments(mapped);
       } catch (err) {
         console.error(

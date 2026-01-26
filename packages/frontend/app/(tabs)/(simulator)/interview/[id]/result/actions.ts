@@ -32,11 +32,20 @@ export async function startFeedback() {
     return { started: true };
   }
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/feedback/start`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({}),
-  });
-  if (!res.ok) throw new Error("피드백 시작 실패");
-  return await res.json();
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/interview/feedback`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ interviewId: "1" }),
+    },
+  );
+
+  console.log(response);
+
+  if (!response.ok) {
+    throw new Error("API 요청 실패");
+  }
+
+  return await response.json();
 }
