@@ -2,7 +2,7 @@ import { ArrowRight, Plus } from "lucide-react";
 
 export default function InterviewStartBox() {
   return (
-    <div className="flex cursor-pointer flex-col gap-7 rounded-2xl bg-primary p-5">
+    <div className="flex cursor-pointer flex-col gap-7 rounded-3xl bg-primary p-8">
       <div className="w-fit rounded-3xl bg-neutral-800 p-4">
         <Plus className="size-8 text-white" />
       </div>
