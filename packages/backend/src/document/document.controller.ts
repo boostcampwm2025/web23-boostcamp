@@ -33,7 +33,7 @@ export class DocumentController {
       body.content,
     );
   }
-  
+
   @Get(':documentId/portfolio')
   async viewPortfolio(
     @Param('documentId') documentId: string,
@@ -68,7 +68,7 @@ export class DocumentController {
     const userId = '1';
     return await this.documentService.viewCoverLetter(userId, documentId);
   }
-  
+
   @Delete(':documentId/cover-letter')
   @HttpCode(204)
   async deleteCoverLetter(@Param('documentId') documentId: string) {
@@ -91,3 +91,4 @@ export class DocumentController {
       sort,
     );
   }
+}

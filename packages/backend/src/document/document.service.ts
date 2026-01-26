@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { DocumentRepository } from './repositories/document.repository';
 import { DataSource } from 'typeorm';
 import { Portfolio } from './entities/portfolio.entity';
@@ -48,14 +53,15 @@ export class DocumentService {
       createdAt: savedDocument.createdAt,
     };
   }
-  
+
   async viewPortfolio(userId: string, documentId: string) {
     const user = await this.userService.findExistingUser(userId);
 
-    const document = await this.documentRepository.findOneWithPortfolioByDocumentIdAndUserId(
-      user.userId,
-      documentId,
-    );
+    const document =
+      await this.documentRepository.findOneWithPortfolioByDocumentIdAndUserId(
+        user.userId,
+        documentId,
+      );
 
     if (!document) {
       this.logger.warn(
@@ -73,13 +79,14 @@ export class DocumentService {
       createdAt: document.createdAt,
     };
   }
-  
+
   async deletePortfolio(userId: string, documentId: string) {
     const user = await this.userService.findExistingUser(userId);
-    const document = await this.documentRepository.findOneWithPortfolioById(
-      user.userId,
-      documentId,
-    );
+    const document =
+      await this.documentRepository.findOneWithPortfolioByDocumentIdAndUserId(
+        user.userId,
+        documentId,
+      );
 
     if (!document) {
       this.logger.warn(`등록되지 않은 문서입니다. documentId=${documentId}`);
@@ -92,7 +99,7 @@ export class DocumentService {
       throw new InternalServerErrorException('문서 삭제에 실패했습니다.');
     }
   }
-  
+
   async createCoverLetter(
     userId: string,
     title: string,
@@ -106,7 +113,7 @@ export class DocumentService {
         const questionAnswer = new CoverLetterQuestionAnswer();
         questionAnswer.question = qa.question;
         questionAnswer.answer = qa.answer;
-        questionAnswer.coverLetter = coverLetter; // Explicitly map inverse relation
+        questionAnswer.coverLetter = coverLetter;
         return questionAnswer;
       });
 
@@ -114,7 +121,7 @@ export class DocumentService {
       document.title = title;
       document.type = DocumentType.COVER;
       document.user = user;
-      
+
       const savedDocument = await manager.save(Document, document);
 
       coverLetter.document = savedDocument;
@@ -125,7 +132,7 @@ export class DocumentService {
         return qa;
       });
       const savedQAs = await manager.save(CoverLetterQuestionAnswer, qas);
-      
+
       savedDocument.coverLetter = savedCoverLetter;
       savedDocument.coverLetter.questionAnswers = savedQAs;
 
@@ -134,7 +141,7 @@ export class DocumentService {
 
     return {
       documentId: savedDocument.documentId,
-      coverletterId: savedDocument.coverLetter.coverLetterId,
+      coverLetterId: savedDocument.coverLetter.coverLetterId,
       type: savedDocument.type,
       title: savedDocument.title,
       content: savedDocument.coverLetter.questionAnswers.map((qa) => ({
@@ -148,10 +155,11 @@ export class DocumentService {
   async viewCoverLetter(userId: string, documentId: string) {
     const user = await this.userService.findExistingUser(userId);
 
-    const document = await this.documentRepository.findOneWithCoverLetterByDocumentIdAndUserId(
-      user.userId,
-      documentId,
-    );
+    const document =
+      await this.documentRepository.findOneWithCoverLetterByDocumentIdAndUserId(
+        user.userId,
+        documentId,
+      );
 
     if (!document) {
       this.logger.warn(
@@ -161,13 +169,15 @@ export class DocumentService {
     }
 
     if (!document.coverLetter) {
-        this.logger.error(`CoverLetter data missing for documentId=${documentId}`);
-        throw new InternalServerErrorException('자기소개서 데이터가 없습니다.');
+      this.logger.error(
+        `CoverLetter data missing for documentId=${documentId}`,
+      );
+      throw new InternalServerErrorException('자기소개서 데이터가 없습니다.');
     }
 
     return {
       documentId: document.documentId,
-      coverletterId: document.coverLetter.coverLetterId,
+      coverLetterId: document.coverLetter.coverLetterId,
       type: document.type,
       title: document.title,
       content: document.coverLetter.questionAnswers.map((qa) => ({
@@ -180,10 +190,11 @@ export class DocumentService {
 
   async deleteCoverLetter(userId: string, documentId: string) {
     const user = await this.userService.findExistingUser(userId);
-    const document = await this.documentRepository.findCoverLetterDocumentByDocumentIdAndUserId(
-      user.userId,
-      documentId,
-    );
+    const document =
+      await this.documentRepository.findCoverLetterDocumentByDocumentIdAndUserId(
+        user.userId,
+        documentId,
+      );
 
     if (!document) {
       throw new NotFoundException('문서를 찾을 수 없습니다.');
