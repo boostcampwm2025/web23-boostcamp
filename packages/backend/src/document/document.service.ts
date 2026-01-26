@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DocumentRepository } from './repositories/document.repository';
-import { DataSource } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { Portfolio } from './entities/portfolio.entity';
 import { Document, DocumentType } from './entities/document.entity';
 import { UserService } from '../user/user.service';
@@ -14,6 +14,7 @@ import { SortType } from './dto/document-summary.request.dto';
 import { CoverLetter } from './entities/cover-letter.entity';
 import { CoverLetterQuestionAnswer } from './entities/cover-letter-question-answer.entity';
 import { CoverLetterQnA } from './dto/create-cover-letter-request.dto';
+import { UpdateCoverLetterRequestDto } from './dto/update-cover-letter-request.dto';
 
 @Injectable()
 export class DocumentService {
@@ -240,5 +241,107 @@ export class DocumentService {
       documents: documentList,
       totalPage: totalPage,
     };
+  }
+
+  async updateCoverLetter(
+    userId: string,
+    documentId: string,
+    dto: UpdateCoverLetterRequestDto,
+  ) {
+    const user = await this.userService.findExistingUser(userId);
+
+    const document =
+      await this.documentRepository.findOneWithCoverLetterByDocumentIdAndUserId(
+        user.userId,
+        documentId,
+      );
+
+    if (!document) {
+      throw new NotFoundException('등록되지 않은 문서입니다');
+    }
+
+    if (!document.coverLetter) {
+      throw new InternalServerErrorException('자기소개서 데이터가 없습니다.');
+    }
+
+    const updatedDocument = await this.dataSource.transaction(
+      async (manager: EntityManager) => {
+        await this.updateTitle(manager, document, dto.title);
+        await this.updateContent(manager, document, dto.content);
+        await this.updateTimestamp(manager, documentId, dto);
+
+        return await manager.findOne(Document, {
+          where: { documentId },
+          relations: { coverLetter: { questionAnswers: true } },
+        });
+      },
+    );
+
+    if (!updatedDocument) {
+      throw new InternalServerErrorException(
+        '업데이트된 문서를 불러오지 못했습니다.',
+      );
+    }
+
+    return {
+      documentId: updatedDocument.documentId,
+      coverLetterId: updatedDocument.coverLetter.coverLetterId,
+      type: updatedDocument.type,
+      title: updatedDocument.title,
+      content: updatedDocument.coverLetter.questionAnswers.map((qa) => ({
+        question: qa.question,
+        answer: qa.answer,
+      })),
+      createdAt: updatedDocument.createdAt,
+      modifiedAt: updatedDocument.modifiedAt,
+    };
+  }
+
+  private async updateTitle(
+    manager: EntityManager,
+    document: Document,
+    title?: string,
+  ) {
+    if (title) {
+      document.title = title;
+      await manager.save(document);
+    }
+  }
+
+  private async updateContent(
+    manager: EntityManager,
+    document: Document,
+    content?: { question: string; answer: string }[],
+  ) {
+    if (!content) return;
+
+    if (document.coverLetter.questionAnswers.length > 0) {
+      await manager.remove(
+        CoverLetterQuestionAnswer,
+        document.coverLetter.questionAnswers,
+      );
+    }
+
+    const newQAs = content.map((qa) => {
+      const entity = new CoverLetterQuestionAnswer();
+      entity.question = qa.question;
+      entity.answer = qa.answer;
+      entity.coverLetter = document.coverLetter;
+      return entity;
+    });
+
+    await manager.save(CoverLetterQuestionAnswer, newQAs);
+  }
+
+  private async updateTimestamp(
+    manager: EntityManager,
+    documentId: string,
+    dto: UpdateCoverLetterRequestDto,
+  ) {
+    if (dto.content && dto.title) {
+      await manager.update(Document, documentId, {
+        modifiedAt: new Date(),
+      });
+    }
   }
 }
