@@ -1,6 +1,6 @@
 "use server";
 
-interface IInterview {
+export interface IInterview {
   interviewId: string;
   title: string;
   type: string;
