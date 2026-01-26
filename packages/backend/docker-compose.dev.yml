@@ -26,7 +26,7 @@ services:
     ports:
       - '${PORT}:${PORT}'
     env_file:
-      - ./packages/backend/.env
+      - .env
     depends_on:
       - mysql
     networks:
