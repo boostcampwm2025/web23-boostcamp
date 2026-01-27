@@ -65,6 +65,10 @@ jobs:
           DB_PASSWORD: password
           DB_DATABASE: test_db
           JEST_JUNIT_OUTPUT_NAME: "junit-e2e.xml"
+          CLOVA_SPEECH_API_URL: ${{ secrets.CLOVA_SPEECH_API_URL }}
+          CLOVA_SPEECH_API_KEY: ${{ secrets.CLOVA_SPEECH_API_KEY }}
+          CLOVA_API_URL: ${{ secrets.CLOVA_API_URL }}
+          CLOVA_API_KEY: ${{ secrets.CLOVA_API_KEY }}
 
 
       # 2. 테스트 결과 시각화
