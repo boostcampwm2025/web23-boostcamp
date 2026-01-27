@@ -7,6 +7,7 @@ import { motion } from "motion/react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { cn } from "@/app/lib/utils";
+import { createInterviewClient } from "@/app/lib/client/interview";
 
 import {
   DocumentCard,
@@ -39,8 +40,8 @@ export default function InterviewCreatePage() {
   const sortedDocs = useMemo(() => {
     return [...documents].sort(
       (a, b) =>
-        new Date(b.date.replace(/\./g, "-")).getTime() -
-        new Date(a.date.replace(/\./g, "-")).getTime(),
+        new Date(b.createdAt.replace(/\./g, "-")).getTime() -
+        new Date(a.createdAt.replace(/\./g, "-")).getTime(),
     );
   }, [documents]);
 
@@ -59,41 +60,32 @@ export default function InterviewCreatePage() {
 
     try {
       const isTech = mode === "tech";
-      const endpoint = isTech
-        ? "/interview/tech/create"
-        : "/interview/coding/create";
 
       const requestBody = isTech
         ? {
-            simulationTitle: title,
-            documentsIds: [
+            documentIds: [
               selectedDocs.COVER_LETTER,
               selectedDocs.PORTFOLIO,
-            ].filter(Boolean),
+            ].filter((id): id is string => Boolean(id)),
           }
         : {
             simulationTitle: title,
             language: "javascript",
           };
 
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        },
-      );
-
-      if (!response.ok) throw new Error("인터뷰 생성 실패");
-
-      const data = await response.json();
-
-      const interviewId = data.interviewId;
-
-      router.push(`/interview/${interviewId}/setting`);
+      // 개발 모드면 서버 호출을 생략
+      if (process.env.NODE_ENV === "development") {
+        await new Promise((r) => setTimeout(r, 300));
+        const interviewId = "1";
+        router.push(`/interview/${interviewId}/ready`);
+      } else {
+        // 클라이언트 API 사용
+        const data = await createInterviewClient(
+          requestBody as Record<string, unknown>,
+        );
+        const interviewId = data.interviewId;
+        router.push(`/interview/${interviewId}/ready`);
+      }
     } catch (error) {
       console.error("Error:", error);
       alert("생성 중 오류가 발생했습니다.");
@@ -186,9 +178,9 @@ export default function InterviewCreatePage() {
             {sortedDocs.length > 0 ? (
               sortedDocs.map((doc) => (
                 <DocumentCard
-                  key={doc.id}
+                  key={doc.documentId}
                   doc={doc}
-                  isSelected={selectedDocs[doc.type] === doc.id}
+                  isSelected={selectedDocs[doc.type] === doc.documentId}
                   onSelect={(id) => handleSelect(id, doc.type)}
                 />
               ))

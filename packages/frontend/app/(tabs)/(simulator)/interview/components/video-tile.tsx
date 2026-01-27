@@ -1,16 +1,31 @@
-import { forwardRef } from "react";
+"use client";
+
+import { forwardRef, useEffect, useRef } from "react";
 import { Ghost } from "lucide-react";
 
 import { cn } from "@/app/lib/utils";
 
-export default forwardRef<
-  HTMLVideoElement,
-  {
-    isSpeaker?: boolean;
-    label?: string;
-    isOn?: boolean;
-  }
->(function VideoTile({ isSpeaker = false, label, isOn = true }, ref) {
+interface IVideoTileProps {
+  isSpeaker?: boolean;
+  label?: string;
+  isOn?: boolean;
+  stream?: MediaStream | null;
+}
+
+export default function VideoTile({
+  isSpeaker = false,
+  label,
+  isOn = true,
+  stream = null,
+}: IVideoTileProps) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    if (videoRef.current && stream) {
+      videoRef.current.srcObject = stream;
+    }
+  }, [stream]);
+
   return (
     <div
       className={cn(
@@ -19,7 +34,6 @@ export default forwardRef<
       )}
     >
       <video
-        ref={ref}
         autoPlay
         playsInline
         muted
@@ -27,6 +41,7 @@ export default forwardRef<
           "aspect-video w-full bg-primary/20 object-cover",
           !isOn && "hidden",
         )}
+        ref={videoRef}
       ></video>
 
       {/* 카메라 꺼진 상태 표시 */}
@@ -47,4 +62,4 @@ export default forwardRef<
       </div>
     </div>
   );
-});
+}

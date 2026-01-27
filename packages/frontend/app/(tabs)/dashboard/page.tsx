@@ -1,18 +1,36 @@
-import { SidebarProvider } from "@/app/components/ui/sidebar";
+import { unstable_cache as nextCache } from "next/cache";
 
-import { AppSidebar } from "./components/app-sidebar";
+import { getInterviews } from "./actions";
+import InterviewList from "./components/interview-list";
+import InterviewStartBox from "./components/interview-start-box";
+import InterviewWelomeHeader from "./components/interview-welcome-header";
+import Tip from "../(simulator)/interview/[id]/result/components/tip";
 
-export default function Page() {
+const getCachedInterviews = nextCache(getInterviews, [
+  "interviews_dashboard_page",
+]);
+
+export default async function Page() {
+  const { interviews } = await getCachedInterviews();
+
   return (
     <div>
-      <SidebarProvider>
-        <AppSidebar />
-        <main>
-          <div className="mx-auto mt-20 grid max-w-7xl grid-cols-1 gap-4 md:max-w-2xl lg:grid-cols-12 2xl:max-w-428">
-            Dashboard Content
+      <main className="mx-auto max-w-180">
+        <div className="mt-12">
+          <InterviewWelomeHeader />
+        </div>
+        <div className="mt-8">
+          <InterviewStartBox />
+        </div>
+        <div className="mt-12">
+          <InterviewList interviews={interviews} />
+        </div>
+        <div className="mt-12">
+          <div className="rounded-2xl bg-primary/10 p-5">
+            <Tip />
           </div>
-        </main>
-      </SidebarProvider>
+        </div>
+      </main>
     </div>
   );
 }

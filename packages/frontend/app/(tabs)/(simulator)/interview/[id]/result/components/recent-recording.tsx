@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { fetchLatestVideo } from "@/app/lib/client/media/videoStorage";
+import { getLatestVideo } from "@/app/lib/client/media-storage";
 
 export default function RecentRecording() {
   const [url, setUrl] = useState<string | null>(null);
@@ -13,7 +13,7 @@ export default function RecentRecording() {
 
     (async () => {
       try {
-        const blob = await fetchLatestVideo();
+        const blob = await getLatestVideo();
         if (!blob) {
           return;
         }
