@@ -1,3 +1,9 @@
+import GoogleLoginButton from "./components/google-login-button";
+
 export default function Home() {
-  return <div></div>;
+  return (
+    <div>
+      <GoogleLoginButton />
+    </div>
+  );
 }
