@@ -24,7 +24,7 @@ export default async function Page() {
 
   return (
     <div>
-      <main className="mx-auto max-w-180">
+      <main className="mx-auto max-w-180 px-5">
         <div className="mt-12">
           <InterviewWelomeHeader username={user.email} />
         </div>
