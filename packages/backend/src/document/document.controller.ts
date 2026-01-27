@@ -1,24 +1,26 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   Param,
   Post,
+  Put,
   Patch,
   Query,
-  Delete,
-  HttpCode,
 } from '@nestjs/common';
+
 import { DocumentService } from './document.service';
 import { CreatePortfolioTextRequestDto } from './dto/create-portfolio-text-request.dto';
 import { CreatePortfolioTextResponseDto } from './dto/create-portfolio-text-response.dto';
 import { PortfolioDetailResponseDto } from './dto/portfolio-detail-response.dto';
-import { ViewCoverLetterResponseDto } from './dto/view-cover-letter-response.dto';
 import { DocumentSummaryListResponse } from './dto/document-summary.response.dto';
 import { DocumentSummaryRequest } from './dto/document-summary.request.dto';
 import { CreateCoverLetterRequestDto } from './dto/create-cover-letter-request.dto';
 import { CreateCoverLetterResponseDto } from './dto/create-cover-letter-response.dto';
-import { UpdatePortfolioRequestDto } from './dto/update-portfolio-request.dto';
+import { UpdateCoverLetterRequestDto } from './dto/update-cover-letter-request.dto';
+import { CoverLetterDetailResponseDto } from './dto/cover-letter-detail-response.dto';
 
 @Controller('document')
 export class DocumentController {
@@ -80,7 +82,7 @@ export class DocumentController {
   @Get(':documentId/cover-letter')
   async viewCoverLetter(
     @Param('documentId') documentId: string,
-  ): Promise<ViewCoverLetterResponseDto> {
+  ): Promise<CoverLetterDetailResponseDto> {
     const userId = '1';
     return await this.documentService.viewCoverLetter(userId, documentId);
   }
@@ -90,6 +92,19 @@ export class DocumentController {
   async deleteCoverLetter(@Param('documentId') documentId: string) {
     const userId = '1';
     await this.documentService.deleteCoverLetter(userId, documentId);
+  }
+
+  @Put(':documentId/cover-letter')
+  async updateCoverLetter(
+    @Param('documentId') documentId: string,
+    @Body() body: UpdateCoverLetterRequestDto,
+  ): Promise<CoverLetterDetailResponseDto> {
+    const userId = '1';
+    return await this.documentService.updateCoverLetter(
+      userId,
+      documentId,
+      body,
+    );
   }
 
   @Get()

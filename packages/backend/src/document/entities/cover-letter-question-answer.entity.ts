@@ -23,6 +23,7 @@ export class CoverLetterQuestionAnswer {
 
   @ManyToOne(() => CoverLetter, (coverLetter) => coverLetter.questionAnswers, {
     onDelete: 'CASCADE',
+    orphanedRowAction: 'delete',
   })
   @JoinColumn({ name: 'cover_letter_id' })
   coverLetter: CoverLetter;
