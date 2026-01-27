@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
+import { Server } from 'http';
 import { AppModule } from '../../src/app.module';
 import { DataSource } from 'typeorm';
 import { seedDatabase } from '../utils/seed-db';
@@ -29,13 +30,14 @@ describe('InterviewController (e2e)', () => {
 
   describe('GET /interview', () => {
     it('요청이 성공하면 200 상태코드와 면접 목록을 반환해야 한다 (최소 1개 이상)', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as Server)
         .get('/interview?type=TECH&page=1')
         .expect(200);
 
-      expect(response.body).toHaveProperty('interviews');
+      const body = response.body as { interviews: unknown[] };
+      expect(body).toHaveProperty('interviews');
       // Seed data has 1 interview
-      expect(response.body.interviews.length).toBeGreaterThanOrEqual(1);
+      expect(body.interviews.length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -46,13 +48,14 @@ describe('InterviewController (e2e)', () => {
         documentsIds: [1, 2], // IDs from seed
       };
 
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as Server)
         .post('/interview/tech/create')
         .send(dto);
 
       if (response.status === 201) {
-        expect(response.body).toHaveProperty('interviewId');
-        expect(response.body).toHaveProperty('question');
+        const body = response.body as { interviewId: number; question: string };
+        expect(body).toHaveProperty('interviewId');
+        expect(body).toHaveProperty('question');
       } else {
         console.warn(
           'Interview Creation failed, possibly due to External AI dependency',
@@ -65,12 +68,13 @@ describe('InterviewController (e2e)', () => {
 
   describe('POST /interview/tech/question', () => {
     it('다음 질문을 생성하고 200 상태코드를 반환해야 한다', async () => {
-      const response = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer() as Server)
         .post('/interview/tech/question')
         .send({ interviewId: 1 });
 
       if (response.status === 200) {
-        expect(response.body).toHaveProperty('question');
+        const body = response.body as { question: string };
+        expect(body).toHaveProperty('question');
       }
     });
   });
