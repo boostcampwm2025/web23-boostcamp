@@ -64,5 +64,9 @@ export function useDocuments(userId: string) {
     loadDocs();
   }, [userId]);
 
-  return { documents, isLoading };
+  const addDocument = (newDocument: DocumentItem) => {
+    setDocuments((prev) => [newDocument, ...prev]);
+  };
+
+  return { documents, isLoading, addDocument };
 }
