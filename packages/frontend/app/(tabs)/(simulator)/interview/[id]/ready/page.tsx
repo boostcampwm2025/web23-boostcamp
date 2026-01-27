@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/app/components/ui/button";
 
 import VideoStatus from "../components/video-status";
+import IconBox from "@/app/components/ui/icon-box";
 
 export default async function InterviewReadyPage() {
   return (
@@ -27,9 +28,9 @@ export default async function InterviewReadyPage() {
         </span>
 
         <div className="mt-8 flex gap-3 rounded-lg border px-4 py-6 shadow-sm">
-          <div className="flex size-10 items-center justify-center rounded-md bg-primary/10">
+          <IconBox>
             <ShieldCheck className="size-5 text-primary" />
-          </div>
+          </IconBox>
           <div>
             <h3 className="text-sm font-semibold">개인정보 및 보안 안내</h3>
             <span className="text-xs text-muted-foreground">

@@ -1,18 +1,36 @@
-import { Bot, Heart, HeartOff } from "lucide-react";
+import { Heart, HeartOff } from "lucide-react";
+import { unstable_cache as nextCache } from "next/cache";
 
 import ChatHistory from "@/app/components/chat-history";
-import { Skeleton } from "@/app/components/ui/skeleton";
 import { Button } from "@/app/components/ui/button";
 import { buildChatHistory } from "@/app/lib/client/chat";
 
 import RecentRecording from "./components/recent-recording";
+import { getFeedback, startFeedback } from "./actions";
+import { getHistory } from "../actions";
 import Panel from "./components/panel";
+import Score from "./components/score";
+import AISummary from "./components/ai-summary";
 import Tip from "./components/tip";
-import { getHistory } from "../../(simulator)/interview/[id]/actions";
 
+const getCachedHistory = nextCache(getHistory, [
+  "interview_result_history",
+  "1",
+]);
+
+const getCachedFeedback = nextCache(getFeedback, [
+  "interview_result_feedback",
+  "1",
+]);
 
 export default async function InterviewResultPage() {
-  const { history } = await getHistory({ interviewId: "1" });
+  const { history } = await getCachedHistory({ interviewId: "1" });
+  let feedbackResult = { score: "0", feedback: "" };
+
+  feedbackResult = await getCachedFeedback({ interviewId: "1" });
+  if (!feedbackResult.score || !feedbackResult.feedback) {
+    feedbackResult = await startFeedback({ interviewId: "1" });
+  }
 
   return (
     <div className="mt-5 w-full pb-5">
@@ -29,12 +47,9 @@ export default async function InterviewResultPage() {
           </div>
         </div>
         <div className="flex flex-col gap-6 md:flex-row">
-          <Skeleton className="flex flex-1 items-center justify-center gap-4 rounded-2xl border p-5 shadow">
-            <Bot />
-          </Skeleton>
-          {/* <Panel className="flex-1 p-5">
-            <Score />
-          </Panel> */}
+          <Panel className="flex-1 p-5">
+            <Score score={+feedbackResult.score} />
+          </Panel>
           <Panel className="flex-2 p-5">
             <RecentRecording />
           </Panel>
@@ -46,12 +61,9 @@ export default async function InterviewResultPage() {
               className="max-h-120"
             />
           </Panel>
-          <Skeleton className="flex flex-1 items-center justify-center gap-4 rounded-2xl border p-5 shadow">
-            <Bot />
-          </Skeleton>
-          {/* <Panel className="flex-1 p-5">
-            <AISummary />
-          </Panel> */}
+          <Panel className="flex-1 p-5">
+            <AISummary summary={feedbackResult.feedback} />
+          </Panel>
         </div>
         <div className="flex flex-col gap-6 md:flex-row">
           <Panel className="flex-1 bg-primary/5 p-5">

@@ -41,10 +41,13 @@ export const useMediaPermissions = () => {
           video: deviceId ? { deviceId: { exact: deviceId } } : true,
         });
         setVideoStream(stream);
+
         const track = stream.getVideoTracks()[0];
         setVideoDeviceId(track.getSettings().deviceId || null);
         setIsVideoEnabled(track.enabled);
+
         await getMediaDevices();
+
         return stream;
       } catch (error) {
         setMediaError(error as Error);

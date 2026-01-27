@@ -69,17 +69,13 @@ export default function Chat({
 
       // 답변 전송 (텍스트 입력일 때만 실행)
       if (!isVoice) {
-        console.log("텍스트 답변 저장 중...");
         await sendAnswer({ interviewId: "1", answer: answerText });
-      } else {
-        console.log("음성 답변은 이미 서버(STT)에서 저장됨, 추가 저장 스킵");
       }
 
       // 서버가 DB 처리를 완료할 수 있도록 지연
       await new Promise((resolve) => setTimeout(resolve, 200));
 
       // 다음 질문 생성 요청
-      console.log("새 질문 생성 요청 중...");
       const nextQ = await generateQuestion({ interviewId: "1" });
 
       if (nextQ) {

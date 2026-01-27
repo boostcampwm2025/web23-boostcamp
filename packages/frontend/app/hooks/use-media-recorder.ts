@@ -1,6 +1,120 @@
 import { useCallback, useRef, useState, useEffect } from "react";
 
-import { saveVideo, saveAudio } from "@/app/lib/client/media/mediaStorage";
+import { saveVideo, saveAudio } from "@/app/lib/client/media-storage";
+
+const VIDEO_MIME_CANDIDATES = [
+  "video/webm;codecs=vp9,opus",
+  "video/webm;codecs=vp9,flac",
+  "video/webm;codecs=vp8,opus",
+  "video/webm",
+];
+const AUDIO_MIME_CANDIDATES = [
+  "audio/webm;codecs=opus",
+  "audio/webm;codecs=flac",
+  "audio/ogg;codecs=opus",
+  "audio/webm",
+  "audio/ogg",
+];
+const VIDEO_BLOB_TYPE = "video/webm";
+const AUDIO_BLOB_TYPE = "audio/webm";
+
+type MediaType = "video" | "audio";
+
+interface IMediaRecorderConfig {
+  mimeCandidates: string[];
+  blobTypeFallback: string;
+  saveFunction: (blob: Blob) => Promise<void>;
+}
+
+const MEDIA_CONFIGS: Record<MediaType, IMediaRecorderConfig> = {
+  video: {
+    mimeCandidates: VIDEO_MIME_CANDIDATES,
+    blobTypeFallback: VIDEO_BLOB_TYPE,
+    saveFunction: saveVideo,
+  },
+  audio: {
+    mimeCandidates: AUDIO_MIME_CANDIDATES,
+    blobTypeFallback: AUDIO_BLOB_TYPE,
+    saveFunction: saveAudio,
+  },
+};
+
+const pickMimeType = (candidates: string[], fallback: string) => {
+  if (typeof MediaRecorder === "undefined") return fallback;
+  const found = candidates.find((mime) => MediaRecorder.isTypeSupported(mime));
+  return found || fallback;
+};
+
+const createMediaRecorder = (
+  mediaStream: MediaStream,
+  mimeType: string,
+  errorContext: string,
+) => {
+  try {
+    return new MediaRecorder(mediaStream, { mimeType });
+  } catch {
+    try {
+      return new MediaRecorder(mediaStream);
+    } catch (error) {
+      console.error(`${errorContext}용 MediaRecorder 생성 실패:`, error);
+      return null;
+    }
+  }
+};
+
+const startMediaRecorderSafely = (
+  mediaRecorder: MediaRecorder,
+  errorContext: string,
+  setIsRecording: (value: boolean) => void,
+) => {
+  try {
+    mediaRecorder.start();
+    setIsRecording(true);
+    return true;
+  } catch (error) {
+    console.error(`${errorContext} MediaRecorder 시작 실패:`, error);
+    return false;
+  }
+};
+
+const stopMediaRecorderSafely = async (
+  mediaRecorder: MediaRecorder | null,
+  chunksRef: { current: BlobPart[] },
+  blobType: string,
+  saveFunction: (blob: Blob) => Promise<void>,
+  setIsRecording: (value: boolean) => void,
+  setLastBlob: (blob: Blob | null) => void,
+  errorContext: string,
+) => {
+  return new Promise<Blob | null>((resolve) => {
+    if (!mediaRecorder) {
+      resolve(null);
+      return;
+    }
+
+    mediaRecorder.onstop = async () => {
+      const blob = new Blob(chunksRef.current, {
+        type: blobType,
+      });
+      try {
+        await saveFunction(blob);
+      } catch (error) {
+        console.error(`${errorContext} 저장 실패:`, error);
+      }
+      chunksRef.current = [];
+      setIsRecording(false);
+      setLastBlob(blob);
+      resolve(blob);
+    };
+
+    try {
+      mediaRecorder.stop();
+    } catch (error) {
+      console.warn("MediaRecorder 중지 중 오류", error);
+      resolve(null);
+    }
+  });
+};
 
 export const useMediaRecorder = (stream?: MediaStream | null) => {
   const mediaRecorderRefVideo = useRef<MediaRecorder | null>(null);
@@ -8,6 +122,8 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
   const chunksRefVideo = useRef<BlobPart[]>([]);
   const chunksRefAudio = useRef<BlobPart[]>([]);
   const audioStreamRef = useRef<MediaStream | null>(null);
+  const videoBlobTypeRef = useRef<string>(VIDEO_BLOB_TYPE);
+  const audioBlobTypeRef = useRef<string>(AUDIO_BLOB_TYPE);
 
   const [isRecording, setIsRecording] = useState(false);
   const [lastBlob, setLastBlob] = useState<Blob | null>(null);
@@ -19,76 +135,51 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
     }
 
     chunksRefVideo.current = [];
-    try {
-      let mr: MediaRecorder | null = null;
-      try {
-        mr = new MediaRecorder(stream, {
-          mimeType: "video/webm;codecs=vp9,opus",
-        });
-      } catch (error) {
-        try {
-          mr = new MediaRecorder(stream as MediaStream);
-        } catch (error) {
-          console.error("비디오용 MediaRecorder 생성 실패:", error);
-          mr = null;
-        }
-      }
 
-      if (!mr) {
-        console.warn("비디오용 MediaRecorder를 생성할 수 없습니다.");
-        return;
-      }
+    const mimeType = pickMimeType(
+      MEDIA_CONFIGS.video.mimeCandidates,
+      MEDIA_CONFIGS.video.blobTypeFallback,
+    );
+    videoBlobTypeRef.current =
+      mimeType.split(";")[0] || MEDIA_CONFIGS.video.blobTypeFallback;
 
-      mediaRecorderRefVideo.current = mr;
-      mr.ondataavailable = (e) => {
-        chunksRefVideo.current.push(e.data);
-      };
+    const mediaRecorder = createMediaRecorder(stream, mimeType, "비디오");
 
-      try {
-        mr.start();
-        setIsRecording(true);
-      } catch (err) {
-        console.error("비디오 MediaRecorder 시작 실패:", err);
-      }
-    } catch (outer) {
-      console.error("비디오 녹화 시작 중 예외 발생:", outer);
+    if (!mediaRecorder) {
+      console.warn("비디오용 MediaRecorder를 생성할 수 없습니다.");
+      return;
+    }
+
+    mediaRecorderRefVideo.current = mediaRecorder;
+    mediaRecorder.ondataavailable = (event) => {
+      chunksRefVideo.current.push(event.data);
+    };
+
+    const started = startMediaRecorderSafely(
+      mediaRecorder,
+      "비디오",
+      setIsRecording,
+    );
+    if (!started) {
+      mediaRecorderRefVideo.current = null;
     }
   }, [stream]);
 
   const stopVideoRecording = useCallback<
     () => Promise<Blob | null>
   >(async () => {
-    return new Promise<Blob | null>((resolve) => {
-      const mr = mediaRecorderRefVideo.current;
-      if (!mr) {
-        resolve(null);
-        return;
-      }
+    const blob = await stopMediaRecorderSafely(
+      mediaRecorderRefVideo.current,
+      chunksRefVideo,
+      videoBlobTypeRef.current,
+      MEDIA_CONFIGS.video.saveFunction,
+      setIsRecording,
+      setLastBlob,
+      "비디오",
+    );
 
-      mr.onstop = async () => {
-        const videoBlob = new Blob(chunksRefVideo.current, {
-          type: "video/webm",
-        });
-        try {
-          await saveVideo(videoBlob);
-        } catch (err) {
-          console.error("비디오 저장 실패:", err);
-        }
-        chunksRefVideo.current = [];
-        setIsRecording(false);
-        setLastBlob(videoBlob);
-        // 참조 정리
-        mediaRecorderRefVideo.current = null;
-        resolve(videoBlob);
-      };
-
-      try {
-        mr.stop();
-      } catch (err) {
-        console.warn("MediaRecorder 중지 중 오류", err);
-        resolve(null);
-      }
-    });
+    mediaRecorderRefVideo.current = null;
+    return blob;
   }, []);
 
   const startAudioRecording = useCallback(() => {
@@ -106,122 +197,93 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
 
     // 이전 오디오 스트림이 있으면 중지
     if (audioStreamRef.current) {
-      audioStreamRef.current.getTracks().forEach((t) => t.stop());
+      audioStreamRef.current.getTracks().forEach((track) => track.stop());
       audioStreamRef.current = null;
     }
 
     const audioStream = new MediaStream(
-      audioTracks.map((t) => (t.clone ? t.clone() : t)),
+      audioTracks.map((track) => (track.clone ? track.clone() : track)),
     );
     audioStreamRef.current = audioStream;
 
     chunksRefAudio.current = [];
-    try {
-      let mr: MediaRecorder | null = null;
-      try {
-        mr = new MediaRecorder(audioStream, {
-          mimeType: "audio/webm;codecs=opus",
-        });
-      } catch (e) {
-        try {
-          mr = new MediaRecorder(audioStream as MediaStream);
-        } catch (err) {
-          console.error("오디오용 MediaRecorder 생성 실패:", err);
-          mr = null;
-        }
-      }
 
-      if (!mr) {
-        console.warn("오디오용 MediaRecorder를 생성할 수 없습니다.");
-        return;
-      }
+    const mimeType = pickMimeType(
+      MEDIA_CONFIGS.audio.mimeCandidates,
+      MEDIA_CONFIGS.audio.blobTypeFallback,
+    );
+    audioBlobTypeRef.current =
+      mimeType.split(";")[0] || MEDIA_CONFIGS.audio.blobTypeFallback;
 
-      mediaRecorderRefAudio.current = mr;
-      mr.ondataavailable = (e) => {
-        chunksRefAudio.current.push(e.data);
-      };
+    const mediaRecorder = createMediaRecorder(audioStream, mimeType, "오디오");
 
-      try {
-        mr.start();
-        setIsRecording(true);
-      } catch (err) {
-        console.error("오디오 MediaRecorder 시작 실패:", err);
-      }
-    } catch (outer) {
-      console.error("오디오 녹화 시작 중 예외 발생:", outer);
+    if (!mediaRecorder) {
+      console.warn("오디오용 MediaRecorder를 생성할 수 없습니다.");
+      return;
+    }
+
+    mediaRecorderRefAudio.current = mediaRecorder;
+    mediaRecorder.ondataavailable = (event) => {
+      chunksRefAudio.current.push(event.data);
+    };
+
+    const started = startMediaRecorderSafely(
+      mediaRecorder,
+      "오디오",
+      setIsRecording,
+    );
+    if (!started) {
+      mediaRecorderRefAudio.current = null;
+      audioStreamRef.current.getTracks().forEach((track) => track.stop());
+      audioStreamRef.current = null;
     }
   }, [stream]);
 
   const stopAudioRecording = useCallback<
     () => Promise<Blob | null>
   >(async () => {
-    return new Promise<Blob | null>((resolve) => {
-      const mr = mediaRecorderRefAudio.current;
-      if (!mr) {
-        resolve(null);
-        return;
-      }
+    const blob = await stopMediaRecorderSafely(
+      mediaRecorderRefAudio.current,
+      chunksRefAudio,
+      audioBlobTypeRef.current,
+      MEDIA_CONFIGS.audio.saveFunction,
+      setIsRecording,
+      setLastBlob,
+      "오디오",
+    );
 
-      mr.onstop = async () => {
-        const audioBlob = new Blob(chunksRefAudio.current, {
-          type: "audio/webm",
-        });
-        try {
-          await saveAudio(audioBlob);
-        } catch (err) {
-          console.error("오디오 저장 실패:", err);
-        }
-        chunksRefAudio.current = [];
-        setIsRecording(false);
-        setLastBlob(audioBlob);
-        // clear reference after handling
-        mediaRecorderRefAudio.current = null;
-        try {
-          if (audioStreamRef.current) {
-            audioStreamRef.current.getTracks().forEach((t) => t.stop());
-            audioStreamRef.current = null;
-          }
-        } catch (_) {}
-        resolve(audioBlob);
-      };
+    mediaRecorderRefAudio.current = null;
 
-      try {
-        mr.stop();
-      } catch (err) {
-        console.warn("MediaRecorder 중지 중 오류", err);
-        resolve(null);
-      }
-    });
+    if (audioStreamRef.current) {
+      audioStreamRef.current.getTracks().forEach((track) => track.stop());
+      audioStreamRef.current = null;
+    }
+
+    return blob;
   }, []);
 
   useEffect(() => {
     return () => {
-      try {
-        if (
-          mediaRecorderRefVideo.current &&
-          mediaRecorderRefVideo.current.state !== "inactive"
-        ) {
-          mediaRecorderRefVideo.current.stop();
-        }
-      } catch (_) {}
-      try {
-        if (
-          mediaRecorderRefAudio.current &&
-          mediaRecorderRefAudio.current.state !== "inactive"
-        ) {
-          mediaRecorderRefAudio.current.stop();
-        }
-      } catch (_) {}
+      if (
+        mediaRecorderRefVideo.current &&
+        mediaRecorderRefVideo.current.state !== "inactive"
+      ) {
+        mediaRecorderRefVideo.current.stop();
+      }
+      if (
+        mediaRecorderRefAudio.current &&
+        mediaRecorderRefAudio.current.state !== "inactive"
+      ) {
+        mediaRecorderRefAudio.current.stop();
+      }
       mediaRecorderRefVideo.current = null;
       mediaRecorderRefAudio.current = null;
       chunksRefVideo.current = [];
       chunksRefAudio.current = [];
-      try {
-        if (audioStreamRef.current) {
-          audioStreamRef.current.getTracks().forEach((t) => t.stop());
-          audioStreamRef.current = null;
-        }
-      } catch (_) {}
+      if (audioStreamRef.current) {
+        audioStreamRef.current.getTracks().forEach((track) => track.stop());
+        audioStreamRef.current = null;
+      }
     };
   }, []);
 
