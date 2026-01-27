@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsString, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 
 export class CoverLetterQnA {
   @IsString()
@@ -11,6 +11,7 @@ export class CoverLetterQnA {
 
 export class CreateCoverLetterRequestDto {
   @IsString()
+  @IsNotEmpty()
   title: string;
 
   @ValidateNested({ each: true })
