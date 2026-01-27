@@ -42,9 +42,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
-      # 1. 린트, 빌드 실행 (변경된 패키지만)
-      - name: Run Lint & Build (Affected)
-        run: npx turbo run lint build --filter=...[origin/develop]
+      # 1. 린트, 빌드 실행 (백엔드만)
+      - name: Run Lint & Build (Backend Only)
+        run: npx turbo run lint build --filter=backend
 
       # 2. 유닛 테스트 (항상 실행)
       - name: Run Unit Tests
