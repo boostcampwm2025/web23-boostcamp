@@ -111,14 +111,15 @@ export default function DocumentsClient({ initialDocuments }: Props) {
   }
 
   return (
-    <div>
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold">Documents</h2>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={toggleSelectAllVisible}>
-            {isAllSelected ? "Unselect all" : "Select all"}
+            {isAllSelected ? "전체 해제" : "전체 선택"}
           </Button>
+        </div>
 
+        <div className="flex items-center gap-2">
           {selectedDocumentIds.size > 0 ? (
             <Button
               variant="destructive"
@@ -136,7 +137,7 @@ export default function DocumentsClient({ initialDocuments }: Props) {
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {documents.map((document: DocumentItem) => (
           <DocumentCard
             key={document.documentId}

@@ -28,12 +28,16 @@ export default async function Page() {
   const documents = data?.documents ?? [];
 
   return (
-    <div>
-      <main className="mx-auto max-w-180">
-        <div className="mt-12">
-          <DocumentsClient initialDocuments={documents} />
-        </div>
-      </main>
+    <div className="mx-auto max-w-7xl py-12">
+      <header className="mb-10 space-y-2">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          서류 관리
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          면접에 활용할 자기소개서와 포트폴리오를 관리하세요.
+        </p>
+      </header>
+      <DocumentsClient initialDocuments={documents} />
     </div>
   );
 }
