@@ -38,6 +38,13 @@ export async function seedDatabase(dataSource: DataSource) {
   await dataSource.query('SET FOREIGN_KEY_CHECKS = 1');
 
   for (const query of queries) {
-    await dataSource.query(query);
+    try {
+      if (query.trim().length > 0) {
+        await dataSource.query(query);
+      }
+    } catch (e) {
+      console.error('Failed to execute seed query:', (e as Error).message);
+      console.error('Query snippet:', query.substring(0, 50) + '...');
+    }
   }
 }

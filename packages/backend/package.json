@@ -19,7 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "cross-env DB_HOST=${DB_HOST:-127.0.0.1} jest --config ./test/jest-e2e.json --runInBand",
-    "test:e2e:ci": "jest --config ./test/jest-e2e.json --runInBand --ci --reporters=default --reporters=jest-junit",
+    "test:e2e:ci": "jest --config ./test/jest-e2e.json --runInBand --ci --reporters=default --reporters=jest-junit --forceExit",
     "test:ci": "jest --ci --reporters=default --reporters=jest-junit"
   },
   "dependencies": {
