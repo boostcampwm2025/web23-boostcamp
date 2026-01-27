@@ -72,27 +72,36 @@ export class GoogleOAuthService {
   }
 
   async getUserInfo(accessToken: string): Promise<GoogleUser> {
-    const userResponse = await fetch(
-      'https://www.googleapis.com/oauth2/v2/userinfo',
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
+    try {
+      const userResponse = await fetch(
+        'https://www.googleapis.com/oauth2/v2/userinfo',
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         },
-      },
-    );
+      );
 
-    if (!userResponse.ok) {
-      this.logger.error('사용자 정보를 가져오는데 실패했습니다.');
-      throw new InternalServerErrorException('Failed to get user info');
+      if (!userResponse.ok) {
+        this.logger.error('사용자 정보를 가져오는데 실패했습니다.');
+        throw new InternalServerErrorException(
+          '구글 사용자 정보를 가져오는데 실패했습니다.',
+        );
+      }
+
+      const userResponseJson =
+        (await userResponse.json()) as GoogleUserResponse;
+
+      return {
+        profileUrl: userResponseJson.picture,
+        email: userResponseJson.email,
+        sub: userResponseJson.id,
+      };
+    } catch (err) {
+      // 👈 여기서 네트워크 에러, 타임아웃 등 잡힘
+      this.logger.error('Google userinfo network error', err);
+      throw new InternalServerErrorException('구글 OAuth 연결에 실패했습니다.');
     }
-
-    const userResponseJson = (await userResponse.json()) as GoogleUserResponse;
-
-    return {
-      profileUrl: userResponseJson.picture,
-      email: userResponseJson.email,
-      sub: userResponseJson.id,
-    };
   }
 }
