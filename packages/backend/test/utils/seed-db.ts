@@ -14,7 +14,7 @@ export async function seedDatabase(dataSource: DataSource) {
 
   // Disable FK checks to allow truncation
   await dataSource.query('SET FOREIGN_KEY_CHECKS = 0');
-  
+
   const tables = [
     'interviews_documents',
     'technical_interviews',
@@ -24,14 +24,14 @@ export async function seedDatabase(dataSource: DataSource) {
     'cover_letters',
     'portfolios',
     'documents',
-    'users'
+    'users',
   ];
 
   for (const table of tables) {
     try {
       await dataSource.query(`TRUNCATE TABLE ${table}`);
     } catch (e) {
-      console.warn(`Failed to truncate table ${table}:`, e.message);
+      console.warn(`Failed to truncate table ${table}:`, (e as Error).message);
     }
   }
 
