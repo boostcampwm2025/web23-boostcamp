@@ -3,8 +3,7 @@ import { MountainSnow } from "lucide-react";
 
 import AutoBreadcrumb from "@/app/components/auto-breadcrumb";
 import Profile from "@/app/components/profile";
-
-import { logout } from "@/app/actions/auth";
+import { logout } from "../(auth)/actions/auth";
 
 export default function Header() {
   return (
