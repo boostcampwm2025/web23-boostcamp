@@ -1,6 +1,7 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
+import { TokenResponse } from './dto/token-response.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -22,7 +23,7 @@ export class AuthController {
   }
 
   @Get('/signup/oauth')
-  async signup(@Query('code') code: string): Promise<any> {
+  async signup(@Query('code') code: string): Promise<TokenResponse> {
     return await this.authService.googleLogin(code);
   }
 }
