@@ -8,6 +8,8 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "test:e2e": "turbo run test:e2e",
+    "test:e2e:local": "cross-env DB_HOST=127.0.0.1 turbo run test:e2e",
     "dev:backend": "cd packages/backend && docker-compose up -d mysql && docker-compose up --build backend",
     "dev:backend:stop": "cd packages/backend && docker-compose down"
   },
@@ -17,12 +19,13 @@
   "packageManager": "pnpm@10.28.1+sha512.7d7dbbca9e99447b7c3bf7a73286afaaf6be99251eb9498baefa7d406892f67b879adb3a1d7e687fc4ccc1a388c7175fbaae567a26ab44d1067b54fcb0d6a316",
   "devDependencies": {
     "@types/multer": "^2.0.0",
+    "cross-env": "^10.1.0",
     "prettier": "^3.4.2",
     "turbo": "^2.6.3"
   },
   "dependencies": {
-    "jest": "^30.2.0",
     "@mediapipe/tasks-vision": "0.10.22-rc.20250304",
+    "jest": "^30.2.0",
     "pnpm": "^10.28.0"
   }
 }

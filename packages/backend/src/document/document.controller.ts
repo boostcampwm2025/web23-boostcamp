@@ -15,6 +15,7 @@ import { DocumentService } from './document.service';
 import { CreatePortfolioTextRequestDto } from './dto/create-portfolio-text-request.dto';
 import { CreatePortfolioTextResponseDto } from './dto/create-portfolio-text-response.dto';
 import { PortfolioDetailResponseDto } from './dto/portfolio-detail-response.dto';
+import { UpdatePortfolioRequestDto } from './dto/update-portfolio-request.dto';
 import { DocumentSummaryListResponse } from './dto/document-summary.response.dto';
 import { DocumentSummaryRequest } from './dto/document-summary.request.dto';
 import { CreateCoverLetterRequestDto } from './dto/create-cover-letter-request.dto';
