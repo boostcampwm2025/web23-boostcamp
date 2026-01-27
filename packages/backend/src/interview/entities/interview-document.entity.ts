@@ -20,11 +20,13 @@ export class InterviewDocument {
   @UpdateDateColumn({ name: 'modified_at' })
   modifiedAt: Date;
 
-  @ManyToOne(() => TechnicalInterview, (tech) => tech.interviewDocuments)
+  @ManyToOne(() => TechnicalInterview, (tech) => tech.interviewDocuments, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'technical_interview_id' })
   technicalInterview: TechnicalInterview;
 
-  @ManyToOne(() => Document)
+  @ManyToOne(() => Document, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'documents_id' })
   document: Document;
 }

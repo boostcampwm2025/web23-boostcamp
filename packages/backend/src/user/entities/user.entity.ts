@@ -17,6 +17,9 @@ export class User {
   @Column({ name: 'user_email', type: 'varchar', length: 255 })
   userEmail: string;
 
+  @Column({ name: 'sub', type: 'varchar', length: 255, nullable: true })
+  sub: string;
+
   @Column({ name: 'profile_url', type: 'varchar', length: 255, nullable: true })
   profileUrl: string;
 

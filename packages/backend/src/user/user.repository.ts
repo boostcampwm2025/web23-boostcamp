@@ -11,4 +11,8 @@ export class UserRepository extends Repository<User> {
   async findById(userId: string): Promise<User | null> {
     return this.findOne({ where: { userId: userId } });
   }
+
+  async findBySub(sub: string): Promise<User | null> {
+    return this.findOne({ where: { sub: sub } });
+  }
 }

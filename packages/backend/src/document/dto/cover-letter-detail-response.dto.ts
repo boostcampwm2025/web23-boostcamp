@@ -1,6 +1,6 @@
 import { DocumentType } from '../entities/document.entity';
 
-export class ViewCoverLetterResponseDto {
+export class CoverLetterDetailResponseDto {
   documentId: string;
   coverLetterId: string;
   type: DocumentType;
@@ -10,4 +10,5 @@ export class ViewCoverLetterResponseDto {
     answer: string;
   }[];
   createdAt: Date;
+  modifiedAt: Date;
 }

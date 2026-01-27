@@ -301,6 +301,12 @@ export class InterviewService {
     };
   }
 
+  async deleteInterview(userId: string, interviewId: string): Promise<void> {
+    const interview = await this.findExistingInterview(interviewId, ['user']);
+    interview.validateUser(userId);
+    await this.interviewRepository.remove(interview);
+  }
+
   async listInterviews(
     userId: string,
     page: number,

@@ -20,7 +20,9 @@ export class TechnicalInterview {
   @Column({ name: 'feedback_content', type: 'varchar', length: 255 })
   feedbackContent: string;
 
-  @OneToOne(() => Interview, (interview) => interview.technical)
+  @OneToOne(() => Interview, (interview) => interview.technical, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'interview_id' })
   interview: Interview;
 
