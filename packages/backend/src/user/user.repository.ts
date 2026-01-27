@@ -15,5 +15,4 @@ export class UserRepository extends Repository<User> {
   async findBySub(sub: string): Promise<User | null> {
     return this.findOne({ where: { sub: sub } });
   }
-
 }

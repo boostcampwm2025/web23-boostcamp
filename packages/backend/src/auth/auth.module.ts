@@ -9,4 +9,4 @@ import { GoogleOAuthService } from './google-oauth.service';
   controllers: [AuthController],
   providers: [AuthService, GoogleOAuthService],
 })
-export class AuthModule { }
+export class AuthModule {}

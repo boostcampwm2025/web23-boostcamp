@@ -6,7 +6,7 @@ import { UserRepository } from './user.repository';
 export class UserService {
   private readonly logger = new Logger('UserService');
 
-  constructor(private readonly userRepository: UserRepository) { }
+  constructor(private readonly userRepository: UserRepository) {}
 
   async findExistingUser(userId: string): Promise<User> {
     const user = await this.userRepository.findById(userId);

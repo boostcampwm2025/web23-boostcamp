@@ -32,7 +32,7 @@ import { InterviewSummaryListResponse } from './dto/interview-summary.response.d
 @Controller('interview')
 export class InterviewController {
   private readonly logger = new Logger(InterviewController.name);
-  constructor(private readonly interviewService: InterviewService) { }
+  constructor(private readonly interviewService: InterviewService) {}
 
   @Post('tech/create')
   async createTechInterview(
