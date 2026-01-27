@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Ghost } from "lucide-react";
 
 import { cn } from "@/app/lib/utils";
