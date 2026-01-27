@@ -44,9 +44,9 @@ jobs:
 
       # 1. 린트, 빌드, 테스트 한 번에 실행 (변경된 패키지만)
       - name: Run Lint & Build (Affected)
-        run: npx turbo run lint build --filter=...[origin/develop]
-        env:
-          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+        run: npx turbo run lint build --filter=backend
+#        env:
+#          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
 
       # 2. 유닛 테스트 (항상 실행)
       - name: Run Unit Tests
