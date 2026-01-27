@@ -9,6 +9,8 @@ import {
   UploadedFile,
   UseInterceptors,
   Query,
+  Delete,
+  HttpCode,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { InterviewService } from './interview.service';
@@ -156,5 +158,14 @@ export class InterviewController {
       type,
       sort,
     );
+  }
+
+  @Delete(':interviewId')
+  @HttpCode(204)
+  async deleteInterview(
+    @Param('interviewId') interviewId: string,
+  ): Promise<void> {
+    const userId = '1';
+    await this.interviewService.deleteInterview(userId, interviewId);
   }
 }
