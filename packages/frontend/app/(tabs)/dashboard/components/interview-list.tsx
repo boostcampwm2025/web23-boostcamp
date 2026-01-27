@@ -21,7 +21,7 @@ export default function InterviewList({
         </div>
       </div>
       <div className="mt-6 flex flex-col gap-5">
-        {interviews.map((interview) => (
+        {interviews?.map((interview) => (
           <div
             className="group flex cursor-pointer flex-row items-center justify-center rounded-3xl border px-7 py-6 shadow-md"
             key={interview.createdAt}
