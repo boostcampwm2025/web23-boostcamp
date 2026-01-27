@@ -58,18 +58,7 @@ export class DocumentService {
   async viewPortfolio(userId: string, documentId: string) {
     const user = await this.userService.findExistingUser(userId);
 
-    const document =
-      await this.documentRepository.findOneWithPortfolioByDocumentIdAndUserId(
-        user.userId,
-        documentId,
-      );
-
-    if (!document) {
-      this.logger.warn(
-        `등록되지 않은 포트폴리오입니다. documentId=${documentId}`,
-      );
-      throw new NotFoundException('등록되지 않은 문서입니다');
-    }
+    const document = await this.findExistingPortfolio(user.userId, documentId);
 
     return {
       documentId: document.documentId,
@@ -83,16 +72,7 @@ export class DocumentService {
 
   async deletePortfolio(userId: string, documentId: string) {
     const user = await this.userService.findExistingUser(userId);
-    const document =
-      await this.documentRepository.findOneWithPortfolioByDocumentIdAndUserId(
-        user.userId,
-        documentId,
-      );
-
-    if (!document) {
-      this.logger.warn(`등록되지 않은 문서입니다. documentId=${documentId}`);
-      throw new NotFoundException('문서를 찾을 수 없습니다.');
-    }
+    const document = await this.findExistingPortfolio(user.userId, documentId);
 
     const deletedDocument = await this.documentRepository.remove(document);
     if (!deletedDocument) {
@@ -156,25 +136,10 @@ export class DocumentService {
   async viewCoverLetter(userId: string, documentId: string) {
     const user = await this.userService.findExistingUser(userId);
 
-    const document =
-      await this.documentRepository.findOneWithCoverLetterByDocumentIdAndUserId(
-        user.userId,
-        documentId,
-      );
-
-    if (!document) {
-      this.logger.warn(
-        `등록되지 않은 자기소개서입니다. documentId=${documentId}`,
-      );
-      throw new NotFoundException('등록되지 않은 문서입니다');
-    }
-
-    if (!document.coverLetter) {
-      this.logger.error(
-        `CoverLetter data missing for documentId=${documentId}`,
-      );
-      throw new InternalServerErrorException('자기소개서 데이터가 없습니다.');
-    }
+    const document = await this.findExistingCoverLetter(
+      user.userId,
+      documentId,
+    );
 
     return {
       documentId: document.documentId,
@@ -192,15 +157,10 @@ export class DocumentService {
 
   async deleteCoverLetter(userId: string, documentId: string) {
     const user = await this.userService.findExistingUser(userId);
-    const document =
-      await this.documentRepository.findCoverLetterDocumentByDocumentIdAndUserId(
-        user.userId,
-        documentId,
-      );
-
-    if (!document) {
-      throw new NotFoundException('문서를 찾을 수 없습니다.');
-    }
+    const document = await this.findExistingCoverLetter(
+      user.userId,
+      documentId,
+    );
 
     const deletedDocument = await this.documentRepository.remove(document);
     if (!deletedDocument) {
@@ -251,30 +211,33 @@ export class DocumentService {
   ) {
     const user = await this.userService.findExistingUser(userId);
 
-    const document =
-      await this.documentRepository.findOneWithCoverLetterByDocumentIdAndUserId(
-        user.userId,
-        documentId,
-      );
-
-    if (!document) {
-      throw new NotFoundException('등록되지 않은 문서입니다');
-    }
-
-    if (!document.coverLetter) {
-      throw new InternalServerErrorException('자기소개서 데이터가 없습니다.');
-    }
+    const document = await this.findExistingCoverLetter(
+      user.userId,
+      documentId,
+    );
 
     const updatedDocument = await this.dataSource.transaction(
       async (manager: EntityManager) => {
-        await this.updateTitle(manager, document, dto.title);
-        await this.updateContent(manager, document, dto.content);
-        await this.updateTimestamp(manager, documentId, dto);
+        if (dto.title) {
+          document.title = dto.title;
+        }
 
-        return await manager.findOne(Document, {
-          where: { documentId },
-          relations: { coverLetter: { questionAnswers: true } },
-        });
+        if (dto.content) {
+          document.coverLetter.questionAnswers = dto.content.map((qa) => {
+            const entity = new CoverLetterQuestionAnswer();
+            entity.question = qa.question;
+            entity.answer = qa.answer;
+            entity.coverLetter = document.coverLetter;
+            return entity;
+          });
+
+          // 자식 엔티티만 변경될 경우 부모의 modifiedAt이 갱신되지 않으므로 수동 갱신
+          if (!dto.title) {
+            document.modifiedAt = new Date();
+          }
+        }
+
+        return await manager.save(Document, document);
       },
     );
 
@@ -298,51 +261,44 @@ export class DocumentService {
     };
   }
 
-  private async updateTitle(
-    manager: EntityManager,
-    document: Document,
-    title?: string,
-  ) {
-    if (title) {
-      document.title = title;
-      await manager.save(document);
-    }
-  }
-
-  private async updateContent(
-    manager: EntityManager,
-    document: Document,
-    content?: { question: string; answer: string }[],
-  ) {
-    if (!content) return;
-
-    if (document.coverLetter.questionAnswers.length > 0) {
-      await manager.remove(
-        CoverLetterQuestionAnswer,
-        document.coverLetter.questionAnswers,
+  private async findExistingPortfolio(userId: string, documentId: string) {
+    const document =
+      await this.documentRepository.findOneWithPortfolioByDocumentIdAndUserId(
+        userId,
+        documentId,
       );
+
+    if (!document) {
+      this.logger.warn(
+        `등록되지 않은 포트폴리오입니다. documentId=${documentId}`,
+      );
+      throw new NotFoundException('등록되지 않은 문서입니다');
     }
 
-    const newQAs = content.map((qa) => {
-      const entity = new CoverLetterQuestionAnswer();
-      entity.question = qa.question;
-      entity.answer = qa.answer;
-      entity.coverLetter = document.coverLetter;
-      return entity;
-    });
-
-    await manager.save(CoverLetterQuestionAnswer, newQAs);
+    return document;
   }
 
-  private async updateTimestamp(
-    manager: EntityManager,
-    documentId: string,
-    dto: UpdateCoverLetterRequestDto,
-  ) {
-    if (dto.content && dto.title) {
-      await manager.update(Document, documentId, {
-        modifiedAt: new Date(),
-      });
+  private async findExistingCoverLetter(userId: string, documentId: string) {
+    const document =
+      await this.documentRepository.findOneWithCoverLetterByDocumentIdAndUserId(
+        userId,
+        documentId,
+      );
+
+    if (!document) {
+      this.logger.warn(
+        `등록되지 않은 자기소개서입니다. documentId=${documentId}`,
+      );
+      throw new NotFoundException('등록되지 않은 문서입니다');
     }
+
+    if (!document.coverLetter) {
+      this.logger.error(
+        `CoverLetter data missing for documentId=${documentId}`,
+      );
+      throw new InternalServerErrorException('자기소개서 데이터가 없습니다.');
+    }
+
+    return document;
   }
 }
