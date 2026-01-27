@@ -31,5 +31,5 @@ export async function DevLogin() {
   };
   await userSession.save();
 
-  redirect("/");
+  redirect("/dashboard");
 }

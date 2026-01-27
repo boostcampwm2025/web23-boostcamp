@@ -7,7 +7,7 @@ export default async function Home() {
   const session = await getUserSession();
 
   return (
-    <div>
+    <div className="bg-red-50">
       <GoogleLoginButton />
       <DevLoginButton />
       <LogoutButton />
