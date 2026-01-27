@@ -69,6 +69,12 @@ jobs:
           CLOVA_SPEECH_API_KEY: ${{ secrets.CLOVA_SPEECH_API_KEY }}
           CLOVA_API_URL: ${{ secrets.CLOVA_API_URL }}
           CLOVA_API_KEY: ${{ secrets.CLOVA_API_KEY }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_ACCESS_TOKEN_EXPIRATION: 12h
+          JWT_REFRESH_TOKEN_EXPIRATION: 14d
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          OAUTH_REDIRECT_URI: http://localhost:8000/auth/signup/oauth
 
 
       # 2. 테스트 결과 시각화
