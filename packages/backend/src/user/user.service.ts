@@ -16,4 +16,20 @@ export class UserService {
     }
     return user;
   }
+
+  async findOneBySub(sub: string): Promise<User | null> {
+    return await this.userRepository.findBySub(sub);
+  }
+
+  async registerUser(
+    email: string,
+    profileUrl: string,
+    sub: string,
+  ): Promise<User> {
+    const user = new User();
+    user.userEmail = email;
+    user.profileUrl = profileUrl;
+    user.sub = sub;
+    return await this.userRepository.save(user);
+  }
 }
