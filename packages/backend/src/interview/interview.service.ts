@@ -43,7 +43,7 @@ export class InterviewService {
     private readonly coverLetterRepository: CoverLetterRepository,
     private readonly documentRepository: DocumentRepository,
     private readonly interviewFeedBackService: InterviewFeedbackService,
-  ) { }
+  ) {}
 
   async calculateInterviewTime(
     userId: string,

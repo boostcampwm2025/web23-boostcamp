@@ -1,3 +1,5 @@
+"use client";
+
 const DB_CONFIG = {
   name: "SimulationStorage",
   version: 1,
@@ -7,13 +9,6 @@ const DB_CONFIG = {
     audio: "latest_audio",
   },
 } as const;
-
-export interface MediaRecord {
-  id: string;
-  blob: Blob;
-  type: "video" | "audio";
-  updatedAt: number;
-}
 
 /**
  * IndexedDB 연결 및 초기화
@@ -90,4 +85,29 @@ export const getLatestVideo = async () => {
  */
 export const getLatestAudio = async () => {
   return getLatestMedia("audio");
+};
+
+/**
+ * 미디어 삭제
+ */
+export const deleteMedia = async (type: "video" | "audio") => {
+  const db = await getDB();
+  const transaction = db.transaction(DB_CONFIG.store, "readwrite");
+  const store = transaction.objectStore(DB_CONFIG.store);
+  const key = type === "video" ? DB_CONFIG.keys.video : DB_CONFIG.keys.audio;
+  store.delete(key);
+};
+
+/**
+ * 비디오 삭제
+ */
+export const deleteVideo = async () => {
+  return deleteMedia("video");
+};
+
+/**
+ * 오디오 삭제
+ */
+export const deleteAudio = async () => {
+  return deleteMedia("audio");
 };

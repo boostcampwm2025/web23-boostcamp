@@ -8,10 +8,11 @@ import { cn } from "@/app/lib/utils";
 export type DocType = "COVER_LETTER" | "PORTFOLIO";
 
 export interface DocumentItem {
-  id: string;
+  documentId: string;
   type: DocType;
   title: string;
-  date: string;
+  createdAt: string;
+  modifiedAt: string;
 }
 
 interface DocumentCardProps {
@@ -32,7 +33,7 @@ export function DocumentCard({
   return (
     <motion.div whileTap={canClick ? { scale: 0.98 } : {}} className="h-full">
       <Card
-        onClick={() => canClick && onSelect(doc.id)}
+        onClick={() => canClick && onSelect(doc.documentId)}
         className={cn(
           "relative h-[180px] overflow-hidden rounded-2xl border-2 transition-all select-none",
           canClick ? "cursor-pointer" : "cursor-default",
@@ -56,7 +57,7 @@ export function DocumentCard({
               </div>
               <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
                 <Calendar className="h-3 w-3" />
-                {doc.date}
+                {doc.createdAt}
               </div>
             </div>
             <div className="space-y-1.5">

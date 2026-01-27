@@ -67,6 +67,7 @@ export class DocumentService {
       title: document.title,
       content: document.portfolio.content,
       createdAt: document.createdAt,
+      modifiedAt: document.modifiedAt,
     };
   }
 
@@ -79,6 +80,46 @@ export class DocumentService {
       this.logger.warn(`문서 삭제에 실패했습니다. documentId=${documentId}`);
       throw new InternalServerErrorException('문서 삭제에 실패했습니다.');
     }
+  }
+
+  async updatePortfolio(
+    userId: string,
+    documentId: string,
+    title?: string,
+    content?: string,
+  ) {
+    const user = await this.userService.findExistingUser(userId);
+    const document =
+      await this.documentRepository.findOneWithPortfolioByDocumentIdAndUserId(
+        user.userId,
+        documentId,
+      );
+
+    if (!document) {
+      this.logger.warn(
+        `등록되지 않은 포트폴리오입니다. documentId=${documentId}`,
+      );
+      throw new NotFoundException('등록되지 않은 문서입니다');
+    }
+
+    if (title) {
+      document.title = title;
+    }
+    if (content) {
+      document.portfolio.content = content;
+    }
+
+    const savedDocument = await this.documentRepository.save(document);
+
+    return {
+      documentId: savedDocument.documentId,
+      type: savedDocument.type,
+      portfolioId: savedDocument.portfolio.portfolioId,
+      title: savedDocument.title,
+      content: savedDocument.portfolio.content,
+      createdAt: savedDocument.createdAt,
+      modifiedAt: savedDocument.modifiedAt,
+    };
   }
 
   async createCoverLetter(

@@ -38,7 +38,6 @@ export default function AIChromaKey({ src }: { src: string }) {
 
         segmenterRef.current = segmenter;
         setIsModelLoaded(true);
-        console.log("모델 로딩 완료");
       } catch (e) {
         console.error("모델 로딩 에러", e);
       }
