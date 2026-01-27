@@ -42,14 +42,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
-      # 1. 린트, 빌드, 테스트 한 번에 실행 (변경된 패키지만)
+      # 1. 린트, 빌드 실행 (변경된 패키지만)
       - name: Run Lint & Build (Affected)
         run: npx turbo run lint build --filter=...[origin/develop]
 
       # 2. 유닛 테스트 (항상 실행)
       - name: Run Unit Tests
         run: npx turbo run test:ci --filter=backend
-        continue-on-error: true
 
       # 3. E2E 테스트 (MySQL 연동)
       - name: Run E2E Tests
@@ -64,7 +63,7 @@ jobs:
           DB_PASSWORD: password
           DB_DATABASE: test_db
           JEST_JUNIT_OUTPUT_NAME: "junit-e2e.xml"
-        continue-on-error: true
+
 
       # 2. 테스트 결과 시각화
       - name: Publish Test Report
