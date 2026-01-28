@@ -9,6 +9,7 @@ import {
   DocumentItem,
 } from "@/app/(tabs)/(simulator)/components/document-card";
 import DocumentCreateModal from "./document-create-modal";
+import DocumentDetailModal from "./document-detail-modal";
 import { deleteDocumentsClientSideBulk } from "../../../lib/client/document";
 
 interface Props {
@@ -25,6 +26,9 @@ export default function DocumentsClient({ initialDocuments }: Props) {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [detailDocument, setDetailDocument] = useState<DocumentItem | null>(
+    null,
+  );
 
   const allDocumentIds = useMemo(
     () => documents.map((document) => document.documentId),
@@ -146,6 +150,8 @@ export default function DocumentsClient({ initialDocuments }: Props) {
             onSelect={toggleDocumentSelection}
             isSelectable={true}
             showDeleteAction={true}
+            showCheckbox={true}
+            onCardClick={(doc) => setDetailDocument(doc)}
           />
         ))}
       </div>
@@ -159,6 +165,23 @@ export default function DocumentsClient({ initialDocuments }: Props) {
             ...previousDocuments,
           ]);
           setIsModalOpen(false);
+          router.refresh();
+        }}
+      />
+
+      <DocumentDetailModal
+        documentId={detailDocument?.documentId || null}
+        documentType={detailDocument?.type || "PORTFOLIO"}
+        onClose={() => setDetailDocument(null)}
+        onUpdate={(updatedDocument) => {
+          setDocuments((previousDocuments) =>
+            previousDocuments.map((doc) =>
+              doc.documentId === updatedDocument.documentId
+                ? updatedDocument
+                : doc,
+            ),
+          );
+          setDetailDocument(null);
           router.refresh();
         }}
       />
