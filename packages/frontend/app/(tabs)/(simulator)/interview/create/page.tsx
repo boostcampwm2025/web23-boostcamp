@@ -20,7 +20,7 @@ import DocumentCreateModal from "@/app/(tabs)/documents/components/document-crea
 type InterviewMode = "live" | "tech";
 
 interface SelectedDocs {
-  COVER_LETTER: string | null;
+  COVER: string | null;
   PORTFOLIO: string | null;
 }
 
@@ -36,7 +36,7 @@ export default function InterviewCreatePage() {
   const [isDocModalOpen, setIsDocModalOpen] = useState<boolean>(false);
 
   const [selectedDocs, setSelectedDocs] = useState<SelectedDocs>({
-    COVER_LETTER: null,
+    COVER: null,
     PORTFOLIO: null,
   });
 
@@ -56,8 +56,7 @@ export default function InterviewCreatePage() {
   };
 
   const handleStartSimulation = async (): Promise<void> => {
-    if (!title || (!selectedDocs.COVER_LETTER && !selectedDocs.PORTFOLIO))
-      return;
+    if (!title || (!selectedDocs.COVER && !selectedDocs.PORTFOLIO)) return;
 
     setIsSubmitting(true);
 
@@ -66,10 +65,9 @@ export default function InterviewCreatePage() {
 
       const requestBody = isTech
         ? {
-            documentIds: [
-              selectedDocs.COVER_LETTER,
-              selectedDocs.PORTFOLIO,
-            ].filter((id): id is string => Boolean(id)),
+            documentIds: [selectedDocs.COVER, selectedDocs.PORTFOLIO].filter(
+              (id): id is string => Boolean(id),
+            ),
           }
         : {
             simulationTitle: title,
@@ -201,7 +199,7 @@ export default function InterviewCreatePage() {
             className="h-14 px-12 text-base font-bold shadow-md transition-all active:scale-95"
             disabled={
               !title ||
-              (!selectedDocs.COVER_LETTER && !selectedDocs.PORTFOLIO) ||
+              (!selectedDocs.COVER && !selectedDocs.PORTFOLIO) ||
               isSubmitting
             }
             onClick={handleStartSimulation}

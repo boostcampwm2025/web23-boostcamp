@@ -3,7 +3,7 @@ import type { DocumentItem } from "@/app/(tabs)/(simulator)/components/document-
 export const FALLBACK_MOCK_DATA: DocumentItem[] = [
   {
     documentId: "mock-1",
-    type: "COVER_LETTER",
+    type: "COVER",
     title: "[DEV] 2024 하반기 공통 자소서",
     createdAt: "2024.05.12",
     modifiedAt: "2024.05.12",

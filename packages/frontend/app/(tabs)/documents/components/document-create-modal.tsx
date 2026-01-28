@@ -42,9 +42,9 @@ export default function DocumentCreateModal({
   onClose,
   onCreate,
 }: Props) {
-  const [documentType, setDocumentType] = useState<
-    "COVER_LETTER" | "PORTFOLIO"
-  >("COVER_LETTER");
+  const [documentType, setDocumentType] = useState<"COVER" | "PORTFOLIO">(
+    "COVER",
+  );
   const [title, setTitle] = useState("");
   const [questionAnswerList, setQuestionAnswerList] = useState<
     QuestionAnswer[]
@@ -139,7 +139,7 @@ export default function DocumentCreateModal({
 
     try {
       let createdDocument: DocumentItem;
-      if (documentType === "COVER_LETTER") {
+      if (documentType === "COVER") {
         createdDocument = await createCoverLetter({
           title,
           qa: questionAnswerList,
@@ -186,10 +186,8 @@ export default function DocumentCreateModal({
 
             <div className="mt-4 flex gap-3">
               <Button
-                variant={
-                  documentType === "COVER_LETTER" ? "default" : "outline"
-                }
-                onClick={() => setDocumentType("COVER_LETTER")}
+                variant={documentType === "COVER" ? "default" : "outline"}
+                onClick={() => setDocumentType("COVER")}
                 type="button"
                 className="flex-1"
               >
@@ -224,7 +222,7 @@ export default function DocumentCreateModal({
             </div>
 
             {/* 자기소개서 Q&A 카드 형식 */}
-            {documentType === "COVER_LETTER" ? (
+            {documentType === "COVER" ? (
               <div className="space-y-4">
                 <div className="mb-3 flex items-center justify-between">
                   <label className="text-sm font-semibold text-gray-700">

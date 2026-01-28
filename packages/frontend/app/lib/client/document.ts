@@ -34,7 +34,7 @@ export async function deleteDocumentsClientSideBulk(
       const documentType = document?.type ?? "PORTFOLIO";
 
       const endpoint =
-        documentType === "COVER_LETTER"
+        documentType === "COVER"
           ? `${process.env.NEXT_PUBLIC_API_URL}/document/${documentId}/cover-letter`
           : `${process.env.NEXT_PUBLIC_API_URL}/document/${documentId}/portfolio`;
 
@@ -74,7 +74,7 @@ export async function createCoverLetter(
     const currentTime = new Date().toISOString();
     return {
       documentId: `mock-cover-${Date.now()}`,
-      type: "COVER_LETTER",
+      type: "COVER",
       title: parameters.title || "Untitled Cover Letter",
       createdAt: currentTime,
       modifiedAt: currentTime,
@@ -106,7 +106,7 @@ export async function createCoverLetter(
     type: responseData.type,
     title: responseData.title,
     createdAt: responseData.createdAt,
-    modifiedAt: responseData.modifiedAt,
+    modifiedAt: responseData.createdAt,
   };
 }
 
@@ -152,6 +152,6 @@ export async function createPortfolio(
     type: responseData.type,
     title: responseData.title,
     createdAt: responseData.createdAt,
-    modifiedAt: responseData.modifiedAt,
+    modifiedAt: responseData.createdAt,
   };
 }
