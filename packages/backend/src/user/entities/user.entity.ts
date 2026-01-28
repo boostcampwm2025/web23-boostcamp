@@ -9,6 +9,11 @@ import {
 import { Interview } from '../../interview/entities/interview.entity';
 import { Document } from '../../document/entities/document.entity';
 
+export enum UserRole {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+}
+
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'user_id' })
@@ -19,6 +24,14 @@ export class User {
 
   @Column({ name: 'sub', type: 'varchar', length: 255, nullable: true })
   sub: string;
+
+  @Column({
+    name: 'role',
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.USER,
+  })
+  role: UserRole;
 
   @Column({ name: 'profile_url', type: 'varchar', length: 255, nullable: true })
   profileUrl: string;

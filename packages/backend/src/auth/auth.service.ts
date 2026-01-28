@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from '../user/user.service';
 import { GoogleOAuthService } from './google-oauth.service';
+import { JwtTokenProvider } from './jwt-token.provider';
+import { TokenResponse } from './dto/token-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -10,12 +12,14 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly userService: UserService,
     private readonly googleOAuthService: GoogleOAuthService,
+    private readonly jwtTokenProvider: JwtTokenProvider,
   ) {}
 
-  async googleLogin(code: string): Promise<any> {
-    const accessToken =
+  async googleLogin(code: string): Promise<TokenResponse> {
+    const googleAccessToken =
       await this.googleOAuthService.exchangeCodeForToken(code);
-    const userData = await this.googleOAuthService.getUserInfo(accessToken);
+    const userData =
+      await this.googleOAuthService.getUserInfo(googleAccessToken);
 
     const email = userData.email;
     const profileUrl = userData.profileUrl;
@@ -29,6 +33,22 @@ export class AuthService {
       user = await this.userService.registerUser(email, profileUrl, sub);
     }
 
-    return user;
+    const now = Date.now();
+    const refreshToken = await this.jwtTokenProvider.generateRefreshToken(
+      user.userId,
+      user.role,
+      now,
+    );
+
+    const accessToken = await this.jwtTokenProvider.generateAccessToken(
+      user.userId,
+      user.role,
+      now,
+    );
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }
