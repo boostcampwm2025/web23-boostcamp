@@ -2,7 +2,7 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { TokenResponse } from './dto/token-response.dto';
-import { Public } from './public.decorator';
+import { Public } from './decorator/public.decorator';
 
 @Controller('auth')
 export class AuthController {
