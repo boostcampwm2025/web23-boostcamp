@@ -23,6 +23,9 @@ import { CreateCoverLetterResponseDto } from './dto/create-cover-letter-response
 import { UpdateCoverLetterRequestDto } from './dto/update-cover-letter-request.dto';
 import { CoverLetterDetailResponseDto } from './dto/cover-letter-detail-response.dto';
 
+import { BulkDeleteDocumentRequestDto } from './dto/bulk-delete-document-request.dto';
+import { BulkDeleteDocumentResponseDto } from './dto/bulk-delete-document-response.dto';
+
 @Controller('document')
 export class DocumentController {
   constructor(private readonly documentService: DocumentService) {}
@@ -121,6 +124,17 @@ export class DocumentController {
       take,
       type,
       sort,
+    );
+  }
+
+  @Delete()
+  async bulkDeleteDocuments(
+    @Body() dto: BulkDeleteDocumentRequestDto,
+  ): Promise<BulkDeleteDocumentResponseDto> {
+    const userId = '1';
+    return await this.documentService.bulkDeleteDocuments(
+      userId,
+      dto.documentIds,
     );
   }
 }

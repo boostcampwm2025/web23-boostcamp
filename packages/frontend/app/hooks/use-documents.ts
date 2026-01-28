@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { DocumentItem } from "@/app/(tabs)/(simulator)/components/document-card";
+import { FALLBACK_MOCK_DATA } from "@/app/lib/mock/documents";
+import { formatIsoDateToDot } from "@/app/lib/utils";
 
 // API 응답 타입 정의
 interface ApiDocumentItem {
@@ -12,24 +14,6 @@ interface ApiDocumentItem {
 interface DocumentResponse {
   documents: ApiDocumentItem[];
 }
-
-// 서버가 응답하지 않을 때 보여줄 임시 데이터
-const FALLBACK_MOCK_DATA: DocumentItem[] = [
-  {
-    documentId: "mock-1",
-    type: "COVER_LETTER",
-    title: "[DEV] 2024 하반기 공통 자소서",
-    createdAt: "2024.05.12",
-    modifiedAt: "2024.05.12",
-  },
-  {
-    documentId: "mock-2",
-    type: "PORTFOLIO",
-    title: "[DEV] FE 아키텍트 포트폴리오",
-    createdAt: "2024.04.28",
-    modifiedAt: "2024.04.28",
-  },
-];
 
 export function useDocuments(userId: string) {
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
@@ -62,8 +46,8 @@ export function useDocuments(userId: string) {
           documentId: item.documentId,
           type: item.type === "COVER" ? "COVER_LETTER" : "PORTFOLIO",
           title: item.title,
-          createdAt: item.createdAt.split("T")[0].replace(/-/g, "."),
-          modifiedAt: item.createdAt.split("T")[0].replace(/-/g, "."),
+          createdAt: formatIsoDateToDot(item.createdAt),
+          modifiedAt: formatIsoDateToDot(item.createdAt),
         }));
         setDocuments(mapped);
       } catch (err) {
@@ -80,5 +64,9 @@ export function useDocuments(userId: string) {
     loadDocs();
   }, [userId]);
 
-  return { documents, isLoading };
+  const addDocument = (newDocument: DocumentItem) => {
+    setDocuments((prev) => [newDocument, ...prev]);
+  };
+
+  return { documents, isLoading, addDocument };
 }

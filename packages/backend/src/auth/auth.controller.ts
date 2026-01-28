@@ -1,6 +1,8 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
+import { TokenResponse } from './dto/token-response.dto';
+import { Public } from './public.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -14,6 +16,7 @@ export class AuthController {
     this.redirectUri = configService.getOrThrow<string>('OAUTH_REDIRECT_URI');
   }
 
+  @Public()
   @Get('login/url/google')
   getGoogleLoginUrl(): { url: string } {
     const url = `https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/userinfo.email+https://www.googleapis.com/auth/userinfo.profile&response_type=code&access_type=offline&redirect_uri=${this.redirectUri}&client_id=${this.googleClientId}`;
@@ -21,8 +24,9 @@ export class AuthController {
     return { url };
   }
 
+  @Public()
   @Get('/signup/oauth')
-  async signup(@Query('code') code: string): Promise<any> {
+  async signup(@Query('code') code: string): Promise<TokenResponse> {
     return await this.authService.googleLogin(code);
   }
 }

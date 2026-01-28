@@ -404,6 +404,7 @@ export class InterviewService {
         title: interview.title,
         type: interview.type,
         createdAt: interview.createdAt,
+        score: interview.score,
       };
     });
 

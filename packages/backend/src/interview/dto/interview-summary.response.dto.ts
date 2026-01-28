@@ -10,4 +10,5 @@ export class InterviewSummaryResponse {
   title: string;
   type: InterviewType;
   createdAt: Date;
+  score?: string;
 }
