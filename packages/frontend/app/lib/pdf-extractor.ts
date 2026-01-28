@@ -119,9 +119,16 @@ export async function extractTextFromPdf(
       message: "텍스트 추출 완료!",
     });
 
+    // 연속된 공백을 하나로 정리
+    const cleanedText = fullText
+      .trim()
+      .split("\n")
+      .map((line) => line.replace(/ {2,}/g, " "))
+      .join("\n");
+
     return {
-      text: fullText.trim(),
-      totalCharacters: fullText.trim().length,
+      text: cleanedText,
+      totalCharacters: cleanedText.length,
       pageCount: totalPages,
       ocrPagesCount,
     };
