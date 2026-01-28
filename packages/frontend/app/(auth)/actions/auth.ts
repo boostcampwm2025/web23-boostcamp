@@ -17,7 +17,6 @@ export async function GoogleLogin() {
   const { url: loginUrl } = (await (
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login/url/google`)
   ).json()) as IGoogleLoginResponse;
-
   redirect(loginUrl);
 }
 

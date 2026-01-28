@@ -19,16 +19,9 @@ export async function GET(req: Request) {
   }
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/signup/oauth`,
+    `${process.env.NEXT_PUBLIC_API_URL}/auth/signup/oauth?code=${code}`,
     {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        provider: "google",
-        code,
-      }),
+      method: "GET",
     },
   );
 
@@ -37,6 +30,11 @@ export async function GET(req: Request) {
   }
 
   const user = (await res.json()) as IOAuthResponse;
+
+  const tokenPayload = JSON.parse(
+    Buffer.from(user.accessToken.split(".")[1], "base64").toString(),
+  );
+  console.log(tokenPayload);
 
   const userSession = await getUserSession();
 
