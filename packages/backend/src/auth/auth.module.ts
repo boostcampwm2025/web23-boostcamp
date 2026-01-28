@@ -7,6 +7,7 @@ import { UserModule } from '../user/user.module';
 import { GoogleOAuthService } from './google-oauth.service';
 import { JwtTokenProvider } from './jwt-token.provider';
 import { JwtTokenDecoder } from './jwt-token.decoder';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { JwtTokenDecoder } from './jwt-token.decoder';
     GoogleOAuthService,
     JwtTokenProvider,
     JwtTokenDecoder,
+    JwtAuthGuard,
   ],
-  exports: [JwtTokenProvider, JwtTokenDecoder],
+  exports: [JwtTokenProvider, JwtTokenDecoder, JwtAuthGuard],
 })
 export class AuthModule {}
