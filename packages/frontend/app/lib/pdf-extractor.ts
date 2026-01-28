@@ -6,7 +6,8 @@ if (typeof window !== "undefined") {
 }
 
 const MAX_PAGES = 50;
-const MIN_TEXT_LENGTH_FOR_OCR = 50; // 이 글자수 미만이면 OCR 실행
+const MIN_TEXT_LENGTH_FOR_OCR = 30; // 이 글자수 미만이면 OCR 실행
+const MIN_QUALITY_THRESHOLD = 0.3; // 텍스트 품질이 낮으면 OCR 사용
 
 export interface PdfExtractionProgress {
   currentPage: number;
@@ -73,9 +74,14 @@ export async function extractTextFromPdf(
       // 1. 텍스트 레이어 추출 시도
       const textContent = await page.getTextContent();
       let pageText = sortTextByCoordinates(textContent.items);
+      const textQuality = calculateTextQuality(pageText);
 
-      // 2. 텍스트가 충분하지 않으면 OCR 실행
-      if (pageText.trim().length < MIN_TEXT_LENGTH_FOR_OCR) {
+      // 2. 텍스트가 충분하지 않거나 품질이 낮으면 OCR 실행
+      const needsOCR =
+        pageText.trim().length < MIN_TEXT_LENGTH_FOR_OCR ||
+        textQuality < MIN_QUALITY_THRESHOLD;
+
+      if (needsOCR) {
         onProgress?.({
           currentPage: pageNum,
           totalPages,
@@ -93,9 +99,11 @@ export async function extractTextFromPdf(
         ocrPagesCount++;
       }
 
-      // 페이지 헤더와 함께 결과에 추가
-      const pageHeader = `\n--- Page ${pageNum} ---\n`;
-      fullText += pageHeader + pageText + "\n";
+      // 페이지별 텍스트 추가 (빈 줄로 구분)
+      if (fullText.length > 0 && pageText.trim().length > 0) {
+        fullText += "\n\n";
+      }
+      fullText += pageText;
     }
 
     onProgress?.({
@@ -151,29 +159,72 @@ function sortTextByCoordinates(
     str: item.str,
     x: item.transform[4],
     y: item.transform[5],
+    width: item.transform[0],
+    height: item.transform[3],
   }));
+
+  if (mappedItems.length === 0) return "";
+
+  // 평균 글자 높이 계산 (동적 줄 간격 감지용)
+  const avgHeight =
+    mappedItems.reduce((sum, item) => sum + Math.abs(item.height), 0) /
+    mappedItems.length;
+  const lineThreshold = avgHeight * 0.5; // 평균 높이의 50%를 줄 간격으로 사용
 
   // Y 좌표 기준 내림차순 정렬 (위에서 아래로), 같은 줄이면 X 좌표 오름차순
   mappedItems.sort((a, b) => {
-    if (Math.abs(a.y - b.y) < 5) {
+    if (Math.abs(a.y - b.y) < lineThreshold) {
       return a.x - b.x;
     }
     return b.y - a.y;
   });
 
   let result = "";
-  let currentY = mappedItems[0]?.y;
+  let currentY = mappedItems[0].y;
+  let lastX = 0;
 
-  mappedItems.forEach((item) => {
+  mappedItems.forEach((item, index) => {
     // Y 좌표가 많이 다르면 새 줄로
-    if (Math.abs(item.y - currentY) > 5) {
+    if (Math.abs(item.y - currentY) > lineThreshold) {
       result += "\n";
       currentY = item.y;
+      lastX = 0;
+    } else if (index > 0) {
+      // 같은 줄에서 단어 간격이 크면 공백 추가
+      const gap = item.x - lastX;
+      if (gap > avgHeight) {
+        result += " ";
+      }
     }
-    result += item.str + " ";
+
+    result += item.str;
+    lastX = item.x + item.str.length * Math.abs(item.width);
   });
 
-  return result.replace(/\s+/g, " ").trim();
+  return result.trim();
+}
+
+/**
+ * 페이지를 캔버스로 렌더링하고 OCR 실행
+ * 텍스트 품질 평가 (한글/영문 비율, 특수문자 비율 등)
+ */
+function calculateTextQuality(text: string): number {
+  if (!text || text.length < 10) return 0;
+
+  const koreanCount = (text.match(/[ㄱ-ㅎ가-힣]/g) || []).length;
+  const englishCount = (text.match(/[a-zA-Z]/g) || []).length;
+  const numberCount = (text.match(/[0-9]/g) || []).length;
+  const specialCount = (text.match(/[^\w\s가-힣ㄱ-ㅎㅏ-ㅣ]/g) || []).length;
+
+  const validCharCount = koreanCount + englishCount + numberCount;
+  const totalCount = text.length;
+
+  // 유효한 문자 비율
+  const validRatio = validCharCount / totalCount;
+  // 특수문자가 너무 많으면 품질 저하
+  const specialRatio = specialCount / totalCount;
+
+  return validRatio * (1 - specialRatio * 0.5);
 }
 
 /**
@@ -183,7 +234,7 @@ async function runPageOCR(
   page: pdfjsLib.PDFPageProxy,
   worker: Awaited<ReturnType<typeof createWorker>>,
 ): Promise<string> {
-  const viewport = page.getViewport({ scale: 2.5 });
+  const viewport = page.getViewport({ scale: 2.0 });
   const canvas = document.createElement("canvas");
   const context = canvas.getContext("2d");
 
@@ -199,5 +250,5 @@ async function runPageOCR(
   const {
     data: { text },
   } = await worker.recognize(canvas);
-  return text;
+  return text.trim();
 }
