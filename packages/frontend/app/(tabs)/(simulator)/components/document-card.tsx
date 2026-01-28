@@ -3,6 +3,7 @@
 import { Calendar, Check } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Card, CardContent } from "@/app/components/ui/card";
+import { Checkbox } from "@/app/components/ui/checkbox";
 import { cn } from "@/app/lib/utils";
 
 export type DocType = "COVER" | "PORTFOLIO";
@@ -21,6 +22,8 @@ interface DocumentCardProps {
   onSelect?: (id: string) => void;
   isSelectable?: boolean;
   showDeleteAction?: boolean;
+  showCheckbox?: boolean;
+  onCardClick?: (doc: DocumentItem) => void;
 }
 
 export function DocumentCard({
@@ -29,22 +32,54 @@ export function DocumentCard({
   onSelect,
   isSelectable = true,
   showDeleteAction = false,
+  showCheckbox = false,
+  onCardClick,
 }: DocumentCardProps) {
   const canClick = isSelectable && !!onSelect;
 
+  const handleCheckboxClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onSelect) {
+      onSelect(doc.documentId);
+    }
+  };
+
+  const handleCardClick = () => {
+    if (onCardClick) {
+      onCardClick(doc);
+    } else if (canClick) {
+      onSelect!(doc.documentId);
+    }
+  };
+
   return (
-    <motion.div whileTap={canClick ? { scale: 0.98 } : {}} className="h-full">
+    <motion.div
+      whileTap={onCardClick || canClick ? { scale: 0.98 } : {}}
+      className="h-full"
+    >
       <Card
-        onClick={() => canClick && onSelect(doc.documentId)}
+        onClick={handleCardClick}
         className={cn(
           "relative h-[180px] overflow-hidden rounded-2xl border-2 transition-all select-none",
-          canClick ? "cursor-pointer" : "cursor-default",
+          onCardClick || canClick ? "cursor-pointer" : "cursor-default",
           isSelected
             ? "border-emerald-500 bg-emerald-50/20 shadow-md ring-1 ring-emerald-500"
             : "border-border shadow-sm hover:border-emerald-200",
         )}
       >
         <CardContent className="flex h-full flex-col justify-between p-5">
+          {showCheckbox && (
+            <div
+              onClick={handleCheckboxClick}
+              className="absolute top-3 left-3 z-20 -m-2 cursor-pointer p-2"
+            >
+              <Checkbox
+                checked={isSelected}
+                className="h-4 w-4 border-2 data-checked:border-emerald-500 data-checked:bg-emerald-500"
+              />
+            </div>
+          )}
+
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div
