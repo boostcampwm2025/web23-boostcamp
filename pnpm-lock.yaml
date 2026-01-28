@@ -21,6 +21,9 @@ importers:
       '@types/multer':
         specifier: ^2.0.0
         version: 2.0.0
+      cross-env:
+        specifier: ^10.1.0
+        version: 10.1.0
       prettier:
         specifier: ^3.4.2
         version: 3.7.4
@@ -115,6 +118,9 @@ importers:
       jest:
         specifier: ^30.0.0
         version: 30.2.0(@types/node@22.19.3)(ts-node@10.9.2(@types/node@22.19.3)(typescript@5.9.3))
+      jest-html-reporter:
+        specifier: ^4.3.0
+        version: 4.3.0(jest@30.2.0(@types/node@22.19.3)(ts-node@10.9.2(@types/node@22.19.3)(typescript@5.9.3)))(typescript@5.9.3)
       jest-junit:
         specifier: ^16.0.0
         version: 16.0.0
@@ -541,6 +547,9 @@ packages:
 
   '@emnapi/wasi-threads@1.1.0':
     resolution: {integrity: sha512-WI0DdZ8xFSbgMjR1sFsKABJ/C5OnRrjT06JXbZKexJGrDuPTzZdDYfFlsgcCXCyf+suG5QU2e/y1Wo2V/OapLQ==}
+
+  '@epic-web/invariant@1.0.0':
+    resolution: {integrity: sha512-lrTPqgvfFQtR/eY/qkIzp98OGdNJu0m5ji3q/nJI8v3SXkRKEnWiOxMmbvcSoAIzv/cGiuvRy57k4suKQSAdwA==}
 
   '@eslint-community/eslint-utils@4.9.0':
     resolution: {integrity: sha512-ayVFHdtZ+hsq1t2Dy24wCmGXGe4q9Gu3smhLYALJrr473ZH27MsnSL+LKUlimp4BWJqMDMLmPpx/Q9R3OAlL4g==}
@@ -2911,6 +2920,11 @@ packages:
   create-require@1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
 
+  cross-env@10.1.0:
+    resolution: {integrity: sha512-GsYosgnACZTADcmEyJctkJIoqAhHjttw7RsFrVoJNXbsWWqaq6Ym+7kZjq6mS45O0jij6vtiReppKQEtqWy6Dw==}
+    engines: {node: '>=20'}
+    hasBin: true
+
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
@@ -2941,6 +2955,9 @@ packages:
   data-view-byte-offset@1.0.1:
     resolution: {integrity: sha512-BS8PfmtDGnrgYdOonGZQdLZslWIeCGFP9tpan0hi1Co2Zr2NKADsvGYA8XxuG/4UWgJ6Cjtv+YJnB6MM69QGlQ==}
     engines: {node: '>= 0.4'}
+
+  dateformat@3.0.2:
+    resolution: {integrity: sha512-EelsCzH0gMC2YmXuMeaZ3c6md1sUJQxyb1XXc4xaisi/K6qKukqZhKPrEQyRkdNIncgYyLoDTReq0nNyuKerTg==}
 
   dayjs@1.11.19:
     resolution: {integrity: sha512-t5EcLVS6QPBNqM2z8fakk/NKel+Xzshgt8FFKAn+qwlD1pzZWxh0nVCrvFK7ZDb6XucZeF9z8C7CBWTRIVApAw==}
@@ -4010,6 +4027,13 @@ packages:
   jest-haste-map@30.2.0:
     resolution: {integrity: sha512-sQA/jCb9kNt+neM0anSj6eZhLZUIhQgwDt7cPGjumgLM4rXsfb9kpnlacmvZz3Q5tb80nS+oG/if+NBKrHC+Xw==}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
+
+  jest-html-reporter@4.3.0:
+    resolution: {integrity: sha512-lq4Zx35yc6Ehw513CXJ1ok3wUmkSiOImWcyLAmylfzrz7DAqtrhDF9V73F4qfstmGxlr8X0QrEjWsl/oqhf4sQ==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      jest: 19.x - 30.x
+      typescript: ^3.7.x || ^4.3.x || ^5.x
 
   jest-junit@16.0.0:
     resolution: {integrity: sha512-A94mmw6NfJab4Fg/BlvVOUXzXgF0XIH6EmTgJ5NDPp4xoKq0Kr7sErb+4Xs9nZvu58pJojz5RFGpqnZYJTrRfQ==}
@@ -5933,6 +5957,10 @@ packages:
   xml@1.0.1:
     resolution: {integrity: sha512-huCv9IH9Tcf95zuYCsQraZtWnJvBtLVE0QHMOs8bWyZAFZNDcYjsPq1nEx8jKA9y+Beo9v+7OBPRisQTjinQMw==}
 
+  xmlbuilder@15.0.0:
+    resolution: {integrity: sha512-KLu/G0DoWhkncQ9eHSI6s0/w+T4TM7rQaLhtCaL6tORv8jFlJPlnGumsgTcGfYeS1qZ/IHqrvDG7zJZ4d7e+nw==}
+    engines: {node: '>=8.0'}
+
   xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
     engines: {node: '>=0.4'}
@@ -6366,6 +6394,8 @@ snapshots:
     dependencies:
       tslib: 2.8.1
     optional: true
+
+  '@epic-web/invariant@1.0.0': {}
 
   '@eslint-community/eslint-utils@4.9.0(eslint@9.39.2(jiti@2.6.1))':
     dependencies:
@@ -8961,6 +8991,11 @@ snapshots:
 
   create-require@1.1.1: {}
 
+  cross-env@10.1.0:
+    dependencies:
+      '@epic-web/invariant': 1.0.0
+      cross-spawn: 7.0.6
+
   cross-spawn@7.0.6:
     dependencies:
       path-key: 3.1.1
@@ -8992,6 +9027,8 @@ snapshots:
       call-bound: 1.0.4
       es-errors: 1.3.0
       is-data-view: 1.0.2
+
+  dateformat@3.0.2: {}
 
   dayjs@1.11.19: {}
 
@@ -10359,6 +10396,21 @@ snapshots:
       walker: 1.0.8
     optionalDependencies:
       fsevents: 2.3.3
+
+  jest-html-reporter@4.3.0(jest@30.2.0(@types/node@22.19.3)(ts-node@10.9.2(@types/node@22.19.3)(typescript@5.9.3)))(typescript@5.9.3):
+    dependencies:
+      '@jest/reporters': 30.2.0
+      '@jest/test-result': 30.2.0
+      '@jest/types': 30.2.0
+      dateformat: 3.0.2
+      jest: 30.2.0(@types/node@22.19.3)(ts-node@10.9.2(@types/node@22.19.3)(typescript@5.9.3))
+      mkdirp: 1.0.4
+      strip-ansi: 6.0.1
+      typescript: 5.9.3
+      xmlbuilder: 15.0.0
+    transitivePeerDependencies:
+      - node-notifier
+      - supports-color
 
   jest-junit@16.0.0:
     dependencies:
@@ -12537,6 +12589,8 @@ snapshots:
       powershell-utils: 0.1.0
 
   xml@1.0.1: {}
+
+  xmlbuilder@15.0.0: {}
 
   xtend@4.0.2: {}
 

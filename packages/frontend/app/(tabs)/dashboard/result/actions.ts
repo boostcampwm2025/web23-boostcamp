@@ -10,7 +10,7 @@ export async function getFeedback({
 }: {
   interviewId: string;
 }): Promise<IFeedback> {
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === "development" && false) {
     return {
       score: 84,
       content:

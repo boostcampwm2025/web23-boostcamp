@@ -15,7 +15,7 @@ export default async function Page({
 
   return (
     <div className="mx-auto mt-8 flex max-w-360">
-      <InterviewClient history={history} />
+      <InterviewClient history={history} interviewId={interviewId} />
     </div>
   );
 }

@@ -1,13 +1,19 @@
 "use server";
 
-import { getUserSession } from "@/app/lib/server/session";
 import { NextResponse } from "next/server";
+import { getUserSession } from "@/app/lib/server/session";
 
 interface IOAuthResponse {
-  userId: number;
   email: string;
   accessToken: string;
   refreshToken: string;
+}
+
+interface ITokenPayload {
+  exp: number;
+  iat: number;
+  sub: string;
+  role: "USER" | "ADMIN";
 }
 
 export async function GET(req: Request) {
@@ -31,21 +37,20 @@ export async function GET(req: Request) {
 
   const user = (await res.json()) as IOAuthResponse;
 
-  const tokenPayload = JSON.parse(
+  const tokenPayload: ITokenPayload = JSON.parse(
     Buffer.from(user.accessToken.split(".")[1], "base64").toString(),
   );
-  console.log(tokenPayload);
 
   const userSession = await getUserSession();
 
   userSession.user = {
-    id: user.userId,
-    email: user.email,
+    id: +tokenPayload.sub,
+    email: user.email ?? "test@email.com",
     token: user.accessToken,
     refreshToken: user.refreshToken,
   };
 
   await userSession.save();
 
-  return NextResponse.redirect(new URL("/", req.url));
+  return NextResponse.redirect(new URL("/dashboard", req.url));
 }

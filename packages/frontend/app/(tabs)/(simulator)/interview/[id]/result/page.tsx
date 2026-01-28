@@ -5,31 +5,30 @@ import ChatHistory from "@/app/components/chat-history";
 import { Button } from "@/app/components/ui/button";
 import { buildChatHistory } from "@/app/lib/client/chat";
 
-import RecentRecording from "./components/recent-recording";
 import { getFeedback, startFeedback } from "./actions";
 import { getHistory } from "../actions";
+import RecentRecording from "./components/recent-recording";
 import Panel from "./components/panel";
 import Score from "./components/score";
 import AISummary from "./components/ai-summary";
 import Tip from "./components/tip";
 
-const getCachedHistory = nextCache(getHistory, [
-  "interview_result_history",
-  "1",
-]);
+const getCachedHistory = nextCache(getHistory);
+const getCachedFeedback = nextCache(getFeedback);
 
-const getCachedFeedback = nextCache(getFeedback, [
-  "interview_result_feedback",
-  "1",
-]);
+export default async function InterviewResultPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id: interviewId } = await params;
+  const { history } = await getCachedHistory({ interviewId });
 
-export default async function InterviewResultPage() {
-  const { history } = await getCachedHistory({ interviewId: "1" });
   let feedbackResult = { score: "0", feedback: "" };
+  feedbackResult = await getCachedFeedback({ interviewId });
 
-  feedbackResult = await getCachedFeedback({ interviewId: "1" });
   if (!feedbackResult.score || !feedbackResult.feedback) {
-    feedbackResult = await startFeedback({ interviewId: "1" });
+    feedbackResult = await startFeedback({ interviewId });
   }
 
   return (

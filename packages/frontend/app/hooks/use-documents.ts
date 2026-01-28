@@ -41,7 +41,7 @@ export function useDocuments(userId: string) {
       try {
         setIsLoading(true);
         // 개발 모드면 서버 호출을 생략
-        if (process.env.NODE_ENV === "development") {
+        if (process.env.NODE_ENV === "development" && false) {
           setDocuments(FALLBACK_MOCK_DATA);
           setIsLoading(false);
           return;

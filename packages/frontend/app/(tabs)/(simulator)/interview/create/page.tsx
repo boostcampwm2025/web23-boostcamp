@@ -74,10 +74,18 @@ export default function InterviewCreatePage() {
           };
 
       // 개발 모드면 서버 호출을 생략
-      if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV === "development" && false) {
+        const data = await createInterviewClient(
+          requestBody as Record<string, unknown>,
+        );
+        const interviewId = data.interviewId;
+        router.push(`/interview/${interviewId}/ready`);
+
+        /* 
         await new Promise((r) => setTimeout(r, 300));
         const interviewId = "1";
         router.push(`/interview/${interviewId}/ready`);
+ */
       } else {
         // 클라이언트 API 사용
         const data = await createInterviewClient(

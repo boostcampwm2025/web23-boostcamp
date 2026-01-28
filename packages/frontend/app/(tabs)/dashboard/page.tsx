@@ -20,7 +20,7 @@ export default async function Page() {
     return redirect("/");
   }
 
-  const { interviews } = await getCachedInterviews();
+  const { interviews } = await getInterviews();
 
   return (
     <div>
@@ -32,6 +32,7 @@ export default async function Page() {
           <InterviewStartBox href="/interview/create" />
         </div>
         <div className="mt-12">
+          {/* FIXME: 이후에 interview 리스트 가 없을경우 or [] 인경우 */}
           <InterviewList interviews={interviews} />
         </div>
         <div className="mt-12">

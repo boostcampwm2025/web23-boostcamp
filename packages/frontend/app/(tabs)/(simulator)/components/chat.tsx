@@ -15,11 +15,13 @@ export default function Chat({
   initalChats,
   setChats,
   stream,
+  interviewId,
   className,
 }: {
   initalChats: IChatMessage[];
   setChats: Dispatch<SetStateAction<IChatMessage[]>>;
   stream: MediaStream | null;
+  interviewId: string;
   className?: string;
 }) {
   const [isRecording, setIsRecording] = useState(false);
@@ -69,7 +71,7 @@ export default function Chat({
 
       // 답변 전송 (텍스트 입력일 때만 실행)
       if (!isVoice) {
-        await sendAnswer({ interviewId: "1", answer: answerText });
+        await sendAnswer({ interviewId, answer: answerText });
       }
 
       // 서버가 DB 처리를 완료할 수 있도록 지연

@@ -13,14 +13,14 @@ export async function logout() {
 interface IGoogleLoginResponse {
   url: string;
 }
-export async function GoogleLogin() {
+export async function googleLogin() {
   const { url: loginUrl } = (await (
     await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login/url/google`)
   ).json()) as IGoogleLoginResponse;
   redirect(loginUrl);
 }
 
-export async function DevLogin() {
+export async function devLogin() {
   const userSession = await getUserSession();
   userSession.user = {
     id: 1,
