@@ -94,9 +94,15 @@ export async function extractTextFromPdf(
           ocrWorker = await createWorker("kor+eng");
         }
 
-        const ocrResult = await runPageOCR(page, ocrWorker);
-        pageText = ocrResult;
-        ocrPagesCount++;
+        pageText = await runPageOCR(page, ocrWorker);
+        const ocrQuality = calculateTextQuality(pageText);
+
+        // OCR 결과도 품질이 낮으면 버림
+        if (ocrQuality < MIN_QUALITY_THRESHOLD) {
+          pageText = "";
+        } else {
+          ocrPagesCount++;
+        }
       }
 
       // 페이지별 텍스트 추가 (빈 줄로 구분)
