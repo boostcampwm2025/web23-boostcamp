@@ -27,6 +27,8 @@ export async function getFeedback({
   return (await res.json()) as IFeedback;
 }
 
+// 현재 사용하고 있지 않아 lint 에러가 나긴 하나, 나중에 추가될 것 같아서 놔둡니다.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function startFeedback({ interviewId }: { interviewId?: string }) {
   if (process.env.NODE_ENV === "development") {
     await new Promise((r) => setTimeout(r, 200));

@@ -20,6 +20,7 @@ interface DocumentCardProps {
   isSelected?: boolean;
   onSelect?: (id: string) => void;
   isSelectable?: boolean;
+  showDeleteAction?: boolean;
 }
 
 export function DocumentCard({
@@ -27,6 +28,7 @@ export function DocumentCard({
   isSelected,
   onSelect,
   isSelectable = true,
+  showDeleteAction = false,
 }: DocumentCardProps) {
   const canClick = isSelectable && !!onSelect;
 
@@ -67,7 +69,7 @@ export function DocumentCard({
             </div>
           </div>
           <AnimatePresence>
-            {isSelectable && isSelected && (
+            {showDeleteAction && isSelectable && isSelected && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}

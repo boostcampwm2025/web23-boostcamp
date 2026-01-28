@@ -12,8 +12,10 @@ import { createInterviewClient } from "@/app/lib/client/interview";
 import {
   DocumentCard,
   type DocType,
+  type DocumentItem,
 } from "@/app/(tabs)/(simulator)/components/document-card";
 import { useDocuments } from "@/app/hooks/use-documents";
+import DocumentCreateModal from "@/app/(tabs)/documents/components/document-create-modal";
 
 type InterviewMode = "live" | "tech";
 
@@ -26,11 +28,12 @@ export default function InterviewCreatePage() {
   const router = useRouter();
 
   const userId = "1";
-  const { documents, isLoading } = useDocuments(userId);
+  const { documents, isLoading, addDocument } = useDocuments(userId);
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
   const [mode, setMode] = useState<InterviewMode>("tech");
+  const [isDocModalOpen, setIsDocModalOpen] = useState<boolean>(false);
 
   const [selectedDocs, setSelectedDocs] = useState<SelectedDocs>({
     COVER_LETTER: null,
@@ -167,7 +170,7 @@ export default function InterviewCreatePage() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => alert("미구현 기능입니다.")}
+              onClick={() => setIsDocModalOpen(true)}
               className="h-9 gap-2 rounded-lg border-dashed border-muted-foreground/50 text-xs text-muted-foreground transition-all hover:border-primary hover:text-primary"
             >
               <Plus className="h-4 w-4" />새 서류 업로드
@@ -214,6 +217,15 @@ export default function InterviewCreatePage() {
           </Button>
         </footer>
       </div>
+
+      <DocumentCreateModal
+        open={isDocModalOpen}
+        onClose={() => setIsDocModalOpen(false)}
+        onCreate={(newDocument: DocumentItem) => {
+          addDocument(newDocument);
+          setIsDocModalOpen(false);
+        }}
+      />
     </div>
   );
 }
