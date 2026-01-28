@@ -31,6 +31,8 @@ import { InterviewFeedbackResponse } from './dto/interview-feedback-response.dto
 import { InterviewSummaryRequest } from './dto/interview-summary.request.dto';
 import { InterviewSummaryListResponse } from './dto/interview-summary.response.dto';
 
+import { GetUser } from '../auth/decorator/get-user.decorator';
+
 @Controller('interview')
 export class InterviewController {
   private readonly logger = new Logger(InterviewController.name);
@@ -38,16 +40,16 @@ export class InterviewController {
 
   @Post('tech/create')
   async createTechInterview(
+    @GetUser() userId: string,
     @Body() body: CreateInterviewRequestDto,
   ): Promise<CreateInterviewResponseDto> {
-    // 인증이 없기 때문에 userId를 상수화
-    const userId = '1';
     return await this.interviewService.createTechInterview(userId, body);
   }
 
   @Post('answer/voice')
   @UseInterceptors(FileInterceptor('file'))
   async answerWithVoice(
+    @GetUser() userId: string,
     @UploadedFile() file: Express.Multer.File,
     @Body() body: InterviewAnswerVoiceRequest,
   ): Promise<InterviewAnswerResponse> {
@@ -58,8 +60,6 @@ export class InterviewController {
       throw new BadRequestException('음성 파일이 없습니다.');
     }
 
-    // 인증이 없기 때문에 userId를 상수화
-    const userId = '1';
     const answerResult = await this.interviewService.answerWithVoice(
       userId,
       body.interviewId,
@@ -73,10 +73,9 @@ export class InterviewController {
 
   @Post('answer/chat')
   async answerWithChat(
+    @GetUser() userId: string,
     @Body() body: InterviewAnswerChatRequest,
   ): Promise<InterviewAnswerResponse> {
-    // 인증이 없기 때문에 userId를 상수화
-    const userId = '1';
     const answerResult = await this.interviewService.answerWithChat(
       userId,
       body.interviewId,
@@ -89,9 +88,10 @@ export class InterviewController {
   }
 
   @Post('/stop')
-  async stopInterview(@Body() body: InterviewStopRequest): Promise<void> {
-    // 인증이 없기 때문에 userId를 상수화
-    const userId = '1';
+  async stopInterview(
+    @GetUser() userId: string,
+    @Body() body: InterviewStopRequest,
+  ): Promise<void> {
     const endTime = new Date();
     await this.interviewService.calculateInterviewTime(
       userId,
@@ -102,10 +102,9 @@ export class InterviewController {
 
   @Get('/:interviewId/chat/history')
   async getInterviewChatHistory(
+    @GetUser() userId: string,
     @Param('interviewId') interviewId: string,
   ): Promise<InterviewChatHistoryResponse> {
-    // 인증이 없기 때문에 userId를 상수화
-    const userId = '1';
     return this.interviewService.findInterviewChatHistory(userId, interviewId);
   }
 
@@ -122,9 +121,9 @@ export class InterviewController {
 
   @Post('/feedback')
   async generateAiInterview(
+    @GetUser() userId: string,
     @Body() body: CreateFeedbackRequest,
   ): Promise<InterviewFeedbackResponse> {
-    const userId = '1';
     return await this.interviewService.createInterviewFeedback(
       userId,
       body.interviewId,
@@ -133,27 +132,25 @@ export class InterviewController {
 
   @Get(':interviewId/time')
   async getDuringTime(
+    @GetUser() userId: string,
     @Param('interviewId') interviewId: string,
   ): Promise<InterviewDuringTimeResponse> {
-    // 인증이 없기 때문에 userId를 상수화
-    const userId = '1';
     return await this.interviewService.getInterviewTime(userId, interviewId);
   }
 
   @Get('/:interviewId/feedback')
   async getInterviewFeedback(
+    @GetUser() userId: string,
     @Param('interviewId') interviewId: string,
   ): Promise<InterviewFeedbackResponse> {
-    // 인증이 없기 때문에 userId를 상수화
-    const userId = '1';
     return this.interviewService.findInterviewFeedback(userId, interviewId);
   }
 
   @Get()
   async getInterviewList(
+    @GetUser() userId: string,
     @Query() dto: InterviewSummaryRequest,
   ): Promise<InterviewSummaryListResponse> {
-    const userId = '1';
     const { page, take, type, sort } = dto;
     return await this.interviewService.listInterviews(
       userId,
@@ -167,9 +164,9 @@ export class InterviewController {
   @Delete(':interviewId')
   @HttpCode(204)
   async deleteInterview(
+    @GetUser() userId: string,
     @Param('interviewId') interviewId: string,
   ): Promise<void> {
-    const userId = '1';
     await this.interviewService.deleteInterview(userId, interviewId);
   }
 }

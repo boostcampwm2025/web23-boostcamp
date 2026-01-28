@@ -26,15 +26,17 @@ import { CoverLetterDetailResponseDto } from './dto/cover-letter-detail-response
 import { BulkDeleteDocumentRequestDto } from './dto/bulk-delete-document-request.dto';
 import { BulkDeleteDocumentResponseDto } from './dto/bulk-delete-document-response.dto';
 
+import { GetUser } from '../auth/decorator/get-user.decorator';
+
 @Controller('document')
 export class DocumentController {
   constructor(private readonly documentService: DocumentService) {}
 
   @Post('portfolio/create')
   async createPortfolioWithText(
+    @GetUser() userId: string,
     @Body() body: CreatePortfolioTextRequestDto,
   ): Promise<CreatePortfolioTextResponseDto> {
-    const userId = '1';
     return await this.documentService.createPortfolioWithText(
       userId,
       body.title,
@@ -44,18 +46,18 @@ export class DocumentController {
 
   @Get(':documentId/portfolio')
   async viewPortfolio(
+    @GetUser() userId: string,
     @Param('documentId') documentId: string,
   ): Promise<PortfolioDetailResponseDto> {
-    const userId = '1';
     return await this.documentService.viewPortfolio(userId, documentId);
   }
 
   @Patch(':documentId/portfolio')
   async updatePortfolio(
+    @GetUser() userId: string,
     @Param('documentId') documentId: string,
     @Body() body: UpdatePortfolioRequestDto,
   ): Promise<PortfolioDetailResponseDto> {
-    const userId = '1';
     return await this.documentService.updatePortfolio(
       userId,
       documentId,
@@ -66,16 +68,18 @@ export class DocumentController {
 
   @Delete(':documentId/portfolio')
   @HttpCode(204)
-  async deletePortfolio(@Param('documentId') documentId: string) {
-    const userId = '1';
+  async deletePortfolio(
+    @GetUser() userId: string,
+    @Param('documentId') documentId: string,
+  ) {
     await this.documentService.deletePortfolio(userId, documentId);
   }
 
   @Post('cover-letter/create')
   async createCoverLetter(
+    @GetUser() userId: string,
     @Body() body: CreateCoverLetterRequestDto,
   ): Promise<CreateCoverLetterResponseDto> {
-    const userId = '1';
     return await this.documentService.createCoverLetter(
       userId,
       body.title,
@@ -85,25 +89,27 @@ export class DocumentController {
 
   @Get(':documentId/cover-letter')
   async viewCoverLetter(
+    @GetUser() userId: string,
     @Param('documentId') documentId: string,
   ): Promise<CoverLetterDetailResponseDto> {
-    const userId = '1';
     return await this.documentService.viewCoverLetter(userId, documentId);
   }
 
   @Delete(':documentId/cover-letter')
   @HttpCode(204)
-  async deleteCoverLetter(@Param('documentId') documentId: string) {
-    const userId = '1';
+  async deleteCoverLetter(
+    @GetUser() userId: string,
+    @Param('documentId') documentId: string,
+  ) {
     await this.documentService.deleteCoverLetter(userId, documentId);
   }
 
   @Put(':documentId/cover-letter')
   async updateCoverLetter(
+    @GetUser() userId: string,
     @Param('documentId') documentId: string,
     @Body() body: UpdateCoverLetterRequestDto,
   ): Promise<CoverLetterDetailResponseDto> {
-    const userId = '1';
     return await this.documentService.updateCoverLetter(
       userId,
       documentId,
@@ -113,10 +119,9 @@ export class DocumentController {
 
   @Get()
   async getDocumentList(
+    @GetUser() userId: string,
     @Query() dto: DocumentSummaryRequest,
   ): Promise<DocumentSummaryListResponse> {
-    const userId = '1';
-
     const { page, take, type, sort } = dto;
     return await this.documentService.listDocuments(
       userId,
@@ -129,9 +134,9 @@ export class DocumentController {
 
   @Delete()
   async bulkDeleteDocuments(
+    @GetUser() userId: string,
     @Body() dto: BulkDeleteDocumentRequestDto,
   ): Promise<BulkDeleteDocumentResponseDto> {
-    const userId = '1';
     return await this.documentService.bulkDeleteDocuments(
       userId,
       dto.documentIds,
