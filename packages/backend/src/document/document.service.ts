@@ -1,11 +1,12 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { DocumentRepository } from './repositories/document.repository';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, In } from 'typeorm';
 import { Portfolio } from './entities/portfolio.entity';
 import { Document, DocumentType } from './entities/document.entity';
 import { UserService } from '../user/user.service';
@@ -15,6 +16,7 @@ import { CoverLetter } from './entities/cover-letter.entity';
 import { CoverLetterQuestionAnswer } from './entities/cover-letter-question-answer.entity';
 import { CoverLetterQnA } from './dto/create-cover-letter-request.dto';
 import { UpdateCoverLetterRequestDto } from './dto/update-cover-letter-request.dto';
+import { BulkDeleteDocumentResponseDto } from './dto/bulk-delete-document-response.dto';
 
 @Injectable()
 export class DocumentService {
@@ -341,5 +343,46 @@ export class DocumentService {
     }
 
     return document;
+  }
+
+  async bulkDeleteDocuments(
+    userId: string,
+    documentIds: string[],
+  ): Promise<BulkDeleteDocumentResponseDto> {
+    const documents = await this.documentRepository.findAllByDocumentIds(
+      userId,
+      documentIds,
+    );
+
+    if (documents.length === 0) {
+      this.logger.warn(
+        `문서를 찾을 수 없습니다. documentIds=${documentIds.join(',')}`,
+      );
+      throw new BadRequestException(`문서를 찾을 수 없습니다.`);
+    }
+
+    const foundIds = documents.map((d) => d.documentId);
+    const failedDocuments = documentIds.filter(
+      (id) => !this.isFoundDocumentId(id, foundIds),
+    );
+
+    if (foundIds.length > 0) {
+      await this.documentRepository.delete({ documentId: In(foundIds) });
+    }
+
+    return {
+      success: true,
+      requestedCount: documentIds.length,
+      deletedCount: foundIds.length,
+      failedDocuments,
+    };
+  }
+
+  private isFoundDocumentId(id: string, ids: string[]) {
+    if (ids.includes(id)) {
+      return true;
+    }
+    this.logger.warn(`pk가 ${id}인 문서 삭제에 실패했습니다.`);
+    return false;
   }
 }
