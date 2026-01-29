@@ -4,7 +4,6 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
-  BadRequestException,
 } from '@nestjs/common';
 import { DocumentRepository } from './repositories/document.repository';
 import { DataSource, EntityManager, In } from 'typeorm';
