@@ -1,8 +1,12 @@
 import { ArrowRight, Plus } from "lucide-react";
+import Link from "next/link";
 
-export default function InterviewStartBox() {
+export default function InterviewStartBox({ href }: { href: string }) {
   return (
-    <div className="flex cursor-pointer flex-col gap-7 rounded-3xl bg-primary p-8">
+    <Link
+      href={href}
+      className="flex cursor-pointer flex-col gap-7 rounded-3xl bg-primary p-8"
+    >
       <div className="w-fit rounded-3xl bg-neutral-800 p-4">
         <Plus className="size-8 text-white" />
       </div>
@@ -22,6 +26,6 @@ export default function InterviewStartBox() {
         </span>
         <ArrowRight className="size-5" />
       </div>
-    </div>
+    </Link>
   );
 }

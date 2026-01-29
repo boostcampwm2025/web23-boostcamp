@@ -1,5 +1,7 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+
 interface IAnswerResponse {
   answer: string;
 }
@@ -27,7 +29,7 @@ export async function speakAnswer({
   audio: Blob;
 }) {
   // 개발 환경에서는 서버 호출을 생략하고 모의 응답을 반환합니다.
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === "development" && false) {
     await new Promise((r) => setTimeout(r, 100));
     return { answer: "[DEV] 개발 모드 음성 변환 샘플 응답" } as IAnswerResponse;
   }
@@ -58,13 +60,6 @@ export async function sendAnswer({
   interviewId: string;
   answer: string;
 }) {
-  if (process.env.NODE_ENV === "development") {
-    await new Promise((r) => setTimeout(r, 100));
-    const mock = { answer: "[DEV] 개발 모드 채팅 응답" } as IAnswerResponse;
-    console.log("DEV mock sendAnswer ->", mock);
-    return mock;
-  }
-
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/interview/answer/chat`,
     {
@@ -81,11 +76,12 @@ export async function sendAnswer({
   }
 
   const data = (await response.json()) as IAnswerResponse;
+  revalidatePath(`/interview/${interviewId}/result`);
   return data;
 }
 
 export async function getHistory({ interviewId }: { interviewId: string }) {
-  if (process.env.NODE_ENV === "development") {
+  /* if (process.env.NODE_ENV === "development" && false) {
     const now = new Date();
     const h1 = new Date(now.getTime() - 1000 * 60 * 60 * 3);
     const h2 = new Date(now.getTime() - 1000 * 60 * 60 * 2);
@@ -137,7 +133,7 @@ export async function getHistory({ interviewId }: { interviewId: string }) {
         },
       ] as IHistoryItem[],
     };
-  }
+  } */
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/interview/${interviewId}/chat/history`,
@@ -149,7 +145,7 @@ export async function getHistory({ interviewId }: { interviewId: string }) {
   );
 
   if (!response.ok) {
-    throw new Error("API 요청 실패");
+    throw new Error("API 요청에 실패하였습니다.");
   }
 
   const { history } = (await response.json()) as IHistoryResponse;
@@ -167,14 +163,14 @@ export async function generateQuestion({
 }: {
   interviewId: string;
 }) {
-  if (process.env.NODE_ENV === "development") {
+  /*   if (process.env.NODE_ENV === "development" && false) {
     return {
       questionId: "sample-question-id",
       question: "[DEV] 이것은 샘플 질문입니다.",
       createdAt: new Date(),
       isLast: false,
     };
-  }
+  } */
 
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/interview/tech/question`,

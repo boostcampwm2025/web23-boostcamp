@@ -149,6 +149,7 @@ export class InterviewService {
       'user',
       'questions',
     ]);
+    console.log('interview:', interview, userId, interviewId);
     interview.validateUser(userId);
 
     const feedbackDto =

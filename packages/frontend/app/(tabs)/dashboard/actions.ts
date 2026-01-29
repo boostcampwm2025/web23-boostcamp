@@ -8,11 +8,19 @@ export interface IInterview {
 }
 
 export async function getInterviews() {
-  const json = (await (
-    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/interview?page=1&take=6`, {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/interview?page=1&take=6`,
+    {
       method: "GET",
       cache: "no-store",
-    })
-  ).json()) as { interviews: IInterview[] };
+    },
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch interviews");
+  }
+
+  const json = (await res.json()) as { interviews: IInterview[] };
+
   return json;
 }

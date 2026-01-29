@@ -1,12 +1,20 @@
 import { ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
+import { notFound } from "next/navigation";
 import Link from "next/link";
 
+import IconBox from "@/app/components/ui/icon-box";
+import { getUserSession } from "@/app/lib/server/session";
 import { Button } from "@/app/components/ui/button";
 
 import VideoStatus from "../components/video-status";
-import IconBox from "@/app/components/ui/icon-box";
 
 export default async function InterviewReadyPage() {
+  const { user } = await getUserSession();
+
+  if (!user) {
+    return notFound();
+  }
+
   return (
     <div className="mx-auto flex w-full max-w-360 flex-col gap-8 lg:flex-row">
       {/* <InterviewClient history={history} /> */}
@@ -19,7 +27,7 @@ export default async function InterviewReadyPage() {
           <h5 className="text-xs font-semibold text-primary"> 준비 완료</h5>
         </div>
         <div className="mt-4 flex flex-col gap-1 text-4xl font-bold text-pretty">
-          <h3>준호 님,</h3>
+          <h3>{user.email} 님,</h3>
           <h3>준비되셨나요?</h3>
         </div>
         <span className="mt-4 block text-base font-semibold text-muted-foreground">
