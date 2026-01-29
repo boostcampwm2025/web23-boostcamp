@@ -3,9 +3,11 @@ import { IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 
 export class CoverLetterQnA {
   @IsString()
+  @IsNotEmpty()
   question: string;
 
   @IsString()
+  @IsNotEmpty()
   answer: string;
 }
 
@@ -16,5 +18,6 @@ export class CreateCoverLetterRequestDto {
 
   @ValidateNested({ each: true })
   @Type(() => CoverLetterQnA)
+  @IsNotEmpty()
   content: CoverLetterQnA[];
 }

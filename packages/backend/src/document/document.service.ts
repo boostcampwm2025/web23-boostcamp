@@ -33,6 +33,13 @@ export class DocumentService {
     title: string,
     content: string,
   ) {
+    if (!title.trim()) {
+      throw new BadRequestException('제목은 비어있을 수 없습니다.');
+    }
+    if (!content.trim()) {
+      throw new BadRequestException('내용은 비어있을 수 없습니다.');
+    }
+
     const user = await this.userService.findExistingUser(userId);
     const savedDocument = await this.dataSource.transaction(async (manager) => {
       const portfolio = new Portfolio();
@@ -104,10 +111,18 @@ export class DocumentService {
       throw new NotFoundException('등록되지 않은 문서입니다');
     }
 
-    if (title) {
+    if (title !== undefined) {
+      if (!title.trim()) {
+        this.logger.warn(`비어있는 문자열 입력`);
+        throw new BadRequestException('제목은 비어있을 수 없습니다.');
+      }
       document.title = title;
     }
-    if (content) {
+    if (content !== undefined) {
+      if (!content.trim()) {
+        this.logger.warn(`비어있는 문자열 입력`);
+        throw new BadRequestException('내용은 비어있을 수 없습니다.');
+      }
       document.portfolio.content = content;
     }
 
@@ -130,6 +145,13 @@ export class DocumentService {
     content: CoverLetterQnA[],
   ) {
     const user = await this.userService.findExistingUser(userId);
+
+    if (!title.trim()) {
+      throw new BadRequestException('제목은 비어있을 수 없습니다.');
+    }
+    if (content.some((qa) => !qa.question.trim() || !qa.answer.trim())) {
+      throw new BadRequestException('질문과 답변은 비어있을 수 없습니다.');
+    }
 
     const savedDocument = await this.dataSource.transaction(async (manager) => {
       const coverLetter = new CoverLetter();
@@ -259,9 +281,21 @@ export class DocumentService {
       documentId,
     );
 
+    if (dto.title !== undefined) {
+      if (!dto.title.trim()) {
+        throw new BadRequestException('제목은 비어있을 수 없습니다.');
+      }
+    }
+
+    if (dto.content !== undefined) {
+      if (dto.content.some((qa) => !qa.question.trim() || !qa.answer.trim())) {
+        throw new BadRequestException('질문과 답변은 비어있을 수 없습니다.');
+      }
+    }
+
     const updatedDocument = await this.dataSource.transaction(
       async (manager: EntityManager) => {
-        if (dto.title) {
+        if (dto.title !== undefined) {
           document.title = dto.title;
         }
 

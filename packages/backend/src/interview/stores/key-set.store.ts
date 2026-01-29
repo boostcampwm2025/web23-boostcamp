@@ -4,6 +4,7 @@ import { MinHeapScheduler } from './min-heap.scheduler';
 @Injectable()
 export class KeySetStore implements OnModuleInit {
   private readonly store = new Map<string, Set<string>>();
+  private readonly numberStore = new Map<string, number>();
   // TTL 관리를 위한 Min-Heap 스케줄러
   private readonly scheduler = new MinHeapScheduler();
   private readonly logger = new Logger(KeySetStore.name);
@@ -93,5 +94,24 @@ export class KeySetStore implements OnModuleInit {
     this.store.delete(key);
     // 스케줄러에서도 제거
     this.scheduler.remove(key);
+  }
+
+  addToNumber(key: string, value: number, ttl: number = 40 * 60 * 1000) {
+    this.numberStore.set(key, value);
+    // TTL이 0이거나 음수면 스케줄링 하지 않음 (필요 시 정책 조정)
+    if (ttl > 0) {
+      // 기존 스케줄 제거 후 새로 등록 (TTL 갱신)
+      // 스케줄러는 O(log N)으로 동작하므로 무거운 연산 아님
+      this.scheduler.remove(key);
+      this.scheduler.push(key, Date.now() + ttl);
+    }
+  }
+
+  getNumber(key: string): number | undefined {
+    return this.numberStore.get(key);
+  }
+
+  deleteNumber(key: string) {
+    this.numberStore.delete(key);
   }
 }

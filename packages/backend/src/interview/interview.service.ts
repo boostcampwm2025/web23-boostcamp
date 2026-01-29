@@ -5,6 +5,10 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import {
+  MAX_INTERVIEW_TIME_MS,
+  MAX_INTERVIEW_TURNS,
+} from './interview.constants';
 import { QuestionsRepository } from './repositories/questions.repository';
 import { AnswersRepository } from './repositories/answers.repository';
 import { InterviewQuestion } from './entities/interview-question.entity';
@@ -13,20 +17,24 @@ import { KeySetStore } from './stores/key-set.store';
 import { InterviewAIService } from './interview-ai.service';
 import { SttService } from './stt.service';
 import { InterviewRepository } from './interview.repository';
-import { Interview } from './entities/interview.entity';
+import {
+  Interview,
+  InterviewType,
+  LikeStatus,
+} from './entities/interview.entity';
 import { InterviewChatHistoryResponse } from './dto/interview-chat-history-response.dto';
 import { InterviewDuringTimeResponse } from './dto/interview-during-time-response.dto';
 import { PortfolioRepository } from '../document/repositories/portfolio.repository';
 import { CoverLetterRepository } from '../document/repositories/cover-letter.repository';
 import { CreateInterviewResponseDto } from './dto/create-interview-response.dto';
-import { InterviewType, LikeStatus } from './entities/interview.entity';
 import { CreateInterviewRequestDto } from './dto/create-interview-request.dto';
 import { DocumentRepository } from '../document/repositories/document.repository';
-import { User } from '../user/entities/user.entity';
 import { InterviewFeedbackService } from './interview-feedback.service';
 import { InterviewFeedbackResponse } from './dto/interview-feedback-response.dto';
 import { InterviewSummaryListResponse } from './dto/interview-summary.response.dto';
 import { SortType } from './dto/interview-summary.request.dto';
+import { In } from 'typeorm';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class InterviewService {
@@ -43,7 +51,8 @@ export class InterviewService {
     private readonly coverLetterRepository: CoverLetterRepository,
     private readonly documentRepository: DocumentRepository,
     private readonly interviewFeedBackService: InterviewFeedbackService,
-  ) { }
+    private readonly userService: UserService,
+  ) {}
 
   async calculateInterviewTime(
     userId: string,
@@ -71,52 +80,6 @@ export class InterviewService {
     return {
       createdAt: interview.createdAt,
       duringTime: interview.duringTime,
-    };
-  }
-
-  async createTechInterview(
-    userId: string,
-    dto: CreateInterviewRequestDto,
-  ): Promise<CreateInterviewResponseDto> {
-    // 1. Interview 엔티티 생성
-    const interview = new Interview();
-    interview.title = 'Tech Interview'; // 기본 타이틀
-    interview.type = InterviewType.TECH;
-    interview.likeStatus = LikeStatus.NONE;
-    interview.user = { userId } as User; // 관계 설정을 위해 ID만 할당 (User entity 전체 로드 불필요 시)
-
-    const savedInterview = await this.interviewRepository.save(interview);
-    const interviewId = savedInterview.interviewId;
-
-    // 2. 초기 데이터 (Portfolio/CoverLetter 등) 준비 및 Redis(KeySetStore) 저장
-    const documentsKey = `documents:${interviewId}`;
-
-    if (dto.documentIds && dto.documentIds.length > 0) {
-      const documents = await this.documentRepository.findByIds(
-        dto.documentIds,
-      );
-
-      documents.forEach((doc) => {
-        // DocumentType이 'PORTFOLIO', 'COVER' 등과 일치한다고 가정
-        // Redis 저장 포맷: TYPE:ID (예: PORTFOLIO:1)
-        this.keySetStore.addToSet(
-          documentsKey,
-          `${doc.type}:${doc.documentId}`,
-        );
-        this.logger.log(
-          `Added document to MemoryStore: ${doc.type}:${doc.documentId}`,
-        );
-      });
-    }
-
-    // 3. 첫 질문 생성
-    const firstQuestion = await this.chatInterviewer(interviewId);
-
-    return {
-      interviewId: interviewId,
-      questionId: firstQuestion.questionId,
-      question: firstQuestion.question,
-      createdAt: firstQuestion.createdAt,
     };
   }
 
@@ -177,22 +140,6 @@ export class InterviewService {
     return interview;
   }
 
-  async findInterviewChatHistory(
-    userId: string,
-    interviewId: string,
-  ): Promise<InterviewChatHistoryResponse> {
-    const interview = await this.findExistingInterview(interviewId, [
-      'answers',
-      'user',
-      'questions',
-    ]);
-    interview.validateUser(userId);
-    return InterviewChatHistoryResponse.fromEntity(
-      interview.answers,
-      interview.questions,
-    );
-  }
-
   async createInterviewFeedback(
     userId: string,
     interviewId: string,
@@ -216,11 +163,102 @@ export class InterviewService {
     return feedbackDto;
   }
 
-  async chatInterviewer(interviewId: string) {
+  async createTechInterview(
+    userId: string,
+    dto: CreateInterviewRequestDto,
+  ): Promise<CreateInterviewResponseDto> {
+    const user = await this.userService.findExistingUser(userId);
+
+    const documents = await this.documentRepository.find({
+      where: {
+        documentId: In(dto.documentIds),
+        user: { userId },
+      },
+    });
+
+    if (documents.length !== dto.documentIds.length) {
+      this.logger.warn(`잘못된 문서 선택: ${dto.documentIds.toString()}`);
+      throw new BadRequestException(`잘못된 문서가 포함되어있습니다.`);
+    }
+
+    // 1. Interview 엔티티 생성
+    const interview = new Interview();
+    interview.title = dto.simulationTitle;
+    interview.type = InterviewType.TECH;
+    interview.likeStatus = LikeStatus.NONE;
+    interview.user = user;
+
+    const savedInterview = await this.interviewRepository.save(interview);
+
+    // 2. 초기 데이터 (Portfolio/CoverLetter 등) 준비 및 Redis(KeySetStore) 저장
+    // type에 따른 연관관계가 상이하므로, 쿼리를 아끼기위한 캐싱 데이터
+    // ex) document 조회 -> type -> portfolio (x), document + type -> portfolio 조회
+    const documentsKey = `documents:${savedInterview.interviewId}`;
+
+    documents.forEach((doc) => {
+      // DocumentType이 'PORTFOLIO', 'COVER' 등과 일치한다고 가정
+      // Redis 저장 포맷: TYPE:ID (예: PORTFOLIO:1)
+      this.keySetStore.addToSet(documentsKey, `${doc.type}:${doc.documentId}`);
+      this.logger.log(
+        `Added document to MemoryStore: ${doc.type}:${doc.documentId}`,
+      );
+    });
+
+    // 3. 첫 질문 생성
+    const firstQuestion = await this.createQuestion(savedInterview.interviewId);
+
+    // 첫 질문 셍성 후 첫 번째 턴 시작
+    this.keySetStore.addToNumber(interview.interviewId, 1);
+
+    return {
+      interviewId: savedInterview.interviewId,
+      questionId: firstQuestion.questionId,
+      question: firstQuestion.question,
+      createdAt: firstQuestion.createdAt,
+    };
+  }
+
+  async chatInterviewer(userId: string, interviewId: string) {
+    const user = await this.userService.findExistingUser(userId);
+    const interview = await this.findExistingInterview(interviewId);
+
+    interview.validateUser(user.userId);
+
+    const isTimeOver = await this.checkInterviewTimeOver(interviewId);
+    const currentTurn = this.getCurrentTurn(interviewId);
+    const isTurnOver = this.checkInterviewTurnOver(currentTurn);
+
+    let isLastQuestion = false;
+
+    if (isTimeOver) {
+      this.logger.log(`Time Over: isTimeOver=${isTimeOver}`);
+      isLastQuestion = true;
+    }
+
+    if (isTurnOver) {
+      this.logger.log(`Turn Over: isTurnOver=${isTurnOver}`);
+      isLastQuestion = true;
+    }
+
+    const question = await this.createQuestion(interviewId, isLastQuestion);
+
+    question.isLast = isLastQuestion;
+
+    this.keySetStore.addToNumber(interviewId, currentTurn + 1);
+
+    return question;
+  }
+
+  private async createQuestion(interviewId: string, isLastQuestion = false) {
     const questions: InterviewQuestion[] =
       await this.questionRepository.findFiveByInterviewId(interviewId);
     const answers: InterviewAnswer[] =
       await this.answerRepository.findFiveByInterviewId(interviewId);
+
+    if (questions.length === 0 && answers.length === 0) {
+      this.logger.debug(`첫 질문 생성 (히스토리 없음)`);
+      // 첫 질문이므로 에러가 아님. 그대로 진행.
+    }
 
     this.logger.log('questions:', JSON.stringify(questions, null, 2));
     this.logger.log('answers:', JSON.stringify(answers, null, 2));
@@ -232,6 +270,7 @@ export class InterviewService {
     const portfolioContents: string[] = [];
     const coverLetterContents: string[] = [];
 
+    // TODO: 함수 분리 필요
     for (const item of documentIds) {
       const [type, id] = item.split(':');
       if (type === 'PORTFOLIO') {
@@ -254,9 +293,7 @@ export class InterviewService {
     const userinfo = `[PORTFOLIO]\n${portfolioContents.join('\n\n')}\n\n[COVER LETTER]\n${coverLetterContents.join('\n\n')}`;
 
     const visitedTopicsKey = `visitedTopics:${interviewId}`;
-
     const visitedTopics = this.keySetStore.getSet(visitedTopicsKey);
-
     this.logger.log('visitedTopics:', visitedTopics);
 
     const parsed = await this.interviewAIService.generateInterviewQuestion(
@@ -264,29 +301,69 @@ export class InterviewService {
       answers,
       userinfo,
       visitedTopics,
+      isLastQuestion,
     );
 
-    if (parsed) {
-      if (parsed.tags && Array.isArray(parsed.tags)) {
-        parsed.tags.forEach((tag: string) =>
-          this.keySetStore.addToSet(visitedTopicsKey, tag),
-        );
-      }
+    const savedQuestion = await this.questionRepository.createQuestion(
+      parsed.question,
+      interviewId,
+    );
 
-      const savedQuestion = await this.questionRepository.createQuestion(
-        parsed.question,
-        interviewId,
-      );
+    return {
+      questionId: savedQuestion.questionId,
+      question: parsed.question,
+      createdAt: savedQuestion.createdAt,
+      isLast: parsed.isLast,
+    };
+  }
 
-      return {
-        questionId: savedQuestion.questionId,
-        question: parsed.question,
-        createdAt: savedQuestion.createdAt,
-        isLast: parsed.isLast,
-      };
+  async findInterviewChatHistory(
+    userId: string,
+    interviewId: string,
+  ): Promise<InterviewChatHistoryResponse> {
+    const interview = await this.findExistingInterview(interviewId, [
+      'answers',
+      'user',
+      'questions',
+    ]);
+    interview.validateUser(userId);
+    return InterviewChatHistoryResponse.fromEntity(
+      interview.answers,
+      interview.questions,
+    );
+  }
+
+  private async checkInterviewTimeOver(interviewId: string) {
+    const interview = await this.interviewRepository.findById(interviewId);
+    if (!interview) {
+      throw new NotFoundException('Interview not found');
     }
+    const timeElapsed = Date.now() - interview.createdAt.getTime();
+    const isTimeOver = timeElapsed >= MAX_INTERVIEW_TIME_MS;
 
-    throw new InternalServerErrorException('Failed to parse JSON response');
+    if (isTimeOver) {
+      this.logger.warn(`Termination Mode Activated: isTimeOver=${isTimeOver}`);
+    }
+    return isTimeOver;
+  }
+
+  private getCurrentTurn(interviewId: string) {
+    const currentTurn = this.keySetStore.getNumber(interviewId);
+    if (currentTurn === undefined) {
+      this.logger.warn(
+        `인터뷰 세션을 찾을 수 없습니다. , interviewId=${interviewId}`,
+      );
+      throw new InternalServerErrorException(`세션이 종료되었습니다.`);
+    }
+    return currentTurn;
+  }
+
+  private checkInterviewTurnOver(currentTurn: number): boolean {
+    if (currentTurn >= MAX_INTERVIEW_TURNS) {
+      this.logger.log(`Turn Over: currentTurn=${currentTurn}`);
+      return true;
+    }
+    return false;
   }
 
   async findInterviewFeedback(
