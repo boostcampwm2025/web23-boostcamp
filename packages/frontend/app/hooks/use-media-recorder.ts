@@ -23,7 +23,7 @@ type MediaType = "video" | "audio";
 interface IMediaRecorderConfig {
   mimeCandidates: string[];
   blobTypeFallback: string;
-  saveFunction: (blob: Blob) => Promise<void>;
+  saveFunction: (blob: Blob, interviewId?: string) => Promise<void>;
 }
 
 const MEDIA_CONFIGS: Record<MediaType, IMediaRecorderConfig> = {
@@ -81,10 +81,11 @@ const stopMediaRecorderSafely = async (
   mediaRecorder: MediaRecorder | null,
   chunksRef: { current: BlobPart[] },
   blobType: string,
-  saveFunction: (blob: Blob) => Promise<void>,
+  saveFunction: (blob: Blob, interviewId?: string) => Promise<void>,
   setIsRecording: (value: boolean) => void,
   setLastBlob: (blob: Blob | null) => void,
   errorContext: string,
+  interviewId?: string,
 ) => {
   return new Promise<Blob | null>((resolve) => {
     if (!mediaRecorder) {
@@ -97,7 +98,7 @@ const stopMediaRecorderSafely = async (
         type: blobType,
       });
       try {
-        await saveFunction(blob);
+        await saveFunction(blob, interviewId);
       } catch (error) {
         console.error(`${errorContext} 저장 실패:`, error);
       }
@@ -116,7 +117,10 @@ const stopMediaRecorderSafely = async (
   });
 };
 
-export const useMediaRecorder = (stream?: MediaStream | null) => {
+export const useMediaRecorder = (
+  stream?: MediaStream | null,
+  options?: { interviewId?: string },
+) => {
   const mediaRecorderRefVideo = useRef<MediaRecorder | null>(null);
   const mediaRecorderRefAudio = useRef<MediaRecorder | null>(null);
   const chunksRefVideo = useRef<BlobPart[]>([]);
@@ -127,6 +131,7 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
 
   const [isRecording, setIsRecording] = useState(false);
   const [lastBlob, setLastBlob] = useState<Blob | null>(null);
+  const interviewId = options?.interviewId;
 
   const startVideoRecording = useCallback(() => {
     if (!stream) {
@@ -176,6 +181,7 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
       setIsRecording,
       setLastBlob,
       "비디오",
+      interviewId,
     );
 
     mediaRecorderRefVideo.current = null;
@@ -250,6 +256,7 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
       setIsRecording,
       setLastBlob,
       "오디오",
+      interviewId,
     );
 
     mediaRecorderRefAudio.current = null;
@@ -260,7 +267,7 @@ export const useMediaRecorder = (stream?: MediaStream | null) => {
     }
 
     return blob;
-  }, []);
+  }, [interviewId]);
 
   useEffect(() => {
     return () => {

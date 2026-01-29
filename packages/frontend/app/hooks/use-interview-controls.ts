@@ -32,7 +32,7 @@ export const useInterviewControls = (
     stopVideoRecording,
     startAudioRecording,
     stopAudioRecording,
-  } = useMediaRecorder(stream);
+  } = useMediaRecorder(stream, { interviewId });
 
   const appendLog = useCallback((message: string) => {
     setLog(

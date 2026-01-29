@@ -74,7 +74,7 @@ export default async function InterviewResultPage({
             <Score score={+feedbackResult.score} />
           </Panel>
           <Panel className="flex-2 p-5">
-            <RecentRecording />
+            <RecentRecording interviewId={interviewId} />
           </Panel>
         </div>
         <div className="flex flex-col gap-6 md:flex-row">
