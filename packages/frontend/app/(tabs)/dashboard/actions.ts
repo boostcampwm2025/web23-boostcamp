@@ -8,6 +8,7 @@ export interface IInterview {
   title: string;
   type: string;
   createdAt: string;
+  score: string;
 }
 
 export async function getInterviews() {

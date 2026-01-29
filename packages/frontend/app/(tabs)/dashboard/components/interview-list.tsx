@@ -49,7 +49,9 @@ export default function InterviewList({
                       score
                     </span>
                   </div>
-                  <p className="text-sm font-bold md:text-base">82</p>
+                  <p className="text-sm font-bold md:text-base">
+                    {interview.score}
+                  </p>
                 </div>
 
                 <IconBox className="hidden opacity-0 transition-opacity group-hover:flex group-hover:opacity-100">

@@ -56,3 +56,41 @@ export async function startFeedback({
 
   return (await res.json()) as IFeedback;
 }
+
+export async function like({
+  interviewId,
+  userToken,
+}: {
+  interviewId: string;
+  userToken: string;
+}) {
+  fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/interview/${interviewId}/feedback/like`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+    },
+  );
+}
+
+export async function dislike({
+  interviewId,
+  userToken,
+}: {
+  interviewId: string;
+  userToken: string;
+}) {
+  fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/interview/${interviewId}/feedback/dislike`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+    },
+  );
+}

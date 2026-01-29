@@ -206,7 +206,7 @@ export default function InterviewCreatePage() {
         <footer className="flex justify-end border-t pt-8">
           <Button
             size="lg"
-            className="h-14 px-12 text-base font-bold shadow-md transition-all active:scale-95"
+            className="h-14 cursor-pointer px-12 text-base font-bold shadow-md transition-all active:scale-95"
             disabled={
               !title ||
               (!selectedDocs.COVER && !selectedDocs.PORTFOLIO) ||

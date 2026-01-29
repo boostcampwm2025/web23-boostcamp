@@ -1,9 +1,4 @@
 "use client";
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from "@/app/components/ui/avatar";
 
 import {
   DropdownMenu,
@@ -13,6 +8,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
+import Image from "next/image";
+import { useState } from "react";
 
 export default function Profile({
   email,
@@ -23,14 +20,27 @@ export default function Profile({
   profileImage?: string;
   logout?: () => void;
 }) {
+  const [error, setError] = useState(false);
+
   return (
     <div className="p-3">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Avatar className="cursor-pointer ring-1 ring-primary transition-all hover:brightness-110">
-            <AvatarImage src={profileImage} alt="profile_image" />
-            <AvatarFallback>{email.charAt(0).toUpperCase()}</AvatarFallback>
-          </Avatar>
+          <div className="relative cursor-pointer overflow-hidden rounded-full ring-1 ring-primary transition-all hover:brightness-110">
+            <Image
+              src={profileImage || "/default-profile.png"}
+              alt="profile_image"
+              width={40}
+              height={40}
+              className="z-10 object-cover"
+              onError={() => setError(true)}
+            />
+            {error ?? (
+              <p className="absolute inset-0 flex items-center justify-center font-bold text-white">
+                {email.charAt(0).toUpperCase()}
+              </p>
+            )}
+          </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="m-1 w-56" align="start">
           <DropdownMenuLabel>Email</DropdownMenuLabel>
