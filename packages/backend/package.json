@@ -17,6 +17,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
+    "test:cov:html": "jest  --coverage --coverageReporters='html' --coverageReporters='text-summary'",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:blackbox": "cross-env DB_HOST=${DB_HOST:-127.0.0.1} jest --config ./test/jest-blackbox.json --runInBand",
     "test:e2e": "cross-env DB_HOST=${DB_HOST:-127.0.0.1} jest --config ./test/jest-e2e.json --runInBand",
@@ -68,20 +69,35 @@
     "typescript-eslint": "^8.20.0"
   },
   "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
+    "moduleFileExtensions": ["js", "json", "ts"],
+    "rootDir": ".",
+    "testRegex": ".spec.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "./src/**/*.ts",
+      "!./src/**/*.module.ts",
+      "!./src/main.ts",
+      "!./src/**/*.dto.ts",
+      "!./src/**/*.entity.ts",
+      "!./src/**/*.enum.ts",
+      "!./src/**/*.constant.ts",
+      "!./src/**/*.constants.ts",
+      "!./src/**/*.decorator.ts",
+
+      "!./src/common/logger/**/*.ts",
+      "!./src/common/middlewares/**/*.ts",
+      "!./src/seed/**/*.ts",
+
+      "!./src/**/repositories/**/*.ts"
     ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node",
+    "roots": ["<rootDir>/src/", "<rootDir>/test/"],
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/src/$1"
+    }
   }
+
 }
