@@ -1,4 +1,6 @@
 import { Heart, HeartOff } from "lucide-react";
+
+import { redirect } from "next/navigation";
 import { unstable_cache as nextCache } from "next/cache";
 
 import ChatHistory from "@/app/components/chat-history";
@@ -12,6 +14,7 @@ import Panel from "./components/panel";
 import Score from "./components/score";
 import AISummary from "./components/ai-summary";
 import Tip from "./components/tip";
+import { getUserSession } from "@/app/lib/server/session";
 
 const getCachedHistory = nextCache(getHistory);
 const getCachedFeedback = nextCache(getFeedback);
@@ -21,14 +24,33 @@ export default async function InterviewResultPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { user } = await getUserSession();
+
+  if (!user) {
+    return redirect("/");
+  }
+
   const { id: interviewId } = await params;
-  const { history } = await getCachedHistory({ interviewId });
+  const { history } = await getCachedHistory({
+    interviewId,
+    userToken: user.token,
+  });
 
   let feedbackResult = { score: "0", feedback: "" };
-  feedbackResult = await getCachedFeedback({ interviewId });
+  feedbackResult = await getCachedFeedback({
+    interviewId,
+    userToken: user.token,
+  });
 
   if (!feedbackResult.score || !feedbackResult.feedback) {
-    feedbackResult = await startFeedback({ interviewId });
+    feedbackResult = await startFeedback({
+      interviewId,
+      userToken: user.token,
+    });
+  }
+
+  if (!history) {
+    throw new Error(`인터뷰 ID:${interviewId}의 기록이 없습니다.`);
   }
 
   return (

@@ -2,15 +2,17 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtTokenDecoder } from './jwt-token.decoder';
 import { Request } from 'express';
 import { Reflector } from '@nestjs/core';
-import { IS_PUBLIC_KEY } from './public.decorator';
+import { IS_PUBLIC_KEY } from './decorator/public.decorator';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
+  private readonly logger = new Logger(JwtAuthGuard.name);
   constructor(
     private readonly jwtTokenDecoder: JwtTokenDecoder,
     private readonly reflector: Reflector,
@@ -28,6 +30,9 @@ export class JwtAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
     const token = this.extractTokenFromHeader(request);
     const payload = this.jwtTokenDecoder.decodeToken(token);
+    this.logger.log(
+      `REQUEST METHOD: ${request.method} URI: ${request.url} USERID: ${payload.sub}, ROLE: ${payload.role}`,
+    );
     request['user'] = { userId: payload.sub, role: payload.role };
 
     return true;

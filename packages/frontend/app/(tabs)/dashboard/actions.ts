@@ -1,5 +1,8 @@
 "use server";
 
+import { getUserSession } from "@/app/lib/server/session";
+import { redirect } from "next/navigation";
+
 export interface IInterview {
   interviewId: string;
   title: string;
@@ -8,11 +11,20 @@ export interface IInterview {
 }
 
 export async function getInterviews() {
+  const { user } = await getUserSession();
+
+  if (!user) {
+    return redirect("/");
+  }
+
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/interview?page=1&take=6`,
     {
       method: "GET",
       cache: "no-store",
+      headers: {
+        Authorization: `Bearer ${user?.token}`,
+      },
     },
   );
 

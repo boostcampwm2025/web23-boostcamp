@@ -2,10 +2,7 @@
 
 import React, { useState } from "react";
 import { DocumentItem } from "@/app/(tabs)/(simulator)/components/document-card";
-import {
-  createCoverLetter,
-  createPortfolio,
-} from "../../../lib/client/document";
+import { createPortfolio } from "../../../lib/client/document";
 import { Button } from "@/app/components/ui/button";
 import { Card } from "@/app/components/ui/card";
 import { Progress } from "@/app/components/ui/progress";
@@ -23,6 +20,7 @@ import {
   Trash2,
   AlertCircle,
 } from "lucide-react";
+import { createCoverLetter } from "../actions";
 
 const MAX_CONTENT_LENGTH = 30000; // 최대 3만자 제한
 
@@ -140,10 +138,20 @@ export default function DocumentCreateModal({
     try {
       let createdDocument: DocumentItem;
       if (documentType === "COVER") {
-        createdDocument = await createCoverLetter({
+        const result = await createCoverLetter({
           title,
           qa: questionAnswerList,
         });
+
+        if (!result.error) {
+          createdDocument = {
+            title: result.title,
+            documentId: result.documentId,
+            type: result.type,
+            createdAt: result.createdAt,
+            modifiedAt: result.modifiedAt,
+          };
+        }
       } else {
         createdDocument = await createPortfolio({
           title,

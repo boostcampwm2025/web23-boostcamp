@@ -24,32 +24,42 @@ export async function GET(req: Request) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
-  const res = await fetch(
+  const oauthRes = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/auth/signup/oauth?code=${code}`,
     {
       method: "GET",
     },
   );
 
-  if (!res.ok) {
+  if (!oauthRes.ok) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
-  const user = (await res.json()) as IOAuthResponse;
+  const token = (await oauthRes.json()) as IOAuthResponse;
 
-  const tokenPayload: ITokenPayload = JSON.parse(
-    Buffer.from(user.accessToken.split(".")[1], "base64").toString(),
-  );
+  const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/me`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token.accessToken}`,
+    },
+  });
+
+  const user = (await userRes.json()) as {
+    userId: string;
+    email: string;
+    profileUrl: string | null;
+  };
 
   const userSession = await getUserSession();
 
   userSession.user = {
-    id: +tokenPayload.sub,
-    email: user.email ?? "test@email.com",
-    token: user.accessToken,
-    refreshToken: user.refreshToken,
+    id: user.userId,
+    email: user.email,
+    profileUrl: user.profileUrl,
+    token: token.accessToken,
+    refreshToken: token.refreshToken,
   };
-
   await userSession.save();
 
   return NextResponse.redirect(new URL("/dashboard", req.url));

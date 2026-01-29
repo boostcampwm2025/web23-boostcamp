@@ -24,6 +24,8 @@ export default function Chat({
   interviewId: string;
   className?: string;
 }) {
+  const [restartCount, setRestartCount] = useState(0);
+
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -78,7 +80,7 @@ export default function Chat({
       await new Promise((resolve) => setTimeout(resolve, 200));
 
       // 다음 질문 생성 요청
-      const nextQ = await generateQuestion({ interviewId: "1" });
+      const nextQ = await generateQuestion({ interviewId });
 
       if (nextQ) {
         const qContent = nextQ.question;
@@ -86,10 +88,15 @@ export default function Chat({
           appendMessage(qContent, "ai", "Interviewer");
         }
       }
-    } catch (e) {
-      console.error("Chat Flow Error:", e);
-      setError("메시지 처리 중 오류가 발생했습니다.");
+    } catch (error) {
+      if (restartCount < 3) {
+        setRestartCount(restartCount + 1);
+        processAnswer(answerText, isVoice); // 재시도
+      } else {
+        setError("메시지 처리 중 오류가 발생했습니다.");
+      }
     } finally {
+      setRestartCount(0);
       setIsProcessing(false);
       processingRef.current = false;
     }
@@ -110,7 +117,7 @@ export default function Chat({
         setIsRecording(false);
         if (!blob) return;
 
-        const response = await speakAnswer({ interviewId: "1", audio: blob });
+        const response = await speakAnswer({ interviewId, audio: blob });
 
         if (response?.answer) {
           await processAnswer(response.answer, true);

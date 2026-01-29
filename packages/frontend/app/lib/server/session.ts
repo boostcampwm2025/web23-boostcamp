@@ -7,8 +7,9 @@ import "server-only";
 
 interface ISessionContent {
   user?: {
-    id: number;
+    id: string;
     email: string;
+    profileUrl: string | null;
     token: string;
     refreshToken: string;
   };

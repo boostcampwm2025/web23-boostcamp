@@ -96,48 +96,18 @@ export async function createCoverLetter(
   parameters: CreateCoverLetterParameters,
 ): Promise<DocumentItem> {
   if (process.env.NODE_ENV === "development") {
-    const currentTime = new Date().toISOString();
+    /*  const currentTime = new Date().toISOString();
     return {
       documentId: `mock-cover-${Date.now()}`,
       type: "COVER",
       title: parameters.title || "Untitled Cover Letter",
       createdAt: currentTime,
       modifiedAt: currentTime,
-    };
+    }; */
   }
 
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/document/cover-letter/create`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: parameters.title,
-        content: parameters.qa,
-      }),
-    },
-  );
-
-  if (!response.ok) {
-    console.error(
-      "자기소개서 생성 실패:",
-      response.status,
-      response.statusText,
-    );
-    throw new Error("자기소개서 생성에 실패했습니다");
-  }
-
-  const responseData = await response.json();
-
-  return {
-    documentId: responseData.documentId,
-    type: responseData.type,
-    title: responseData.title,
-    createdAt: responseData.createdAt,
-    modifiedAt: responseData.createdAt,
-  };
+  const result = await createCoverLetter(parameters);
+  return result;
 }
 
 /**
