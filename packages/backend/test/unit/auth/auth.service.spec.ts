@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from '../../../src/auth/auth.service';
 import { ConfigService } from '@nestjs/config';
+
+import { AuthService } from '../../../src/auth/auth.service';
 import { UserService } from '../../../src/user/user.service';
 import { GoogleOAuthService } from '../../../src/auth/google-oauth.service';
 import { JwtTokenProvider } from '../../../src/auth/jwt-token.provider';
@@ -40,29 +41,46 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
+    jest.clearAllMocks();
   });
 
-  it('should be defined', () => {
+  it('AuthService가 DI로 생성되면 서비스 인스턴스가 정상적으로 정의되어야 한다', () => {
+    // Given / When / Then
     expect(service).toBeDefined();
   });
 
   describe('googleLogin', () => {
+    const fixedNow = new Date('2023-01-01T00:00:00Z');
+
     const code = 'valid_oauth_code';
     const mockToken = 'mock_google_token';
+
     const mockUserInfo = {
       email: 'test@example.com',
       profileUrl: 'http://test.com/profile',
       sub: 'google_123',
     };
+
     const mockUser = {
       userId: 'user_1',
       role: UserRole.USER,
     } as User;
 
-    it('성공: 기존 회원 로그인', async () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(fixedNow);
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('기존 회원이 올바른 OAuth 코드로 로그인하면 accessToken/refreshToken이 발급되어 로그인되어야 한다', async () => {
+      // Given
       mockGoogleOAuthService.exchangeCodeForToken.mockResolvedValue(mockToken);
       mockGoogleOAuthService.getUserInfo.mockResolvedValue(mockUserInfo);
       mockUserService.findOneBySub.mockResolvedValue(mockUser);
+
       mockJwtTokenProvider.generateAccessToken.mockResolvedValue(
         'access_token',
       );
@@ -70,26 +88,46 @@ describe('AuthService', () => {
         'refresh_token',
       );
 
+      // When
       const result = await service.googleLogin(code);
 
+      // Then
       expect(mockGoogleOAuthService.exchangeCodeForToken).toHaveBeenCalledWith(
         code,
+      );
+      expect(mockGoogleOAuthService.getUserInfo).toHaveBeenCalledWith(
+        mockToken,
       );
       expect(mockUserService.findOneBySub).toHaveBeenCalledWith(
         mockUserInfo.sub,
       );
-      expect(mockUserService.registerUser).not.toHaveBeenCalled(); // 기존 회원이므로 등록 안 함
+      expect(mockUserService.registerUser).not.toHaveBeenCalled();
+
+      expect(mockJwtTokenProvider.generateAccessToken).toHaveBeenCalledWith(
+        mockUser.userId,
+        mockUser.role,
+        fixedNow.getTime(),
+      );
+      expect(mockJwtTokenProvider.generateRefreshToken).toHaveBeenCalledWith(
+        mockUser.userId,
+        mockUser.role,
+        fixedNow.getTime(),
+      );
+
       expect(result).toEqual({
         accessToken: 'access_token',
         refreshToken: 'refresh_token',
       });
     });
 
-    it('성공: 신규 회원 가입 후 로그인', async () => {
+    it('신규 회원이 올바른 OAuth 코드로 로그인하면 회원가입 후 accessToken/refreshToken이 발급되어 로그인되어야 한다', async () => {
+      // Given
       mockGoogleOAuthService.exchangeCodeForToken.mockResolvedValue(mockToken);
       mockGoogleOAuthService.getUserInfo.mockResolvedValue(mockUserInfo);
-      mockUserService.findOneBySub.mockResolvedValue(null); // 회원 없음
-      mockUserService.registerUser.mockResolvedValue(mockUser); // 회원 가입 성공
+
+      mockUserService.findOneBySub.mockResolvedValue(null);
+      mockUserService.registerUser.mockResolvedValue(mockUser);
+
       mockJwtTokenProvider.generateAccessToken.mockResolvedValue(
         'access_token',
       );
@@ -97,13 +135,37 @@ describe('AuthService', () => {
         'refresh_token',
       );
 
+      // When
       const result = await service.googleLogin(code);
+
+      // Then
+      expect(mockGoogleOAuthService.exchangeCodeForToken).toHaveBeenCalledWith(
+        code,
+      );
+      expect(mockGoogleOAuthService.getUserInfo).toHaveBeenCalledWith(
+        mockToken,
+      );
+      expect(mockUserService.findOneBySub).toHaveBeenCalledWith(
+        mockUserInfo.sub,
+      );
 
       expect(mockUserService.registerUser).toHaveBeenCalledWith(
         mockUserInfo.email,
         mockUserInfo.profileUrl,
         mockUserInfo.sub,
       );
+
+      expect(mockJwtTokenProvider.generateAccessToken).toHaveBeenCalledWith(
+        mockUser.userId,
+        mockUser.role,
+        fixedNow.getTime(),
+      );
+      expect(mockJwtTokenProvider.generateRefreshToken).toHaveBeenCalledWith(
+        mockUser.userId,
+        mockUser.role,
+        fixedNow.getTime(),
+      );
+
       expect(result).toEqual({
         accessToken: 'access_token',
         refreshToken: 'refresh_token',
