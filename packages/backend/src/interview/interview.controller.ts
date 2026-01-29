@@ -113,7 +113,11 @@ export class InterviewController {
   async getIntervalQuestion(
     @Body() body: InterviewQuestionRequest,
   ): Promise<InterviewQuestionResponse> {
-    return await this.interviewService.chatInterviewer(body.interviewId);
+    const userId = '1';
+    return await this.interviewService.chatInterviewer(
+      userId,
+      body.interviewId,
+    );
   }
 
   @Post('/feedback')

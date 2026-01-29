@@ -218,7 +218,12 @@ export class InterviewService {
     };
   }
 
-  async chatInterviewer(interviewId: string) {
+  async chatInterviewer(userId: string, interviewId: string) {
+    const user = await this.userService.findExistingUser(userId);
+    const interview = await this.findExistingInterview(interviewId);
+
+    interview.validateUser(user.userId);
+
     const isTimeOver = await this.checkInterviewTimeOver(interviewId);
     const currentTurn = this.getCurrentTurn(interviewId);
     const isTurnOver = this.checkInterviewTurnOver(currentTurn);
