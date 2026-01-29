@@ -1,8 +1,8 @@
 "use server";
 
 interface IFeedback {
-  score: string | number;
-  content: string;
+  score: string;
+  feedback: string;
 }
 
 export async function getFeedback({
@@ -12,8 +12,8 @@ export async function getFeedback({
 }): Promise<IFeedback> {
   if (process.env.NODE_ENV === "development" && false) {
     return {
-      score: 84,
-      content:
+      score: "84",
+      feedback:
         "[DEV] The candidate gave concise answers with clear impact. Focus on adding more metrics and structure (STAR).",
     };
   }

@@ -9,6 +9,8 @@ import InterviewStartBox from "./components/interview-start-box";
 import InterviewWelomeHeader from "./components/interview-welcome-header";
 import Tip from "../(simulator)/interview/[id]/result/components/tip";
 
+export const dynamic = "force-dynamic";
+
 const getCachedInterviews = nextCache(getInterviews, [
   "interviews_dashboard_page",
 ]);

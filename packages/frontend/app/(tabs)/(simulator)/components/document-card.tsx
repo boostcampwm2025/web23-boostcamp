@@ -3,9 +3,10 @@
 import { Calendar, Check } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Card, CardContent } from "@/app/components/ui/card";
+import { Checkbox } from "@/app/components/ui/checkbox";
 import { cn } from "@/app/lib/utils";
 
-export type DocType = "COVER_LETTER" | "PORTFOLIO";
+export type DocType = "COVER" | "PORTFOLIO";
 
 export interface DocumentItem {
   documentId: string;
@@ -20,6 +21,9 @@ interface DocumentCardProps {
   isSelected?: boolean;
   onSelect?: (id: string) => void;
   isSelectable?: boolean;
+  showDeleteAction?: boolean;
+  showCheckbox?: boolean;
+  onCardClick?: (doc: DocumentItem) => void;
 }
 
 export function DocumentCard({
@@ -27,33 +31,66 @@ export function DocumentCard({
   isSelected,
   onSelect,
   isSelectable = true,
+  showDeleteAction = false,
+  showCheckbox = false,
+  onCardClick,
 }: DocumentCardProps) {
   const canClick = isSelectable && !!onSelect;
 
+  const handleCheckboxClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onSelect) {
+      onSelect(doc.documentId);
+    }
+  };
+
+  const handleCardClick = () => {
+    if (onCardClick) {
+      onCardClick(doc);
+    } else if (canClick) {
+      onSelect!(doc.documentId);
+    }
+  };
+
   return (
-    <motion.div whileTap={canClick ? { scale: 0.98 } : {}} className="h-full">
+    <motion.div
+      whileTap={onCardClick || canClick ? { scale: 0.98 } : {}}
+      className="h-full"
+    >
       <Card
-        onClick={() => canClick && onSelect(doc.documentId)}
+        onClick={handleCardClick}
         className={cn(
           "relative h-[180px] overflow-hidden rounded-2xl border-2 transition-all select-none",
-          canClick ? "cursor-pointer" : "cursor-default",
+          onCardClick || canClick ? "cursor-pointer" : "cursor-default",
           isSelected
             ? "border-emerald-500 bg-emerald-50/20 shadow-md ring-1 ring-emerald-500"
             : "border-border shadow-sm hover:border-emerald-200",
         )}
       >
         <CardContent className="flex h-full flex-col justify-between p-5">
+          {showCheckbox && (
+            <div
+              onClick={handleCheckboxClick}
+              className="absolute top-3 left-3 z-20 -m-2 cursor-pointer p-2"
+            >
+              <Checkbox
+                checked={isSelected}
+                className="h-4 w-4 border-2 data-checked:border-emerald-500 data-checked:bg-emerald-500"
+              />
+            </div>
+          )}
+
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div
                 className={cn(
                   "rounded-md px-2 py-0.5 text-[10px] font-bold tracking-tight uppercase",
-                  doc.type === "COVER_LETTER"
+                  doc.type === "COVER"
                     ? "bg-orange-100 text-orange-600"
                     : "bg-blue-100 text-blue-600",
                 )}
               >
-                {doc.type === "COVER_LETTER" ? "Cover Letter" : "Portfolio"}
+                {doc.type === "COVER" ? "Cover Letter" : "Portfolio"}
               </div>
               <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
                 <Calendar className="h-3 w-3" />
@@ -67,7 +104,7 @@ export function DocumentCard({
             </div>
           </div>
           <AnimatePresence>
-            {isSelectable && isSelected && (
+            {showDeleteAction && isSelectable && isSelected && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
