@@ -1,24 +1,37 @@
 import Link from "next/link";
 import { MountainSnow } from "lucide-react";
 
-import AutoBreadcrumb from "@/app/components/auto-breadcrumb";
 import Profile from "@/app/components/profile";
+import { logout } from "../(auth)/actions/auth";
+import { getUserSession } from "../lib/server/session";
+import GoogleLoginButton from "../(auth)/components/google-login-button";
 
-import { logout } from "@/app/actions/auth";
+export default async function Header() {
+  const { user } = await getUserSession();
 
-export default function Header() {
   return (
-    <header className="sticky top-0 z-50 flex w-full items-center justify-between border-b bg-white/70 px-6 py-1.5 shadow-sm backdrop-blur-md">
+    <header className="sticky top-0 z-50 flex w-full items-center justify-between border-b bg-white/70 px-12 py-4 backdrop-blur-md">
       <nav className="flex items-center gap-4 font-semibold">
         <h1>
-          <Link href={"/"}>
-            <MountainSnow className="text-primary" />
+          <Link href={"/"} className="flex items-center">
+            <div className="rounded-lg bg-black/5 p-1.5">
+              <MountainSnow className="text-primary" />
+            </div>
+            <span className="ml-2 text-xl text-primary">PSI</span>
           </Link>
         </h1>
-        <AutoBreadcrumb />
+        {/* <AutoBreadcrumb /> */}
       </nav>
       <nav>
-        <Profile email="1234@gmail.com" logout={logout} />
+        {user ? (
+          <Profile
+            profileImage={user.profileUrl || undefined}
+            email={user.email}
+            logout={logout}
+          />
+        ) : (
+          <GoogleLoginButton />
+        )}
       </nav>
     </header>
   );

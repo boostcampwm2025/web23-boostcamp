@@ -19,8 +19,10 @@ import { IHistoryItem } from "./actions";
 
 export default function InterviewClient({
   history,
+  interviewId,
 }: {
   history: IHistoryItem[];
+  interviewId: string;
 }) {
   const {
     handleExit,
@@ -33,7 +35,7 @@ export default function InterviewClient({
     isAudioEnabled,
     handleCamToggle,
     handleMicToggle,
-  } = useInterviewControls("1", history);
+  } = useInterviewControls(interviewId, history);
 
   return (
     <div className="mt-5 flex h-full max-w-630 flex-col justify-center gap-5 py-2 xl:flex-row">
@@ -41,7 +43,7 @@ export default function InterviewClient({
         <VideoGrid stream={stream} />
         <InterviewControls
           onToggleChat={() => toggleChat()}
-          onExit={() => handleExit("/interview/1/result")}
+          onExit={() => handleExit(`/interview/${interviewId}/result`)}
           isVideoEnabled={isVideoEnabled}
           isAudioEnabled={isAudioEnabled}
           onToggleVideo={handleCamToggle}
@@ -66,7 +68,12 @@ export default function InterviewClient({
               </Button>
             </CardHeader>
             <CardContent className="min-h-0 flex-1 overflow-y-auto">
-              <Chat initalChats={chats} setChats={setChats} stream={stream} />
+              <Chat
+                initalChats={chats}
+                setChats={setChats}
+                stream={stream}
+                interviewId={interviewId}
+              />
             </CardContent>
           </Card>
         </div>

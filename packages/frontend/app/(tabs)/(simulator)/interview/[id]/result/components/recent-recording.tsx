@@ -2,9 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-import { getLatestVideo } from "@/app/lib/client/media-storage";
+import { getVideoByInterviewId } from "@/app/lib/client/media-storage";
 
-export default function RecentRecording() {
+export default function RecentRecording({
+  interviewId,
+}: {
+  interviewId: string;
+}) {
   const [url, setUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -13,7 +17,7 @@ export default function RecentRecording() {
 
     (async () => {
       try {
-        const blob = await getLatestVideo();
+        const blob = await getVideoByInterviewId(interviewId);
         if (!blob) {
           return;
         }
@@ -31,7 +35,7 @@ export default function RecentRecording() {
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, []);
+  }, [interviewId]);
 
   if (loading)
     return <div className="rounded-2xl bg-primary/10 p-6">Loading...</div>;
@@ -42,11 +46,9 @@ export default function RecentRecording() {
     );
 
   return (
-    <div className="bg-red-200">
-      {/*       <ChromaKeyVideo src={url} />
-       */}
+    <div>
       <video
-        src={url}
+        src={url || ""}
         controls
         preload="metadata"
         className="aspect-video"

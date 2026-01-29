@@ -10,6 +10,10 @@ const DB_CONFIG = {
   },
 } as const;
 
+const buildInterviewKey = (type: "video" | "audio", interviewId: string) => {
+  return `${type}:${interviewId}`;
+};
+
 /**
  * IndexedDB 연결 및 초기화
  */
@@ -32,7 +36,11 @@ const getDB = () => {
 /**
  * 미디어(비디오/오디오) Blob 저장
  */
-export const saveMedia = async (blob: Blob, type: "video" | "audio") => {
+export const saveMedia = async (
+  blob: Blob,
+  type: "video" | "audio",
+  interviewId?: string,
+) => {
   const db = await getDB();
   const transaction = db.transaction(DB_CONFIG.store, "readwrite");
   const store = transaction.objectStore(DB_CONFIG.store);
@@ -44,21 +52,32 @@ export const saveMedia = async (blob: Blob, type: "video" | "audio") => {
     blob,
     type,
     updatedAt: Date.now(),
+    interviewId: interviewId ?? null,
   });
+
+  if (interviewId) {
+    store.put({
+      id: buildInterviewKey(type, interviewId),
+      blob,
+      type,
+      updatedAt: Date.now(),
+      interviewId,
+    });
+  }
 };
 
 /**
  * 비디오 저장
  */
-export const saveVideo = async (blob: Blob) => {
-  return saveMedia(blob, "video");
+export const saveVideo = async (blob: Blob, interviewId?: string) => {
+  return saveMedia(blob, "video", interviewId);
 };
 
 /**
  * 오디오 저장
  */
-export const saveAudio = async (blob: Blob) => {
-  return saveMedia(blob, "audio");
+export const saveAudio = async (blob: Blob, interviewId?: string) => {
+  return saveMedia(blob, "audio", interviewId);
 };
 
 export const getLatestMedia = async (type: "video" | "audio") => {
@@ -85,6 +104,25 @@ export const getLatestVideo = async () => {
  */
 export const getLatestAudio = async () => {
   return getLatestMedia("audio");
+};
+
+export const getMediaByInterviewId = async (
+  type: "video" | "audio",
+  interviewId: string,
+) => {
+  const db = await getDB();
+  return new Promise<Blob | null>((resolve) => {
+    const transaction = db.transaction(DB_CONFIG.store, "readonly");
+    const key = buildInterviewKey(type, interviewId);
+    const request = transaction.objectStore(DB_CONFIG.store).get(key);
+
+    request.onsuccess = () => resolve(request.result?.blob || null);
+    request.onerror = () => resolve(null);
+  });
+};
+
+export const getVideoByInterviewId = async (interviewId: string) => {
+  return getMediaByInterviewId("video", interviewId);
 };
 
 /**

@@ -7,16 +7,16 @@ import { motion } from "motion/react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { cn } from "@/app/lib/utils";
-import { createInterviewClient } from "@/app/lib/client/interview";
 
 import {
   DocumentCard,
   type DocType,
   type DocumentItem,
 } from "@/app/(tabs)/(simulator)/components/document-card";
-import { useDocuments } from "@/app/hooks/use-documents";
+import { useDocuments } from "@/app/hooks/documents/use-documents";
 import DocumentCreateModal from "@/app/(tabs)/documents/components/document-create-modal";
 import DocumentDetailModal from "@/app/(tabs)/documents/components/document-detail-modal";
+import { createTechInterview } from "./actions";
 
 type InterviewMode = "live" | "tech";
 
@@ -28,11 +28,12 @@ interface SelectedDocs {
 export default function InterviewCreatePage() {
   const router = useRouter();
 
-  const userId = "1";
-  const { documents, isLoading, addDocument } = useDocuments(userId);
+  const { documents, isLoading, addDocument } = useDocuments();
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [title, setTitle] = useState<string>("");
+  const [title, setTitle] = useState<string>(
+    `새로운 인터뷰 시뮬레이션 ${Date.now()}`,
+  );
   const [mode, setMode] = useState<InterviewMode>("tech");
   const [isDocModalOpen, setIsDocModalOpen] = useState<boolean>(false);
   const [detailDocument, setDetailDocument] = useState<DocumentItem | null>(
@@ -59,36 +60,39 @@ export default function InterviewCreatePage() {
     }));
   };
 
-  const handleStartSimulation = async (): Promise<void> => {
+  const handleStartSimulation = async () => {
     if (!title || (!selectedDocs.COVER && !selectedDocs.PORTFOLIO)) return;
 
     setIsSubmitting(true);
 
     try {
-      const isTech = mode === "tech";
-
-      const requestBody = isTech
-        ? {
-            documentIds: [selectedDocs.COVER, selectedDocs.PORTFOLIO].filter(
-              (id): id is string => Boolean(id),
-            ),
-          }
+      /* const requestBody = isTech
+        ? {}
         : {
             simulationTitle: title,
             language: "javascript",
-          };
+          }; */
 
       // 개발 모드면 서버 호출을 생략
-      if (process.env.NODE_ENV === "development") {
+      if (process.env.NODE_ENV === "development" && false) {
+        /* 
+        const data = await createInterview();
+        const interviewId = data.interviewId;
+        router.push(`/interview/${interviewId}/ready`);
+
+        
         await new Promise((r) => setTimeout(r, 300));
         const interviewId = "1";
         router.push(`/interview/${interviewId}/ready`);
+      */
       } else {
         // 클라이언트 API 사용
-        const data = await createInterviewClient(
-          requestBody as Record<string, unknown>,
-        );
-        const interviewId = data.interviewId;
+        const { interviewId } = await createTechInterview({
+          documentIds: [selectedDocs.COVER, selectedDocs.PORTFOLIO].filter(
+            (id): id is string => Boolean(id),
+          ),
+          simulationTitle: title,
+        });
         router.push(`/interview/${interviewId}/ready`);
       }
     } catch (error) {
@@ -138,7 +142,7 @@ export default function InterviewCreatePage() {
             인터뷰 종류
           </label>
           <div className="relative flex w-fit overflow-hidden rounded-xl border bg-muted p-1">
-            {(["tech", "live"] as InterviewMode[]).map((m) => (
+            {(["tech"] as InterviewMode[]).map((m) => (
               <button
                 key={m}
                 type="button"
@@ -202,7 +206,7 @@ export default function InterviewCreatePage() {
         <footer className="flex justify-end border-t pt-8">
           <Button
             size="lg"
-            className="h-14 px-12 text-base font-bold shadow-md transition-all active:scale-95"
+            className="h-14 cursor-pointer px-12 text-base font-bold shadow-md transition-all active:scale-95"
             disabled={
               !title ||
               (!selectedDocs.COVER && !selectedDocs.PORTFOLIO) ||

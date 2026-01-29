@@ -9,7 +9,7 @@ import {
   updatePortfolio,
   CoverLetterDetailResponse,
   PortfolioDetailResponse,
-} from "../../../lib/client/document";
+} from "../../../lib/actions/document";
 import { Button } from "@/app/components/ui/button";
 import { Card } from "@/app/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";

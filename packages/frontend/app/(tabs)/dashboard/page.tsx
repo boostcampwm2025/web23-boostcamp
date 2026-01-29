@@ -1,6 +1,9 @@
 import { unstable_cache as nextCache } from "next/cache";
+import { redirect } from "next/navigation";
 
 import { getInterviews } from "./actions";
+import { getUserSession } from "@/app/lib/server/session";
+
 import InterviewList from "./components/interview-list";
 import InterviewStartBox from "./components/interview-start-box";
 import InterviewWelomeHeader from "./components/interview-welcome-header";
@@ -13,18 +16,25 @@ const getCachedInterviews = nextCache(getInterviews, [
 ]);
 
 export default async function Page() {
-  const { interviews } = await getCachedInterviews();
+  const { user } = await getUserSession();
+
+  if (!user) {
+    return redirect("/");
+  }
+
+  const { interviews } = await getInterviews();
 
   return (
     <div>
-      <main className="mx-auto max-w-180">
+      <main className="mx-auto max-w-180 px-5">
         <div className="mt-12">
-          <InterviewWelomeHeader />
+          <InterviewWelomeHeader username={user.email} />
         </div>
         <div className="mt-8">
-          <InterviewStartBox />
+          <InterviewStartBox href="/interview/create" />
         </div>
         <div className="mt-12">
+          {/* FIXME: 이후에 interview 리스트 가 없을경우 or [] 인경우 */}
           <InterviewList interviews={interviews} />
         </div>
         <div className="mt-12">

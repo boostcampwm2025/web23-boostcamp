@@ -15,16 +15,23 @@ export default function Chat({
   initalChats,
   setChats,
   stream,
+  interviewId,
   className,
 }: {
   initalChats: IChatMessage[];
   setChats: Dispatch<SetStateAction<IChatMessage[]>>;
   stream: MediaStream | null;
+  interviewId: string;
   className?: string;
 }) {
+  const [restartCount, setRestartCount] = useState(0);
+
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [isDone, setIsDone] = useState(false);
+
   const processingRef = useRef(false);
 
   const { startAudioRecording, stopAudioRecording } = useMediaRecorder(stream);
@@ -34,12 +41,6 @@ export default function Chat({
       if (!content.trim()) return;
 
       setChats((prev) => {
-        // [중복 체크] 내용과 역할이 같으면 추가 안 함
-        const isDuplicate = prev.some(
-          (msg) => msg.content.trim() === content.trim() && msg.role === role,
-        );
-        if (isDuplicate) return prev;
-
         return [
           ...prev,
           {
@@ -69,25 +70,36 @@ export default function Chat({
 
       // 답변 전송 (텍스트 입력일 때만 실행)
       if (!isVoice) {
-        await sendAnswer({ interviewId: "1", answer: answerText });
+        await sendAnswer({ interviewId, answer: answerText });
       }
 
       // 서버가 DB 처리를 완료할 수 있도록 지연
       await new Promise((resolve) => setTimeout(resolve, 200));
 
       // 다음 질문 생성 요청
-      const nextQ = await generateQuestion({ interviewId: "1" });
+      const nextQ = await generateQuestion({ interviewId });
 
       if (nextQ) {
         const qContent = nextQ.question;
+
         if (qContent) {
           appendMessage(qContent, "ai", "Interviewer");
         }
+
+        if (nextQ.isLast) {
+          setIsDone(true);
+          return;
+        }
       }
-    } catch (e) {
-      console.error("Chat Flow Error:", e);
-      setError("메시지 처리 중 오류가 발생했습니다.");
+    } catch (error) {
+      if (restartCount < 3) {
+        setRestartCount(restartCount + 1);
+        processAnswer(answerText, isVoice); // 재시도
+      } else {
+        setError("메시지 처리 중 오류가 발생했습니다.");
+      }
     } finally {
+      setRestartCount(0);
       setIsProcessing(false);
       processingRef.current = false;
     }
@@ -108,7 +120,7 @@ export default function Chat({
         setIsRecording(false);
         if (!blob) return;
 
-        const response = await speakAnswer({ interviewId: "1", audio: blob });
+        const response = await speakAnswer({ interviewId, audio: blob });
 
         if (response?.answer) {
           await processAnswer(response.answer, true);
@@ -123,7 +135,10 @@ export default function Chat({
 
   return (
     <Card
-      className={cn("flex h-full flex-col border-0 shadow-none", className)}
+      className={cn(
+        "flex h-full flex-col border-none shadow-none ring-0",
+        className,
+      )}
     >
       <div className="flex-1 overflow-y-auto">
         <ChatHistory chatMessages={initalChats} />
@@ -138,12 +153,18 @@ export default function Chat({
         {error && (
           <p className="px-1 text-xs font-medium text-red-500">{error}</p>
         )}
-        <ChatInput
-          onSend={(text) => processAnswer(text, false)} // 텍스트 입력은 isVoice = false
-          onHandleVoiceToggle={handleVoiceToggle}
-          isRecording={isRecording}
-          disabled={isProcessing}
-        />
+        {isDone ? (
+          <p className="px-1 text-xs font-medium text-green-600">
+            모든 질문이 완료되었습니다. 수고하셨습니다!
+          </p>
+        ) : (
+          <ChatInput
+            onSend={(text) => processAnswer(text, false)} // 텍스트 입력은 isVoice = false
+            onHandleVoiceToggle={handleVoiceToggle}
+            isRecording={isRecording}
+            disabled={isProcessing}
+          />
+        )}
       </div>
     </Card>
   );
