@@ -16,6 +16,7 @@ import {
 } from "@/app/(tabs)/(simulator)/components/document-card";
 import { useDocuments } from "@/app/hooks/use-documents";
 import DocumentCreateModal from "@/app/(tabs)/documents/components/document-create-modal";
+import DocumentDetailModal from "@/app/(tabs)/documents/components/document-detail-modal";
 
 type InterviewMode = "live" | "tech";
 
@@ -34,6 +35,9 @@ export default function InterviewCreatePage() {
   const [title, setTitle] = useState<string>("");
   const [mode, setMode] = useState<InterviewMode>("tech");
   const [isDocModalOpen, setIsDocModalOpen] = useState<boolean>(false);
+  const [detailDocument, setDetailDocument] = useState<DocumentItem | null>(
+    null,
+  );
 
   const [selectedDocs, setSelectedDocs] = useState<SelectedDocs>({
     COVER: null,
@@ -183,6 +187,8 @@ export default function InterviewCreatePage() {
                   doc={doc}
                   isSelected={selectedDocs[doc.type] === doc.documentId}
                   onSelect={(id) => handleSelect(id, doc.type)}
+                  showCheckbox={true}
+                  onCardClick={(doc) => setDetailDocument(doc)}
                 />
               ))
             ) : (
@@ -222,6 +228,15 @@ export default function InterviewCreatePage() {
         onCreate={(newDocument: DocumentItem) => {
           addDocument(newDocument);
           setIsDocModalOpen(false);
+        }}
+      />
+
+      <DocumentDetailModal
+        documentId={detailDocument?.documentId || null}
+        documentType={detailDocument?.type || "PORTFOLIO"}
+        onClose={() => setDetailDocument(null)}
+        onUpdate={() => {
+          setDetailDocument(null);
         }}
       />
     </div>
