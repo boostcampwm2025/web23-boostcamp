@@ -110,9 +110,9 @@ export class InterviewController {
 
   @Post('tech/question')
   async getIntervalQuestion(
+    @GetUser() userId: string,
     @Body() body: InterviewQuestionRequest,
   ): Promise<InterviewQuestionResponse> {
-    const userId = '1';
     return await this.interviewService.chatInterviewer(
       userId,
       body.interviewId,
