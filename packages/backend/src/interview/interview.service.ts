@@ -220,7 +220,7 @@ export class InterviewService {
 
   async chatInterviewer(userId: string, interviewId: string) {
     const user = await this.userService.findExistingUser(userId);
-    const interview = await this.findExistingInterview(interviewId);
+    const interview = await this.findExistingInterview(interviewId, ['user']);
 
     interview.validateUser(user.userId);
 
