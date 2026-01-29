@@ -23,10 +23,11 @@ export async function googleLogin() {
 export async function devLogin() {
   const userSession = await getUserSession();
   userSession.user = {
-    id: 1,
+    id: "1",
     email: "anoy@dev.com",
     token: "dev-token",
     refreshToken: "dev-refresh-token",
+    profileUrl: "",
   };
   await userSession.save();
 
