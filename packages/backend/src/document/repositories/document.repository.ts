@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { Document, DocumentType } from '../entities/document.entity';
 import { SortType } from '../dto/document-summary.request.dto';
 
@@ -87,5 +87,19 @@ export class DocumentRepository extends Repository<Document> {
     queryBuilder.orderBy('document.createdAt', sort).skip(skip).take(take);
 
     return await queryBuilder.getManyAndCount();
+  }
+
+  async findAllByDocumentIds(
+    userId: string,
+    documentIds: string[],
+  ): Promise<Document[]> {
+    const documents = await this.find({
+      select: { documentId: true },
+      where: {
+        documentId: In(documentIds),
+        user: { userId },
+      },
+    });
+    return documents;
   }
 }

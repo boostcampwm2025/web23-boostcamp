@@ -47,7 +47,14 @@ export class InterviewAIService {
     answers: InterviewAnswer[],
     userInfo: string,
     visitedTopics: string[],
-  ): Promise<ClovaInterviewResponse | null> {
+    isLastQuestion: boolean,
+  ): Promise<ClovaInterviewResponse> {
+    // Index Out of Bounds 방지: 질문이 없거나, 질문과 답변 수가 같을 때(새 질문 생성 직전) 처리
+    const currentQuestion =
+      questions.length > 0 && questions.length > answers.length
+        ? questions[answers.length].content
+        : '';
+
     const { historyMessages, currentAnswer } = this.createHistoryMessages(
       questions,
       answers,
@@ -56,9 +63,21 @@ export class InterviewAIService {
       userInfo,
       visitedTopics,
       currentAnswer,
+      isLastQuestion,
     );
 
-    return await this.fetchAIQuestion(historyMessages, userPrompt);
+    let aiAnswer = await this.fetchAIQuestion(historyMessages, userPrompt);
+
+    if (aiAnswer.question === currentQuestion) {
+      aiAnswer = await this.fetchAIQuestion(historyMessages, userPrompt);
+      if (aiAnswer.question === currentQuestion) {
+        aiAnswer.isLast = true;
+        return aiAnswer;
+      }
+      return aiAnswer;
+    }
+
+    return aiAnswer;
   }
 
   private createHistoryMessages(
@@ -91,7 +110,16 @@ export class InterviewAIService {
     userInfo: string,
     visitedTopics: string[],
     currentAnswer: string,
+    isLastQuestion: boolean,
   ): string {
+    const lastQuestPrompt = `
+        !!! 종료 모드 (Termination Mode) !!!
+        이번 턴이 인터뷰의 마지막 순서입니다.
+        지원자의 답변에 대한 간단한 마무리 인사를 건네고 인터뷰를 종료하십시오.
+        더 이상의 질문을 생성하지 마십시오.
+        반드시 JSON 응답의 "isLast" 필드를 true로 설정하십시오.
+    `;
+
     return `
             ***[컨텍스트: 이력서 및 포트폴리오]***
             ${userInfo}
@@ -105,13 +133,15 @@ export class InterviewAIService {
 
             !!! 반드시 시스템 프롬프트에 정의된 JSON 형식으로만 답변하십시오. !!!
             Format: { "question": "...", "tags": [...], "isLast": boolean }
+        
+            ${isLastQuestion ? lastQuestPrompt : ''}
         `;
   }
 
   private async fetchAIQuestion(
     historyMessages: { role: string; content: string }[],
     userPrompt: string,
-  ): Promise<ClovaInterviewResponse | null> {
+  ): Promise<ClovaInterviewResponse> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 

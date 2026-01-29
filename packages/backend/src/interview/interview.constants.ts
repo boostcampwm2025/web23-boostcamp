@@ -167,3 +167,7 @@ feedback는 한국어로 작성하며,
 
 {"score": number, "feedback": string}
 `;
+
+export const MAX_INTERVIEW_TIME_MS = 3 * 60 * 1000; // 3 minutes
+export const MAX_INTERVIEW_TURNS = 5;
+export const MAX_QUESTION_RETRY = 1;
