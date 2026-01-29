@@ -1,0 +1,27 @@
+name: Push to Fork Repo for Vercel
+on:
+  push:
+    branches: [main, develop]
+
+jobs:
+  copy-to-fork:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create output directory
+        run: |
+          mkdir -p ../output
+          cp -R ./* ../output/
+
+      - name: Pushes to fork repository
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.AUTO_PUSH_FORK_REPO }}
+        with:
+          source-directory: '../output'
+          destination-github-username: 'hmlim97'
+          destination-repository-name: 'web23-boostcamp-demo'
+          user-email: ${{ secrets.GH_EMAIL }}
+          commit-message: "Sync from original repo: ${{ github.event.head_commit.message }}"
+          target-branch: develop
