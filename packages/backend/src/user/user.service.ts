@@ -1,6 +1,7 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { UserRepository } from './user.repository';
+import { UserInfoResponse } from './dto/user-info-response.dto';
 
 @Injectable()
 export class UserService {
@@ -31,5 +32,14 @@ export class UserService {
     user.profileUrl = profileUrl;
     user.sub = sub;
     return await this.userRepository.save(user);
+  }
+
+  async getUserProfile(userId: string): Promise<UserInfoResponse> {
+    const user = await this.findExistingUser(userId);
+    return {
+      userId: user.userId,
+      email: user.userEmail,
+      profileUrl: user.profileUrl,
+    };
   }
 }
