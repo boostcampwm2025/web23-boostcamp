@@ -31,7 +31,9 @@ export default function InterviewCreatePage() {
   const { documents, isLoading, addDocument } = useDocuments();
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [title, setTitle] = useState<string>("");
+  const [title, setTitle] = useState<string>(
+    `새로운 인터뷰 시뮬레이션 ${Date.now()}`,
+  );
   const [mode, setMode] = useState<InterviewMode>("tech");
   const [isDocModalOpen, setIsDocModalOpen] = useState<boolean>(false);
   const [detailDocument, setDetailDocument] = useState<DocumentItem | null>(
