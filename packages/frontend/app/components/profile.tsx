@@ -26,12 +26,12 @@ export default function Profile({
     <div className="p-3">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div className="relative cursor-pointer overflow-hidden rounded-full ring-1 ring-primary transition-all hover:brightness-110">
+          <div className="relative cursor-pointer overflow-hidden rounded-md ring-1 ring-primary transition-all hover:brightness-110">
             <Image
               src={profileImage || "/default-profile.png"}
               alt="profile_image"
-              width={40}
-              height={40}
+              width={32}
+              height={32}
               className="z-10 object-cover"
               onError={() => setError(true)}
             />
