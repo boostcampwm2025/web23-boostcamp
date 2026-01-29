@@ -20,7 +20,7 @@ jobs:
           API_TOKEN_GITHUB: ${{ secrets.AUTO_PUSH_FORK_REPO }}
         with:
           source-directory: '../output'
-          destination-github-username: 'hmlim97'
+          destination-github-username: 'imgeonhyeok'
           destination-repository-name: 'web23-boostcamp-demo'
           user-email: ${{ secrets.GH_EMAIL }}
           commit-message: "Sync from original repo: ${{ github.event.head_commit.message }}"
