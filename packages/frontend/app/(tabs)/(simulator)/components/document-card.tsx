@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { cn } from "@/app/lib/utils";
 
-export type DocType = "COVER_LETTER" | "PORTFOLIO";
+export type DocType = "COVER" | "PORTFOLIO";
 
 export interface DocumentItem {
   documentId: string;
@@ -50,12 +50,12 @@ export function DocumentCard({
               <div
                 className={cn(
                   "rounded-md px-2 py-0.5 text-[10px] font-bold tracking-tight uppercase",
-                  doc.type === "COVER_LETTER"
+                  doc.type === "COVER"
                     ? "bg-orange-100 text-orange-600"
                     : "bg-blue-100 text-blue-600",
                 )}
               >
-                {doc.type === "COVER_LETTER" ? "Cover Letter" : "Portfolio"}
+                {doc.type === "COVER" ? "Cover Letter" : "Portfolio"}
               </div>
               <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
                 <Calendar className="h-3 w-3" />

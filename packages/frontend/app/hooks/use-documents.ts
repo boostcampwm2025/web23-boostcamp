@@ -44,7 +44,7 @@ export function useDocuments(userId: string) {
         const data: DocumentResponse = await res.json();
         const mapped: DocumentItem[] = data.documents.map((item) => ({
           documentId: item.documentId,
-          type: item.type === "COVER" ? "COVER_LETTER" : "PORTFOLIO",
+          type: item.type,
           title: item.title,
           createdAt: formatIsoDateToDot(item.createdAt),
           modifiedAt: formatIsoDateToDot(item.createdAt),
