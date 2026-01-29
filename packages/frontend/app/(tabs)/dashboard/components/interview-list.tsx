@@ -16,9 +16,9 @@ export default function InterviewList({
           <p className="text-base font-semibold md:text-xl">최근 인터뷰 기록</p>
         </div>
         <div>
-          <p className="cursor-pointer text-sm font-semibold text-muted-foreground md:text-base">
+          {/* <p className="cursor-pointer text-sm font-semibold text-muted-foreground md:text-base">
             더보기
-          </p>
+          </p> */}
         </div>
       </div>
       <div className="mt-6 flex flex-col gap-5">
