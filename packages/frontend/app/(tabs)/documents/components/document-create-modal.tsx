@@ -2,7 +2,10 @@
 
 import React, { useState } from "react";
 import { DocumentItem } from "@/app/(tabs)/(simulator)/components/document-card";
-import { createPortfolio } from "../../../lib/client/document";
+import {
+  createCoverLetter,
+  createPortfolio,
+} from "../../../lib/actions/document";
 import { Button } from "@/app/components/ui/button";
 import { Card } from "@/app/components/ui/card";
 import { Progress } from "@/app/components/ui/progress";
@@ -20,7 +23,6 @@ import {
   Trash2,
   AlertCircle,
 } from "lucide-react";
-import { createCoverLetter } from "../actions";
 
 const MAX_CONTENT_LENGTH = 30000; // 최대 3만자 제한
 
@@ -102,13 +104,6 @@ export default function DocumentCreateModal({
       setPortfolioContent(result.text);
       setUploadProgress(null);
 
-      // OCR 사용 경고
-      if (result.ocrPagesCount > 0) {
-        alert(
-          `${result.ocrPagesCount}개 페이지에서 이미지 기반 OCR이 사용되었습니다.\n텍스트가 부정확할 수 있으니 반드시 확인 후 수정해주세요.`,
-        );
-      }
-
       // 글자수 초과 경고
       if (result.totalCharacters > MAX_CONTENT_LENGTH) {
         alert(
@@ -136,7 +131,7 @@ export default function DocumentCreateModal({
     setIsLoading(true);
 
     try {
-      let createdDocument: DocumentItem;
+      let createdDocument: DocumentItem | undefined = undefined;
       if (documentType === "COVER") {
         const result = await createCoverLetter({
           title,
@@ -152,19 +147,29 @@ export default function DocumentCreateModal({
             modifiedAt: result.modifiedAt,
           };
         }
-      } else {
+      }
+
+      if (documentType === "PORTFOLIO") {
         createdDocument = await createPortfolio({
           title,
           content: portfolioContent,
         });
       }
+
+      if (!createdDocument) {
+        throw new Error("Document creation returned no data");
+      }
+
       onCreate(createdDocument);
       onClose();
     } catch (error) {
-      console.error("Document creation failed:", error);
       alert("문서 생성에 실패했습니다.");
     } finally {
       setIsLoading(false);
+      setTitle("");
+      setQuestionAnswerList([{ question: "", answer: "" }]);
+      setPortfolioContent("");
+      setUploadProgress(null);
     }
   }
 

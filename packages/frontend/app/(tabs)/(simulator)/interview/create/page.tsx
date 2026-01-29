@@ -142,7 +142,7 @@ export default function InterviewCreatePage() {
             인터뷰 종류
           </label>
           <div className="relative flex w-fit overflow-hidden rounded-xl border bg-muted p-1">
-            {(["tech", "live"] as InterviewMode[]).map((m) => (
+            {(["tech"] as InterviewMode[]).map((m) => (
               <button
                 key={m}
                 type="button"

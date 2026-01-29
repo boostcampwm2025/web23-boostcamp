@@ -29,6 +29,9 @@ export default function Chat({
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [isDone, setIsDone] = useState(false);
+
   const processingRef = useRef(false);
 
   const { startAudioRecording, stopAudioRecording } = useMediaRecorder(stream);
@@ -38,12 +41,6 @@ export default function Chat({
       if (!content.trim()) return;
 
       setChats((prev) => {
-        // [중복 체크] 내용과 역할이 같으면 추가 안 함
-        const isDuplicate = prev.some(
-          (msg) => msg.content.trim() === content.trim() && msg.role === role,
-        );
-        if (isDuplicate) return prev;
-
         return [
           ...prev,
           {
@@ -84,8 +81,14 @@ export default function Chat({
 
       if (nextQ) {
         const qContent = nextQ.question;
+
         if (qContent) {
           appendMessage(qContent, "ai", "Interviewer");
+        }
+
+        if (nextQ.isLast) {
+          setIsDone(true);
+          return;
         }
       }
     } catch (error) {
@@ -132,7 +135,10 @@ export default function Chat({
 
   return (
     <Card
-      className={cn("flex h-full flex-col border-0 shadow-none", className)}
+      className={cn(
+        "flex h-full flex-col border-none shadow-none ring-0",
+        className,
+      )}
     >
       <div className="flex-1 overflow-y-auto">
         <ChatHistory chatMessages={initalChats} />
@@ -147,12 +153,18 @@ export default function Chat({
         {error && (
           <p className="px-1 text-xs font-medium text-red-500">{error}</p>
         )}
-        <ChatInput
-          onSend={(text) => processAnswer(text, false)} // 텍스트 입력은 isVoice = false
-          onHandleVoiceToggle={handleVoiceToggle}
-          isRecording={isRecording}
-          disabled={isProcessing}
-        />
+        {isDone ? (
+          <p className="px-1 text-xs font-medium text-green-600">
+            모든 질문이 완료되었습니다. 수고하셨습니다!
+          </p>
+        ) : (
+          <ChatInput
+            onSend={(text) => processAnswer(text, false)} // 텍스트 입력은 isVoice = false
+            onHandleVoiceToggle={handleVoiceToggle}
+            isRecording={isRecording}
+            disabled={isProcessing}
+          />
+        )}
       </div>
     </Card>
   );

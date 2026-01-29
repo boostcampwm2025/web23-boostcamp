@@ -1,4 +1,9 @@
+"use server";
 import { DocumentItem } from "@/app/(tabs)/(simulator)/components/document-card";
+import { getUserSession } from "../server/session";
+
+import { z } from "zod";
+import { redirect } from "next/navigation";
 
 interface QuestionAnswer {
   question: string;
@@ -42,10 +47,11 @@ export interface CoverLetterDetailResponse {
 export async function deleteDocumentsClientSideBulk(
   documentIds: string[],
   documentsMap?: Record<string, DocumentItem>,
-): Promise<{ successIds: string[]; failedIds: string[] }> {
-  if (process.env.NODE_ENV === "development") {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    return { successIds: documentIds, failedIds: [] };
+) {
+  const { user } = await getUserSession();
+
+  if (!user) {
+    return redirect("/");
   }
 
   const deletionPromises = documentIds.map(async (documentId) => {
@@ -58,7 +64,13 @@ export async function deleteDocumentsClientSideBulk(
           ? `${process.env.NEXT_PUBLIC_API_URL}/document/${documentId}/cover-letter`
           : `${process.env.NEXT_PUBLIC_API_URL}/document/${documentId}/portfolio`;
 
-      const response = await fetch(endpoint, { method: "DELETE" });
+      const response = await fetch(endpoint, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
+        },
+      });
 
       if (!response.ok) {
         console.error(
@@ -90,41 +102,13 @@ export async function deleteDocumentsClientSideBulk(
 }
 
 /**
- * 새 자기소개서를 생성하는 함수
- */
-export async function createCoverLetter(
-  parameters: CreateCoverLetterParameters,
-): Promise<DocumentItem> {
-  if (process.env.NODE_ENV === "development") {
-    /*  const currentTime = new Date().toISOString();
-    return {
-      documentId: `mock-cover-${Date.now()}`,
-      type: "COVER",
-      title: parameters.title || "Untitled Cover Letter",
-      createdAt: currentTime,
-      modifiedAt: currentTime,
-    }; */
-  }
-
-  const result = await createCoverLetter(parameters);
-  return result;
-}
-
-/**
  * 새 포트폴리오를 생성하는 함수
  */
-export async function createPortfolio(
-  parameters: CreatePortfolioParameters,
-): Promise<DocumentItem> {
-  if (process.env.NODE_ENV === "development") {
-    const currentTime = new Date().toISOString();
-    return {
-      documentId: `mock-portfolio-${Date.now()}`,
-      type: "PORTFOLIO",
-      title: parameters.title || "Untitled Portfolio",
-      createdAt: currentTime,
-      modifiedAt: currentTime,
-    };
+export async function createPortfolio(parameters: CreatePortfolioParameters) {
+  const { user } = await getUserSession();
+
+  if (!user) {
+    return redirect("/");
   }
 
   const response = await fetch(
@@ -133,6 +117,7 @@ export async function createPortfolio(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${user?.token}`,
       },
       body: JSON.stringify({
         title: parameters.title,
@@ -142,11 +127,6 @@ export async function createPortfolio(
   );
 
   if (!response.ok) {
-    console.error(
-      "포트폴리오 생성 실패:",
-      response.status,
-      response.statusText,
-    );
     throw new Error("포트폴리오 생성에 실패했습니다");
   }
 
@@ -164,20 +144,11 @@ export async function createPortfolio(
 /**
  * 포트폴리오 상세 조회
  */
-export async function getPortfolioDetail(
-  documentId: string,
-): Promise<PortfolioDetailResponse> {
-  if (process.env.NODE_ENV === "development") {
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    return {
-      documentId,
-      type: "PORTFOLIO",
-      portfolioId: `portfolio-${documentId}`,
-      title: "Sample Portfolio",
-      content: "This is a sample portfolio content for development mode.",
-      createdAt: new Date().toISOString(),
-      modifiedAt: new Date().toISOString(),
-    };
+export async function getPortfolioDetail(documentId: string) {
+  const { user } = await getUserSession();
+
+  if (!user) {
+    throw new Error("Unauthorized");
   }
 
   const response = await fetch(
@@ -186,16 +157,12 @@ export async function getPortfolioDetail(
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${user?.token}`,
       },
     },
   );
 
   if (!response.ok) {
-    console.error(
-      "포트폴리오 조회 실패:",
-      response.status,
-      response.statusText,
-    );
     throw new Error("포트폴리오를 불러오는데 실패했습니다");
   }
 
@@ -205,23 +172,11 @@ export async function getPortfolioDetail(
 /**
  * 자기소개서 상세 조회
  */
-export async function getCoverLetterDetail(
-  documentId: string,
-): Promise<CoverLetterDetailResponse> {
-  if (process.env.NODE_ENV === "development") {
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    return {
-      documentId,
-      coverLetterId: `cover-${documentId}`,
-      type: "COVER",
-      title: "Sample Cover Letter",
-      content: [
-        { question: "질문 1", answer: "답변 1" },
-        { question: "질문 2", answer: "답변 2" },
-      ],
-      createdAt: new Date().toISOString(),
-      modifiedAt: new Date().toISOString(),
-    };
+export async function getCoverLetterDetail(documentId: string) {
+  const { user } = await getUserSession();
+
+  if (!user) {
+    throw new Error("Unauthorized");
   }
 
   const response = await fetch(
@@ -230,16 +185,12 @@ export async function getCoverLetterDetail(
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${user?.token}`,
       },
     },
   );
 
   if (!response.ok) {
-    console.error(
-      "자기소개서 조회 실패:",
-      response.status,
-      response.statusText,
-    );
     throw new Error("자기소개서를 불러오는데 실패했습니다");
   }
 
@@ -252,18 +203,11 @@ export async function getCoverLetterDetail(
 export async function updatePortfolio(
   documentId: string,
   params: { title: string; content: string },
-): Promise<PortfolioDetailResponse> {
-  if (process.env.NODE_ENV === "development") {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    return {
-      documentId,
-      type: "PORTFOLIO",
-      portfolioId: `portfolio-${documentId}`,
-      title: params.title,
-      content: params.content,
-      createdAt: new Date().toISOString(),
-      modifiedAt: new Date().toISOString(),
-    };
+) {
+  const { user } = await getUserSession();
+
+  if (!user) {
+    throw new Error("Unauthorized");
   }
 
   const response = await fetch(
@@ -272,17 +216,13 @@ export async function updatePortfolio(
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${user?.token}`,
       },
       body: JSON.stringify(params),
     },
   );
 
   if (!response.ok) {
-    console.error(
-      "포트폴리오 수정 실패:",
-      response.status,
-      response.statusText,
-    );
     throw new Error("포트폴리오 수정에 실패했습니다");
   }
 
@@ -295,18 +235,11 @@ export async function updatePortfolio(
 export async function updateCoverLetter(
   documentId: string,
   params: { title: string; content: QuestionAnswer[] },
-): Promise<CoverLetterDetailResponse> {
-  if (process.env.NODE_ENV === "development") {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    return {
-      documentId,
-      coverLetterId: `cover-${documentId}`,
-      type: "COVER",
-      title: params.title,
-      content: params.content,
-      createdAt: new Date().toISOString(),
-      modifiedAt: new Date().toISOString(),
-    };
+) {
+  const { user } = await getUserSession();
+
+  if (!user) {
+    throw new Error("Unauthorized");
   }
 
   const response = await fetch(
@@ -315,19 +248,110 @@ export async function updateCoverLetter(
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${user?.token}`,
       },
       body: JSON.stringify(params),
     },
   );
 
   if (!response.ok) {
-    console.error(
-      "자기소개서 수정 실패:",
-      response.status,
-      response.statusText,
-    );
     throw new Error("자기소개서 수정에 실패했습니다");
   }
 
   return await response.json();
+}
+
+const coverLetterSchema = z.object({
+  title: z.string().min(1).max(100),
+  qa: z
+    .array(
+      z.object({
+        question: z.string().min(1).max(500),
+        answer: z.string().min(1).max(2000),
+      }),
+    )
+    .min(1)
+    .max(20),
+});
+
+export async function createCoverLetter(params: {
+  title: string;
+  qa: { question: string; answer: string }[];
+}) {
+  const parseResult = coverLetterSchema.safeParse({
+    title: params.title,
+    qa: params.qa,
+  });
+
+  if (!parseResult.success) {
+    return {
+      error: "INVALID_PARAMETERS",
+    };
+  }
+
+  const { user } = await getUserSession();
+  if (!user) {
+    return redirect("/");
+  }
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/document/cover-letter/create`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user?.token}`,
+      },
+      body: JSON.stringify({
+        title: parseResult.data.title,
+        content: parseResult.data.qa,
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error("자기소개서 생성에 실패했습니다");
+  }
+
+  const responseData = await response.json();
+
+  return {
+    documentId: responseData.documentId,
+    type: responseData.type,
+    title: responseData.title,
+    createdAt: responseData.createdAt,
+    modifiedAt: responseData.createdAt,
+  };
+}
+
+interface IDocumentsResponse {
+  documents: DocumentItem[];
+}
+
+export async function getDocuments({
+  page,
+  take,
+}: { page?: number; take?: number } = {}) {
+  const { user } = await getUserSession();
+
+  if (!user) {
+    return redirect("/");
+  }
+
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/document?page=${page ?? 1}&take=${take ?? 20}`,
+    {
+      method: "GET",
+      cache: "no-store",
+      headers: {
+        Authorization: `Bearer ${user?.token}`,
+      },
+    },
+  );
+
+  if (!res.ok) {
+    throw new Error("문서 조회 실패");
+  }
+
+  return (await res.json()) as IDocumentsResponse;
 }
