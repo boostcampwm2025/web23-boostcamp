@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export async function seedDatabase(dataSource: DataSource) {
-  const seedSqlPath = path.join(__dirname, '../../test_data_clean.sql');
+  const seedSqlPath = path.join(__dirname, '../../db/seed.sql');
   if (!fs.existsSync(seedSqlPath)) {
     console.warn('Seed SQL file not found at:', seedSqlPath);
     return;
