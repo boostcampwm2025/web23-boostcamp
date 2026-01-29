@@ -24,7 +24,11 @@ export default async function Header() {
       </nav>
       <nav>
         {user ? (
-          <Profile email={user.email} logout={logout} />
+          <Profile
+            profileImage={user.profileUrl || undefined}
+            email={user.email}
+            logout={logout}
+          />
         ) : (
           <GoogleLoginButton />
         )}

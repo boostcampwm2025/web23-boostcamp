@@ -16,9 +16,11 @@ import {
 
 export default function Profile({
   email,
+  profileImage,
   logout,
 }: {
   email: string;
+  profileImage?: string;
   logout?: () => void;
 }) {
   return (
@@ -26,8 +28,8 @@ export default function Profile({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Avatar className="cursor-pointer ring-1 ring-primary transition-all hover:brightness-110">
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>Default</AvatarFallback>
+            <AvatarImage src={profileImage} alt="profile_image" />
+            <AvatarFallback>{email.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="m-1 w-56" align="start">
