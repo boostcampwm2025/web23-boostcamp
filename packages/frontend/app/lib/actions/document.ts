@@ -4,6 +4,7 @@ import { getUserSession } from "../server/session";
 
 import { z } from "zod";
 import { redirect } from "next/navigation";
+import { formatIsoDateToDot } from "../utils";
 
 interface QuestionAnswer {
   question: string;
@@ -136,8 +137,8 @@ export async function createPortfolio(parameters: CreatePortfolioParameters) {
     documentId: responseData.documentId,
     type: responseData.type,
     title: responseData.title,
-    createdAt: responseData.createdAt,
-    modifiedAt: responseData.createdAt,
+    createdAt: formatIsoDateToDot(responseData.createdAt),
+    modifiedAt: formatIsoDateToDot(responseData.createdAt),
   };
 }
 
@@ -319,8 +320,8 @@ export async function createCoverLetter(params: {
     documentId: responseData.documentId,
     type: responseData.type,
     title: responseData.title,
-    createdAt: responseData.createdAt,
-    modifiedAt: responseData.createdAt,
+    createdAt: formatIsoDateToDot(responseData.createdAt),
+    modifiedAt: formatIsoDateToDot(responseData.createdAt),
   };
 }
 
