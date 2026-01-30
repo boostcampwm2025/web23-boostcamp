@@ -3,14 +3,11 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { Server } from 'http';
 import { AppModule } from '../../src/app.module';
-import { DataSource } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { seedDatabase } from '../utils/seed-db';
 import { setupApp } from '../utils/setup-app';
 
 describe('InterviewController (e2e)', () => {
   let app: INestApplication;
-  let dataSource: DataSource;
   let accessToken: string;
 
   beforeAll(async () => {
@@ -22,7 +19,6 @@ describe('InterviewController (e2e)', () => {
     setupApp(app);
     await app.init();
 
-    dataSource = app.get(DataSource);
     // Setup Auth Token
     const jwtService = app.get(JwtService);
     // User 1 exists in seed data. We use '1' as sub because JwtTokenProvider puts userId in sub.
