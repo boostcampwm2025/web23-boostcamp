@@ -143,8 +143,8 @@ export default function DocumentCreateModal({
             title: result.title,
             documentId: result.documentId,
             type: result.type,
-            createdAt: result.createdAt,
-            modifiedAt: result.modifiedAt,
+            createdAt: result.createdAt!,
+            modifiedAt: result.modifiedAt!,
           };
         }
       }

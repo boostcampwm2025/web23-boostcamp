@@ -20,7 +20,7 @@ export default function GlobalError({
             <h1 className="mb-2 text-3xl font-bold">
               어라..? 뭔가 잘못된거 같군요..
             </h1>
-            <p className="mb-4 text-lg text-gray-600">{error.message}</p>
+            {/* <p className="mb-4 text-lg text-gray-600">{error.message}</p> */}
             {error.digest && (
               <p className="text-xs text-gray-400">Error ID: {error.digest}</p>
             )}

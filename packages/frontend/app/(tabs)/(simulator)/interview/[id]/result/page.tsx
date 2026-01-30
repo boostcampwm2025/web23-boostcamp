@@ -28,6 +28,10 @@ export default async function InterviewResultPage({
     return redirect("/");
   }
 
+  // sleep(2000);
+
+  // await new Promise((resolve) => setTimeout(resolve, 1000000));
+
   const { id: interviewId } = await params;
   const { history } = await getHistory({
     interviewId,
