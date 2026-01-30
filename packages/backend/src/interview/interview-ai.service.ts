@@ -140,8 +140,9 @@ export class InterviewAIService {
             ***[컨텍스트: 현재 입력]***
             - 직전 지원자 답변: ${currentAnswer || '없음 (첫 질문)'}
 
-            !!! 반드시 시스템 프롬프트에 정의된 JSON 형식으로만 답변하십시오. !!!
-            Format: { "question": "...", "tags": [...], "isLast": boolean }
+             ***[필수 규칙]***
+            - **빈 값 금지**: "question" 및 "tags" 배열의 항목은 절대 빈 문자열("")이어서는 안 됩니다. 반드시 유의미한 내용을 포함하십시오.
+            - 최소 10자 이상의 질문을 생성하십시오.
         
             ${isLastQuestion ? lastQuestPrompt : ''}
         `;
@@ -185,6 +186,29 @@ export class InterviewAIService {
             temperature: 0.4,
             repeatPenalty: 1.1,
             seed: 0,
+            responseFormat: {
+              type: 'json',
+              schema: {
+                type: 'object',
+                properties: {
+                  question: {
+                    type: 'string',
+                    minLength: 10,
+                  },
+                  tags: {
+                    type: 'array',
+                    minItems: 1,
+                    items: {
+                      type: 'string',
+                      minLength: 1,
+                    },
+                  },
+                  isLast: { type: 'boolean' },
+                },
+                required: ['question', 'tags', 'isLast'],
+                additionalProperties: false,
+              },
+            },
           }),
           signal: controller.signal,
         });
