@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserRole } from '../user/entities/user.entity';
 
@@ -11,12 +11,15 @@ export interface TokenPayload {
 
 @Injectable()
 export class JwtTokenDecoder {
+  private readonly logger = new Logger(JwtTokenDecoder.name);
+
   constructor(private readonly jwtService: JwtService) {}
 
   decodeToken(token: string): TokenPayload {
     try {
       return this.jwtService.verify(token);
     } catch (e) {
+      this.logger.error((e as Error).message, (e as Error).stack);
       if (e instanceof Error) {
         if (e.name === 'TokenExpiredError') {
           throw new UnauthorizedException('만료된 토큰입니다.');
