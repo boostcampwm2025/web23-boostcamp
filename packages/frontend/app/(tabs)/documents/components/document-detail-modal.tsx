@@ -7,8 +7,8 @@ import {
   getPortfolioDetail,
   updateCoverLetter,
   updatePortfolio,
-  CoverLetterDetailResponse,
-  PortfolioDetailResponse,
+  ICoverLetterDetailResponse,
+  IPortfolioDetailResponse,
 } from "../../../lib/actions/document";
 import { Button } from "@/app/components/ui/button";
 import { Card } from "@/app/components/ui/card";
@@ -18,14 +18,14 @@ import { formatIsoDateToDot } from "@/app/lib/utils";
 
 const MAX_CONTENT_LENGTH = 30000;
 
-interface Props {
+interface IProps {
   documentId: string | null;
   documentType: "COVER" | "PORTFOLIO";
   onClose: () => void;
   onUpdate: (document: DocumentItem) => void;
 }
 
-interface QuestionAnswer {
+interface IQuestionAnswer {
   question: string;
   answer: string;
 }
@@ -35,13 +35,13 @@ export default function DocumentDetailModal({
   documentType,
   onClose,
   onUpdate,
-}: Props) {
+}: IProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
   const [title, setTitle] = useState("");
   const [questionAnswerList, setQuestionAnswerList] = useState<
-    QuestionAnswer[]
+    IQuestionAnswer[]
   >([]);
   const [portfolioContent, setPortfolioContent] = useState("");
 
@@ -57,12 +57,12 @@ export default function DocumentDetailModal({
       setIsLoading(true);
       try {
         if (documentType === "COVER") {
-          const data: CoverLetterDetailResponse =
+          const data: ICoverLetterDetailResponse =
             await getCoverLetterDetail(documentId);
           setTitle(data.title);
           setQuestionAnswerList(data.content);
         } else {
-          const data: PortfolioDetailResponse =
+          const data: IPortfolioDetailResponse =
             await getPortfolioDetail(documentId);
           setTitle(data.title);
           setPortfolioContent(data.content);
@@ -81,7 +81,7 @@ export default function DocumentDetailModal({
 
   function updateQuestionAnswer(
     targetIndex: number,
-    field: keyof QuestionAnswer,
+    field: keyof IQuestionAnswer,
     value: string,
   ) {
     setQuestionAnswerList((previousList) => {

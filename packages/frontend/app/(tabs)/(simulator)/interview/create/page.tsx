@@ -20,7 +20,7 @@ import { createTechInterview } from "./actions";
 
 type InterviewMode = "live" | "tech";
 
-interface SelectedDocs {
+interface ISelectedDocs {
   COVER: string | null;
   PORTFOLIO: string | null;
 }
@@ -40,7 +40,7 @@ export default function InterviewCreatePage() {
     null,
   );
 
-  const [selectedDocs, setSelectedDocs] = useState<SelectedDocs>({
+  const [selectedDocs, setSelectedDocs] = useState<ISelectedDocs>({
     COVER: null,
     PORTFOLIO: null,
   });
@@ -73,28 +73,14 @@ export default function InterviewCreatePage() {
             language: "javascript",
           }; */
 
-      // 개발 모드면 서버 호출을 생략
-      if (process.env.NODE_ENV === "development" && false) {
-        /* 
-        const data = await createInterview();
-        const interviewId = data.interviewId;
-        router.push(`/interview/${interviewId}/ready`);
-
-        
-        await new Promise((r) => setTimeout(r, 300));
-        const interviewId = "1";
-        router.push(`/interview/${interviewId}/ready`);
-      */
-      } else {
-        // 클라이언트 API 사용
-        const { interviewId } = await createTechInterview({
-          documentIds: [selectedDocs.COVER, selectedDocs.PORTFOLIO].filter(
-            (id): id is string => Boolean(id),
-          ),
-          simulationTitle: title,
-        });
-        router.push(`/interview/${interviewId}/ready`);
-      }
+      // 클라이언트 API 사용
+      const { interviewId } = await createTechInterview({
+        documentIds: [selectedDocs.COVER, selectedDocs.PORTFOLIO].filter(
+          (id): id is string => Boolean(id),
+        ),
+        simulationTitle: title,
+      });
+      router.push(`/interview/${interviewId}/ready`);
     } catch (error) {
       console.error("Error:", error);
       alert("생성 중 오류가 발생했습니다.");

@@ -7,11 +7,6 @@ export interface ICreateInterviewResponse {
 export async function createInterviewClient(
   body: Record<string, unknown>,
 ): Promise<ICreateInterviewResponse> {
-  if (process.env.NODE_ENV === "development" && false) {
-    await new Promise((r) => setTimeout(r, 200));
-    return { interviewId: `dev-${Date.now()}` };
-  }
-
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/interview/tech/create`,
     {
@@ -26,10 +21,6 @@ export async function createInterviewClient(
 }
 
 export async function getHistoryClient(interviewId: string) {
-  if (process.env.NODE_ENV === "development" && false) {
-    return { history: [] as IHistoryItem[] };
-  }
-
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/interview/${interviewId}/chat/history`,
     { headers: { "Content-Type": "application/json" } },
@@ -40,11 +31,6 @@ export async function getHistoryClient(interviewId: string) {
 }
 
 export async function sendAnswerClient(interviewId: string, answer: string) {
-  if (process.env.NODE_ENV === "development" && false) {
-    await new Promise((r) => setTimeout(r, 100));
-    return { answer: "[DEV] 개발 모드 채팅 응답" };
-  }
-
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/interview/answer/chat`,
     {
@@ -58,11 +44,6 @@ export async function sendAnswerClient(interviewId: string, answer: string) {
 }
 
 export async function speakAnswerClient(interviewId: string, audio: Blob) {
-  if (process.env.NODE_ENV === "development" && false) {
-    await new Promise((r) => setTimeout(r, 100));
-    return { answer: "[DEV] 개발 모드 음성 응답" };
-  }
-
   const fd = new FormData();
   fd.append("interviewId", interviewId);
   fd.append("file", audio, "answer.webm");
@@ -79,15 +60,6 @@ export async function speakAnswerClient(interviewId: string, audio: Blob) {
 }
 
 export async function generateQuestionClient(interviewId: string) {
-  if (process.env.NODE_ENV === "development" && false) {
-    return {
-      questionId: "sample-question-id",
-      question: "[DEV] 이것은 샘플 질문입니다.",
-      createdAt: new Date().toISOString(),
-      isLast: false,
-    };
-  }
-
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/interview/tech/question`,
     {

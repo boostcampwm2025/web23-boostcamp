@@ -1,10 +1,11 @@
 "use server";
 
 import { getUserSession } from "@/app/lib/server/session";
+import { isApiMockEnabled } from "@/app/lib/server/env";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-interface IAnswerResponse {
+export interface IAnswerResponse {
   answer: string;
 }
 
@@ -19,7 +20,7 @@ export interface IHistoryItem {
   } | null;
 }
 
-interface IHistoryResponse {
+export interface IHistoryResponse {
   history: IHistoryItem[];
 }
 
@@ -39,6 +40,11 @@ export async function speakAnswer({
   const formData = new FormData();
   formData.append("interviewId", interviewId);
   formData.append("file", audio, "answer.webm");
+
+  if (isApiMockEnabled()) {
+    await new Promise((r) => setTimeout(r, 120));
+    return { answer: "[MOCK] 음성 응답(서버사이드)" } as IAnswerResponse;
+  }
 
   const reponse = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/interview/answer/voice`,
@@ -72,6 +78,12 @@ export async function sendAnswer({
     return redirect("/");
   }
 
+  if (isApiMockEnabled()) {
+    await new Promise((r) => setTimeout(r, 60));
+    revalidatePath(`/interview/${interviewId}/result`);
+    return { answer: "[MOCK] 채팅 응답(서버사이드)" } as IAnswerResponse;
+  }
+
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/interview/answer/chat`,
     {
@@ -100,6 +112,10 @@ export async function getHistory({
   interviewId: string;
   userToken: string;
 }) {
+  if (isApiMockEnabled()) {
+    return { history: [] } as IHistoryResponse & { history: IHistoryItem[] };
+  }
+
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/interview/${interviewId}/chat/history`,
     {
@@ -120,10 +136,10 @@ export async function getHistory({
   return { history };
 }
 
-interface IGenerateQuestion {
+export interface IGenerateQuestion {
   questionId: string;
   question: string;
-  createdAt: Date;
+  createdAt: string;
   isLast: boolean;
 }
 export async function generateQuestion({
@@ -135,6 +151,15 @@ export async function generateQuestion({
 
   if (!user) {
     return redirect("/");
+  }
+
+  if (isApiMockEnabled()) {
+    return {
+      questionId: `mock-${Date.now()}`,
+      question: "[MOCK] 예시 질문입니다.",
+      createdAt: new Date().toISOString(),
+      isLast: false,
+    } as IGenerateQuestion;
   }
 
   const response = await fetch(
