@@ -1,27 +1,28 @@
 "use server";
 import { DocumentItem } from "@/app/(tabs)/(simulator)/components/document-card";
 import { getUserSession } from "../server/session";
+import { isApiMockEnabled } from "../server/env";
 
 import { z } from "zod";
 import { redirect } from "next/navigation";
 import { formatIsoDateToDot } from "../utils";
 
-interface QuestionAnswer {
+interface IQuestionAnswer {
   question: string;
   answer: string;
 }
 
-interface CreateCoverLetterParameters {
+interface ICreateCoverLetterParameters {
   title: string;
-  qa: QuestionAnswer[];
+  qa: IQuestionAnswer[];
 }
 
-interface CreatePortfolioParameters {
+interface ICreatePortfolioParameters {
   title: string;
   content: string;
 }
 
-export interface PortfolioDetailResponse {
+export interface IPortfolioDetailResponse {
   documentId: string;
   type: "PORTFOLIO";
   portfolioId: string;
@@ -31,14 +32,24 @@ export interface PortfolioDetailResponse {
   modifiedAt: string;
 }
 
-export interface CoverLetterDetailResponse {
+export interface ICoverLetterDetailResponse {
   documentId: string;
   coverLetterId: string;
   type: "COVER";
   title: string;
-  content: QuestionAnswer[];
+  content: IQuestionAnswer[];
   createdAt: string;
   modifiedAt: string;
+}
+
+interface IDeleteDocumentResult {
+  documentId: string;
+  isSuccess: boolean;
+}
+
+export interface IDeleteDocumentsResponse {
+  successIds: string[];
+  failedIds: string[];
 }
 
 /**
@@ -56,6 +67,10 @@ export async function deleteDocumentsClientSideBulk(
   }
 
   const deletionPromises = documentIds.map(async (documentId) => {
+    if (isApiMockEnabled()) {
+      await new Promise((r) => setTimeout(r, 50));
+      return { documentId, isSuccess: true } as IDeleteDocumentResult;
+    }
     try {
       const document = documentsMap ? documentsMap[documentId] : undefined;
       const documentType = document?.type ?? "PORTFOLIO";
@@ -82,10 +97,10 @@ export async function deleteDocumentsClientSideBulk(
         throw new Error(`문서 삭제에 실패했습니다: ${documentId}`);
       }
 
-      return { documentId, isSuccess: true };
+      return { documentId, isSuccess: true } as IDeleteDocumentResult;
     } catch (error) {
       console.error(`문서 삭제 중 오류 발생 (${documentId}):`, error);
-      return { documentId, isSuccess: false };
+      return { documentId, isSuccess: false } as IDeleteDocumentResult;
     }
   });
 
@@ -99,13 +114,13 @@ export async function deleteDocumentsClientSideBulk(
     .filter((result) => !result.isSuccess)
     .map((result) => result.documentId);
 
-  return { successIds, failedIds };
+  return { successIds, failedIds } as IDeleteDocumentsResponse;
 }
 
 /**
  * 새 포트폴리오를 생성하는 함수
  */
-export async function createPortfolio(parameters: CreatePortfolioParameters) {
+export async function createPortfolio(parameters: ICreatePortfolioParameters) {
   const { user } = await getUserSession();
 
   if (!user) {
@@ -139,7 +154,7 @@ export async function createPortfolio(parameters: CreatePortfolioParameters) {
     title: responseData.title,
     createdAt: formatIsoDateToDot(responseData.createdAt),
     modifiedAt: formatIsoDateToDot(responseData.createdAt),
-  };
+  } as DocumentItem;
 }
 
 /**
@@ -150,6 +165,18 @@ export async function getPortfolioDetail(documentId: string) {
 
   if (!user) {
     throw new Error("Unauthorized");
+  }
+
+  if (isApiMockEnabled()) {
+    return {
+      documentId,
+      type: "PORTFOLIO",
+      portfolioId: `mock-${documentId}`,
+      title: "모의 포트폴리오 제목",
+      content: "이것은 모의 포트폴리오 내용입니다.",
+      createdAt: new Date().toISOString(),
+      modifiedAt: new Date().toISOString(),
+    } as IPortfolioDetailResponse;
   }
 
   const response = await fetch(
@@ -167,7 +194,7 @@ export async function getPortfolioDetail(documentId: string) {
     throw new Error("포트폴리오를 불러오는데 실패했습니다");
   }
 
-  return await response.json();
+  return (await response.json()) as IPortfolioDetailResponse;
 }
 
 /**
@@ -178,6 +205,20 @@ export async function getCoverLetterDetail(documentId: string) {
 
   if (!user) {
     throw new Error("Unauthorized");
+  }
+
+  if (isApiMockEnabled()) {
+    return {
+      documentId,
+      coverLetterId: `mock-${documentId}`,
+      type: "COVER",
+      title: "모의 자기소개서",
+      content: [
+        { question: "자기소개", answer: "안녕하세요, 모의 지원자입니다." },
+      ],
+      createdAt: new Date().toISOString(),
+      modifiedAt: new Date().toISOString(),
+    } as ICoverLetterDetailResponse;
   }
 
   const response = await fetch(
@@ -195,7 +236,7 @@ export async function getCoverLetterDetail(documentId: string) {
     throw new Error("자기소개서를 불러오는데 실패했습니다");
   }
 
-  return await response.json();
+  return (await response.json()) as ICoverLetterDetailResponse;
 }
 
 /**
@@ -209,6 +250,10 @@ export async function updatePortfolio(
 
   if (!user) {
     throw new Error("Unauthorized");
+  }
+
+  if (isApiMockEnabled()) {
+    return { ...params, documentId } as IPortfolioDetailResponse;
   }
 
   const response = await fetch(
@@ -227,7 +272,7 @@ export async function updatePortfolio(
     throw new Error("포트폴리오 수정에 실패했습니다");
   }
 
-  return await response.json();
+  return (await response.json()) as IPortfolioDetailResponse;
 }
 
 /**
@@ -235,12 +280,16 @@ export async function updatePortfolio(
  */
 export async function updateCoverLetter(
   documentId: string,
-  params: { title: string; content: QuestionAnswer[] },
+  params: { title: string; content: IQuestionAnswer[] },
 ) {
   const { user } = await getUserSession();
 
   if (!user) {
     throw new Error("Unauthorized");
+  }
+
+  if (isApiMockEnabled()) {
+    return { ...params, documentId } as ICoverLetterDetailResponse;
   }
 
   const response = await fetch(
@@ -259,7 +308,7 @@ export async function updateCoverLetter(
     throw new Error("자기소개서 수정에 실패했습니다");
   }
 
-  return await response.json();
+  return (await response.json()) as ICoverLetterDetailResponse;
 }
 
 const coverLetterSchema = z.object({
@@ -287,12 +336,22 @@ export async function createCoverLetter(params: {
   if (!parseResult.success) {
     return {
       error: "INVALID_PARAMETERS",
-    };
+    } as { error: string };
   }
 
   const { user } = await getUserSession();
   if (!user) {
     return redirect("/");
+  }
+
+  if (isApiMockEnabled()) {
+    return {
+      documentId: `mock-${Date.now()}`,
+      type: "COVER",
+      title: parseResult.data.title,
+      createdAt: formatIsoDateToDot(new Date().toISOString()),
+      modifiedAt: formatIsoDateToDot(new Date().toISOString()),
+    } as ICoverLetterDetailResponse;
   }
 
   const response = await fetch(
@@ -322,10 +381,10 @@ export async function createCoverLetter(params: {
     title: responseData.title,
     createdAt: formatIsoDateToDot(responseData.createdAt),
     modifiedAt: formatIsoDateToDot(responseData.createdAt),
-  };
+  } as ICoverLetterDetailResponse;
 }
 
-interface IDocumentsResponse {
+export interface IDocumentsResponse {
   documents: DocumentItem[];
 }
 
@@ -337,6 +396,25 @@ export async function getDocuments({
 
   if (!user) {
     return redirect("/");
+  }
+
+  if (isApiMockEnabled()) {
+    return {
+      documents: [
+        {
+          documentId: "mock-cover-1",
+          type: "COVER",
+          title: "모의 이력서 (샘플)",
+          createdAt: formatIsoDateToDot(new Date().toISOString()),
+        },
+        {
+          documentId: "mock-portfolio-1",
+          type: "PORTFOLIO",
+          title: "포트폴리오 예시",
+          createdAt: formatIsoDateToDot(new Date().toISOString()),
+        },
+      ],
+    } as IDocumentsResponse;
   }
 
   const res = await fetch(
