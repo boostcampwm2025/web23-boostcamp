@@ -18,12 +18,12 @@ export default async function Page({
     return redirect("/");
   }
 
-  const { history } = await getHistory({ interviewId, userToken: user.token });
-  // sthrow new Error("인터뷰 목록을 가져오는데 실패하였습니다: 테스트 에러");
+  /*   const { history } = await getHistory({ interviewId, userToken: user.token });
+   */ // sthrow new Error("인터뷰 목록을 가져오는데 실패하였습니다: 테스트 에러");
 
   return (
-    <div className="mx-auto mt-8 flex max-w-360">
-      <InterviewClient history={history} interviewId={interviewId} />
+    <div className="mx-auto flex size-full max-w-360">
+      <InterviewClient history={[]} interviewId={interviewId} />
     </div>
   );
 }

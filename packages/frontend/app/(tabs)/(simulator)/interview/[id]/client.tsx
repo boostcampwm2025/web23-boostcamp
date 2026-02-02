@@ -1,21 +1,15 @@
 "use client";
 
-import { MessageSquare, X } from "lucide-react";
-
-import { useInterviewControls } from "@/app/hooks/use-interview-controls";
-import { Button } from "@/app/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/app/components/ui/card";
-
-import { InterviewControls } from "../components/interview-controls";
-import VideoGrid from "../components/video-grid";
-import Chat from "../../components/chat";
+import { Cpu, Snowflake } from "lucide-react";
 
 import { IHistoryItem } from "./actions";
+
+import { motion } from "motion/react";
+import { useEffect, useState } from "react";
+import ChatInput from "./components/chat-input";
+import { useAudioRecording } from "@/app/hooks/recording/use-audio-recording";
+import { useMediaPermissions } from "@/app/hooks/use-media-permissions";
+import VoiceInput from "./components/voice-input";
 
 export default function InterviewClient({
   history,
@@ -24,7 +18,10 @@ export default function InterviewClient({
   history: IHistoryItem[];
   interviewId: string;
 }) {
-  const {
+  // TODO: 실제 인터뷰 로직 연결 시 사용 예정
+  void history;
+  void interviewId;
+  /*  const {
     handleExit,
     stream,
     isChatOpen,
@@ -35,49 +32,98 @@ export default function InterviewClient({
     isAudioEnabled,
     handleCamToggle,
     handleMicToggle,
-  } = useInterviewControls(interviewId, history);
+  } = useInterviewControls(interviewId, history); */
+  const [textInput, setTextInput] = useState("");
+  const [inputMode, setInputMode] = useState<"text" | "voice">("voice");
+  const [aiState, setAiState] = useState<"idle" | "thinking" | "speaking">(
+    "idle",
+  );
+
+  // 미디어 권한 및 스트림 관리
+  const { audioStream, requestAudio } = useMediaPermissions();
+
+  // 오디오 녹음 관리
+  useAudioRecording();
+
+  // 초기 오디오 권한 요청
+  useEffect(() => {
+    requestAudio();
+  }, [requestAudio]);
+
+  const changeToTextMode = (mode: "text" | "voice") => {
+    setInputMode(mode);
+  };
 
   return (
-    <div className="mt-5 flex h-full max-w-630 flex-col justify-center gap-5 py-2 xl:flex-row">
-      <div className="relative w-full max-w-7xl xl:flex-2">
-        <VideoGrid stream={stream} />
-        <InterviewControls
-          onToggleChat={() => toggleChat()}
-          onExit={() => handleExit(`/interview/${interviewId}/result`)}
-          isVideoEnabled={isVideoEnabled}
-          isAudioEnabled={isAudioEnabled}
-          onToggleVideo={handleCamToggle}
-          onToggleAudio={handleMicToggle}
-        />
-      </div>
-      {isChatOpen && (
-        <div className="flex-1">
-          <Card className="flex h-full flex-col">
-            <CardHeader className="flex items-center justify-between border-b pb-2">
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="size-4" />
-                <h3 className="text-sm font-semibold">채팅 기록</h3>
-              </CardTitle>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="size-6 cursor-pointer"
-                onClick={() => toggleChat()}
-              >
-                <X className="size-4" />
-              </Button>
-            </CardHeader>
-            <CardContent className="min-h-0 flex-1 overflow-y-auto">
-              <Chat
-                initalChats={chats}
-                setChats={setChats}
-                stream={stream}
-                interviewId={interviewId}
-              />
-            </CardContent>
-          </Card>
+    <div className="flex size-full items-center justify-center">
+      <div className="flex flex-col items-center gap-6">
+        <div className="w-fit rounded-3xl bg-primary p-5 shadow-2xl">
+          <Cpu className="size-8 text-white" />
         </div>
-      )}
+        <div className="max-w-lg text-center text-3xl font-extrabold text-pretty">
+          말씀하신 경험들 중에서 가장 도전적이었던 경험에 대해 느껴졌던 순간은
+          언제였나요?
+        </div>
+
+        <motion.div className="absolute bottom-26 w-full max-w-md">
+          {aiState === "idle" && inputMode === "text" && (
+            <div className="mb-4 flex justify-center">
+              <motion.div layoutId="ai-input-slot" className="w-full">
+                <ChatInput
+                  setTextInput={setTextInput}
+                  textInput={textInput}
+                  setInputMode={setInputMode}
+                />
+              </motion.div>
+            </div>
+          )}
+
+          {aiState === "idle" && inputMode === "voice" && (
+            <div className="mb-4 flex justify-center">
+              <motion.div layoutId="ai-input-slot" className="">
+                <VoiceInput
+                  changeToTextMode={changeToTextMode}
+                  audioStream={audioStream}
+                />
+              </motion.div>
+            </div>
+          )}
+
+          {aiState === "thinking" && (
+            <div className="flex justify-center">
+              <motion.div layoutId="ai-input-slot">
+                <span>
+                  면접관이 생각 중입니다
+                  <Snowflake className="ml-2 inline-block size-5 animate-spin text-primary" />
+                </span>
+              </motion.div>
+            </div>
+          )}
+        </motion.div>
+
+        {/* <button
+          onClick={() => {
+            setAiState("idle");
+            setInputMode("text");
+          }}
+        >
+          test state change ( idle )
+        </button>
+        <button
+          onClick={() => {
+            setAiState("thinking");
+          }}
+        >
+          test state change ( thinking )
+        </button>
+        <button
+          onClick={() => {
+            setAiState("speaking");
+          }}
+        >
+          test state change ( speaking )
+        </button> */}
+      </div>
     </div>
   );
 }
