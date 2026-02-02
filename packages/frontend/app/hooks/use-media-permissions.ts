@@ -19,12 +19,8 @@ export const useMediaPermissions = () => {
   const getMediaDevices = useCallback(async () => {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
-      setVideoDevices(
-        devices.filter((devices) => devices.kind === "videoinput"),
-      );
-      setAudioDevices(
-        devices.filter((devices) => devices.kind === "audioinput"),
-      );
+      setVideoDevices(devices.filter((device) => device.kind === "videoinput"));
+      setAudioDevices(devices.filter((device) => device.kind === "audioinput"));
     } catch (error) {
       setMediaError(error as Error);
     }
@@ -34,9 +30,11 @@ export const useMediaPermissions = () => {
   const requestVideo = useCallback(
     async (deviceId?: string) => {
       try {
+        // 기존 스트림이 있으면 정리
         if (videoStream) {
           videoStream.getTracks().forEach((track) => track.stop());
         }
+
         const stream = await navigator.mediaDevices.getUserMedia({
           video: deviceId ? { deviceId: { exact: deviceId } } : true,
         });
@@ -54,13 +52,14 @@ export const useMediaPermissions = () => {
         return null;
       }
     },
-    [videoStream, getMediaDevices],
+    [getMediaDevices],
   );
 
   /** 오디오 권한 및 스트림 요청 */
   const requestAudio = useCallback(
     async (deviceId?: string) => {
       try {
+        // 기존 스트림이 있으면 정리
         if (audioStream) {
           audioStream.getTracks().forEach((track) => track.stop());
         }
@@ -83,7 +82,7 @@ export const useMediaPermissions = () => {
         return null;
       }
     },
-    [audioStream, getMediaDevices],
+    [getMediaDevices],
   );
 
   /**  통합 권한 요청 (초기 설정용) */
