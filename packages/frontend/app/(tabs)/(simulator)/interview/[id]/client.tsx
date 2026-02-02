@@ -4,12 +4,18 @@ import { Cpu, Snowflake } from "lucide-react";
 
 import { IHistoryItem } from "./actions";
 
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import ChatInput from "./components/chat-input";
 import { useAudioRecording } from "@/app/hooks/recording/use-audio-recording";
 import { useMediaPermissions } from "@/app/hooks/use-media-permissions";
 import VoiceInput from "./components/voice-input";
+
+const questionVariants = {
+  enter: { opacity: 0, y: 16 },
+  center: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -16 },
+} as const;
 
 export default function InterviewClient({
   history,
@@ -39,6 +45,10 @@ export default function InterviewClient({
     "idle",
   );
 
+  const [question, setQuestion] = useState(
+    "말씀하신 경험들 중에서 가장 도전적이었던 경험에 대해 느껴졌던 순간은 언제였나요?",
+  );
+
   // 미디어 권한 및 스트림 관리
   const { audioStream, requestAudio } = useMediaPermissions();
 
@@ -60,10 +70,23 @@ export default function InterviewClient({
         <div className="w-fit rounded-3xl bg-primary p-5 shadow-2xl">
           <Cpu className="size-8 text-white" />
         </div>
-        <div className="max-w-lg text-center text-3xl font-extrabold text-pretty">
-          말씀하신 경험들 중에서 가장 도전적이었던 경험에 대해 느껴졌던 순간은
-          언제였나요?
-        </div>
+        <motion.div
+          layout
+          className="max-w-lg text-center text-3xl font-extrabold text-pretty"
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={question}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              variants={questionVariants}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+            >
+              {question}
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
 
         <motion.div className="absolute bottom-26 w-full max-w-md">
           {aiState === "idle" && inputMode === "text" && (
@@ -123,6 +146,15 @@ export default function InterviewClient({
         >
           test state change ( speaking )
         </button> */}
+        <button
+          onClick={() => {
+            setQuestion(
+              "새로운 질문으로 변경되었습니다. 이전 경험들 중에서 가장 자랑스러웠던 순간에 대해 말씀해 주세요.",
+            );
+          }}
+        >
+          test change question
+        </button>
       </div>
     </div>
   );
