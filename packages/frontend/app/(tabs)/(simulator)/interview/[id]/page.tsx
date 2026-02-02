@@ -22,7 +22,7 @@ export default async function Page({
    */ // sthrow new Error("인터뷰 목록을 가져오는데 실패하였습니다: 테스트 에러");
 
   return (
-    <div className="mx-auto flex size-full max-w-360">
+    <div className="mx-auto flex size-full">
       <InterviewClient history={[]} interviewId={interviewId} />
     </div>
   );

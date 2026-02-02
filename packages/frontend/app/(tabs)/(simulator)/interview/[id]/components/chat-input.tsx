@@ -23,17 +23,16 @@ export default function ChatInput({
         onChange={(e) => setTextInput(e.target.value)}
         value={textInput}
       />
-      <div className="cursor-pointer rounded-full p-1 transition-colors hover:bg-neutral-200">
-        {textInput.length > 0 ? (
-          <ActionButton key="send" icon={<Send className="size-5" />} />
-        ) : (
-          <ActionButton
-            key="mic"
-            icon={<Mic className="size-5" />}
-            onClick={() => setInputMode("voice")}
-          />
-        )}
-      </div>
+
+      {textInput.length > 0 ? (
+        <ActionButton key="send" icon={<Send className="size-5" />} />
+      ) : (
+        <ActionButton
+          key="mic"
+          icon={<Mic className="size-5" />}
+          onClick={() => setInputMode("voice")}
+        />
+      )}
     </div>
   );
 }

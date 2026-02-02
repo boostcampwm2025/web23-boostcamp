@@ -26,12 +26,8 @@ export default function VoiceInput({
     <div className="flex items-center gap-1 rounded-full bg-white px-6 py-2 shadow-lg">
       <PinsCanvas audioLevel={audioLevel} className="h-11 w-64" />
       <div className="flex gap-0.5">
-        <div className="cursor-pointer rounded-full p-1 transition-colors hover:bg-neutral-200">
-          <ActionButton onClick={() => changeToTextMode("text")} icon={<X />} />
-        </div>
-        <div className="cursor-pointer rounded-full p-1 transition-colors hover:bg-neutral-200">
-          <ActionButton icon={<Send />} />
-        </div>
+        <ActionButton onClick={() => changeToTextMode("text")} icon={<X />} />
+        <ActionButton icon={<Send />} />
       </div>
     </div>
   );
