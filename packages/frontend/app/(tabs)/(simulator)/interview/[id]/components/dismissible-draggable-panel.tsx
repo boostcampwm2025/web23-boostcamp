@@ -6,16 +6,19 @@ import { cn } from "@/app/lib/utils";
 import { X } from "lucide-react";
 
 interface IDismissibleDraggablePanel extends MotionProps {
-  onDismiss: () => void;
+  showHeader?: boolean;
+  onDismiss?: () => void;
   className?: string;
   minVisibleRatio?: number;
   children: ReactNode;
   title?: string;
+  icon?: ReactNode;
   keepInViewport?: boolean;
   viewportPadding?: number;
 }
 
 export default function DismissibleDraggablePanel({
+  showHeader = true,
   onDismiss,
   className,
   minVisibleRatio = 0.3,
@@ -24,6 +27,7 @@ export default function DismissibleDraggablePanel({
   children,
   onUpdate,
   title,
+  icon,
   ...motionProps
 }: IDismissibleDraggablePanel) {
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -140,7 +144,7 @@ export default function DismissibleDraggablePanel({
           const visibleRatio = visibleArea / rectArea;
 
           if (visibleRatio < minVisibleRatio) {
-            onDismiss();
+            onDismiss?.();
           }
         });
 
@@ -149,20 +153,27 @@ export default function DismissibleDraggablePanel({
         }
       }}
     >
-      <div
-        className={cn(
-          "mb-3 flex items-center",
-          title ? "justify-between" : "justify-end",
-        )}
-      >
-        {title && <div className="text-sm text-gray-700">{title}</div>}
+      {showHeader && (
         <div
-          className="w-fit cursor-pointer rounded-full bg-red-500 p-1.5 text-white shadow-md"
-          onClick={onDismiss}
+          className={cn(
+            "mb-3 flex items-center border-b p-2",
+            title ? "justify-between" : "justify-end",
+          )}
         >
-          <X className="size-4" />
+          {title && (
+            <div className="flex gap-1 text-xs font-semibold text-gray-700 uppercase">
+              {icon && icon}
+              {title}
+            </div>
+          )}
+          <div
+            className="w-fit cursor-pointer p-1.5 text-muted-foreground"
+            onClick={onDismiss}
+          >
+            <X className="size-4" />
+          </div>
         </div>
-      </div>
+      )}
       {children}
     </motion.div>
   );

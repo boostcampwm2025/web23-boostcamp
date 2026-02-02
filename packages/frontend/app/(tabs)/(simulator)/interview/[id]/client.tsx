@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Cpu, MessageSquareText, Snowflake } from "lucide-react";
+import {
+  Camera,
+  Cpu,
+  History,
+  MessageSquareText,
+  Snowflake,
+} from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 
 import { IHistoryItem } from "./actions";
@@ -67,7 +73,7 @@ export default function InterviewClient({
     handleMicToggle,
   } = useInterviewControls(interviewId, history); */
   const [textInput, setTextInput] = useState("");
-  const [inputMode, setInputMode] = useState<"text" | "voice">("voice");
+  const [inputMode, setInputMode] = useState<"text" | "voice">("text");
   const [aiState, setAiState] = useState<"idle" | "thinking" | "speaking">(
     "idle",
   );
@@ -169,6 +175,8 @@ export default function InterviewClient({
             className="absolute top-6 right-6 h-96 w-105 max-w-md overflow-hidden rounded-lg bg-white/50 shadow-lg backdrop-blur-2xl"
             minVisibleRatio={0.3}
             layoutId="history-window"
+            title="timeline"
+            icon={<History className="size-4" />}
           >
             <div className="h-full overflow-y-auto p-4">
               <ChatHistory chatMessages={chatMessages} />
@@ -180,15 +188,16 @@ export default function InterviewClient({
             onClick={() => setIsHistoryOpen((open) => !open)}
             layoutId="history-window"
           >
-            <MessageSquareText className="size-6 text-primary" />
+            <History className="size-6 text-primary" />
           </motion.div>
         )}
 
         {isMediaPermissionPanelOpen ? (
           <DismissibleDraggablePanel
-            className="absolute top-22 left-6 max-w-md cursor-pointer rounded-xl bg-white/50 p-3 shadow-lg backdrop-blur-2xl transition-colors hover:bg-white"
-            onDismiss={closeMediaPermissionPanel}
+            className="absolute top-22 left-6 max-w-xs cursor-pointer rounded-xl bg-white/50 p-3 shadow-lg backdrop-blur-2xl transition-colors hover:bg-white"
             layoutId="media-permission-panel"
+            showHeader={false}
+            onDismiss={closeMediaPermissionPanel}
           >
             <VideoStatus />
           </DismissibleDraggablePanel>
@@ -198,7 +207,7 @@ export default function InterviewClient({
             onClick={() => setIsMediaPermissionPanelOpen((open) => !open)}
             layoutId="media-permission-panel"
           >
-            <MessageSquareText className="size-6 text-primary" />
+            <Camera className="size-6 text-primary" />
           </motion.div>
         )}
 
