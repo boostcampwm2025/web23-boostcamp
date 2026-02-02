@@ -113,7 +113,39 @@ export async function getHistory({
   userToken: string;
 }) {
   if (isApiMockEnabled()) {
-    return { history: [] } as IHistoryResponse & { history: IHistoryItem[] };
+    return {
+      history: [
+        {
+          question: {
+            content: "[MOCK] JavaScript의 이벤트 루프에 대해 설명해주세요.",
+            createdAt: new Date(Date.now() - 300000).toISOString(),
+          },
+          answer: {
+            content:
+              "[MOCK] 이벤트 루프는 콜스택과 태스크큐를 관리하며 비동기 작업을 처리합니다.",
+            createdAt: new Date(Date.now() - 240000).toISOString(),
+          },
+        },
+        {
+          question: {
+            content: "[MOCK] React의 Virtual DOM에 대해 설명해주세요.",
+            createdAt: new Date(Date.now() - 120000).toISOString(),
+          },
+          answer: {
+            content:
+              "[MOCK] Virtual DOM은 실제 DOM의 가벼운 복사본으로, 효율적인 렌더링을 가능하게 합니다.",
+            createdAt: new Date(Date.now() - 60000).toISOString(),
+          },
+        },
+        {
+          question: {
+            content: "[MOCK] 클로저란 무엇인가요?",
+            createdAt: new Date().toISOString(),
+          },
+          answer: null,
+        },
+      ],
+    } as IHistoryResponse & { history: IHistoryItem[] };
   }
 
   const response = await fetch(
