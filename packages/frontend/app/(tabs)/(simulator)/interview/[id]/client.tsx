@@ -13,6 +13,7 @@ import ChatHistory, { type IChatMessage } from "@/app/components/chat-history";
 import VoiceInput from "./components/voice-input";
 import ChatInput from "./components/chat-input";
 import DismissibleDraggablePanel from "./components/dismissible-draggable-panel";
+import VideoStatus from "./components/video-status";
 
 const questionVariants = {
   enter: { opacity: 0, y: 16 },
@@ -77,7 +78,8 @@ export default function InterviewClient({
   );
 
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-
+  const [isMediaPermissionPanelOpen, setIsMediaPermissionPanelOpen] =
+    useState(false);
   // 미디어 권한 및 스트림 관리
   const { audioStream, requestAudio } = useMediaPermissions();
 
@@ -95,6 +97,10 @@ export default function InterviewClient({
 
   const closeHistory = () => {
     setIsHistoryOpen(false);
+  };
+
+  const closeMediaPermissionPanel = () => {
+    setIsMediaPermissionPanelOpen(false);
   };
 
   return (
@@ -165,7 +171,7 @@ export default function InterviewClient({
             layoutId="history-window"
           >
             <div className="h-full overflow-y-auto p-4">
-              <ChatHistory chatMessages={chatMessages} close={closeHistory} />
+              <ChatHistory chatMessages={chatMessages} />
             </div>
           </DismissibleDraggablePanel>
         ) : (
@@ -173,6 +179,24 @@ export default function InterviewClient({
             className="absolute top-6 left-6 cursor-pointer rounded-full bg-white/50 p-3 shadow-lg backdrop-blur-2xl transition-colors hover:bg-white"
             onClick={() => setIsHistoryOpen((open) => !open)}
             layoutId="history-window"
+          >
+            <MessageSquareText className="size-6 text-primary" />
+          </motion.div>
+        )}
+
+        {isMediaPermissionPanelOpen ? (
+          <DismissibleDraggablePanel
+            className="absolute top-22 left-6 max-w-md cursor-pointer rounded-xl bg-white/50 p-3 shadow-lg backdrop-blur-2xl transition-colors hover:bg-white"
+            onDismiss={closeMediaPermissionPanel}
+            layoutId="media-permission-panel"
+          >
+            <VideoStatus />
+          </DismissibleDraggablePanel>
+        ) : (
+          <motion.div
+            className="absolute top-22 left-6 cursor-pointer rounded-full bg-white/50 p-3 shadow-lg backdrop-blur-2xl transition-colors hover:bg-white"
+            onClick={() => setIsMediaPermissionPanelOpen((open) => !open)}
+            layoutId="media-permission-panel"
           >
             <MessageSquareText className="size-6 text-primary" />
           </motion.div>

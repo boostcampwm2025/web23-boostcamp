@@ -17,37 +17,20 @@ export interface IChatMessage {
 
 interface IChatHistory {
   chatMessages: IChatMessage[];
-  title?: string;
   className?: string;
   emptyMessage?: string;
   emptyDescription?: string;
-  close: () => void;
 }
 
 export default function ChatHistory({
   chatMessages,
-  title,
+
   className,
   emptyMessage,
   emptyDescription,
-  close,
 }: IChatHistory) {
   return (
     <div>
-      <div
-        className={cn(
-          "flex items-center",
-          title ? "justify-between" : "justify-end",
-        )}
-      >
-        {title && <div className="text-sm text-gray-700">{title}</div>}
-        <div
-          className="w-fit cursor-pointer rounded-full bg-red-500 p-1.5 text-white shadow-md"
-          onClick={close}
-        >
-          <X className="size-4" />
-        </div>
-      </div>
       <Conversation className={className}>
         {/*     {chatMessages.map((message) => {
         // 날짜 객체 안전하게 생성
