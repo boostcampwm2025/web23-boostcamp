@@ -186,7 +186,7 @@ export const useMediaRecorder = (
 
     mediaRecorderRefVideo.current = null;
     return blob;
-  }, []);
+  }, [interviewId]);
 
   const startAudioRecording = useCallback(() => {
     if (!stream) {
