@@ -1,0 +1,275 @@
+
+> backend@0.0.1 test:blackbox
+> cross-env DB_HOST=${DB_HOST:-127.0.0.1} jest --config ./test/jest-blackbox.json --runInBand test/blackbox/document.blackbox-test.ts
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT[0m [95mversion[0m[37m([0m[37m)[0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT[0m [37m`User`[0m[37m.[0m[37m`user_id`[0m [94mAS[0m [37m`User_user_id`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`user_email`[0m [94mAS[0m [37m`User_user_email`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`sub`[0m [94mAS[0m [37m`User_sub`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`role`[0m [94mAS[0m [37m`User_role`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`profile_url`[0m [94mAS[0m [37m`User_profile_url`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`created_at`[0m [94mAS[0m [37m`User_created_at`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`User_modified_at`[0m [94mFROM[0m [37m`users`[0m [37m`User`[0m [94mWHERE[0m [37m([0m[37m([0m[37m`User`[0m[37m.[0m[37m`sub`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m [94mLIMIT[0m [32m1[0m [90m-- PARAMETERS: ["doc_blackbox_user_sub"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT[0m [37m`User`[0m[37m.[0m[37m`user_id`[0m [94mAS[0m [37m`User_user_id`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`user_email`[0m [94mAS[0m [37m`User_user_email`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`sub`[0m [94mAS[0m [37m`User_sub`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`role`[0m [94mAS[0m [37m`User_role`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`profile_url`[0m [94mAS[0m [37m`User_profile_url`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`created_at`[0m [94mAS[0m [37m`User_created_at`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`User_modified_at`[0m [94mFROM[0m [37m`users`[0m [37m`User`[0m [94mWHERE[0m [37m([0m[37m([0m[37m`User`[0m[37m.[0m[37m`user_id`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m [94mLIMIT[0m [32m1[0m [90m-- PARAMETERS: ["10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [37mSTART[0m [37mTRANSACTION[0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mINSERT INTO[0m [37m`documents`[0m[37m([0m[37m`documents_id`[0m[37m,[0m [37m`type`[0m[37m,[0m [37m`title`[0m[37m,[0m [37m`created_at`[0m[37m,[0m [37m`modified_at`[0m[37m,[0m [37m`user_id`[0m[37m)[0m [94mVALUES[0m [37m([0m[94mDEFAULT[0m[37m,[0m [37m?[0m[37m,[0m [37m?[0m[37m,[0m [94mDEFAULT[0m[37m,[0m [94mDEFAULT[0m[37m,[0m [37m?[0m[37m)[0m [90m-- PARAMETERS: ["PORTFOLIO","My Portfolio","10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT[0m [37m`Document`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document_documents_id`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`created_at`[0m [94mAS[0m [37m`Document_created_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`Document_modified_at`[0m [94mFROM[0m [37m`documents`[0m [37m`Document`[0m [94mWHERE[0m [37m`Document`[0m[37m.[0m[37m`documents_id`[0m [37m=[0m [37m?[0m [90m-- PARAMETERS: ["10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mINSERT INTO[0m [37m`portfolios`[0m[37m([0m[37m`portfolios_id`[0m[37m,[0m [37m`content`[0m[37m,[0m [37m`documents_id`[0m[37m)[0m [94mVALUES[0m [37m([0m[94mDEFAULT[0m[37m,[0m [37m?[0m[37m,[0m [37m?[0m[37m)[0m [90m-- PARAMETERS: ["Portfolio Content","10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mCOMMIT[0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT[0m [37m`User`[0m[37m.[0m[37m`user_id`[0m [94mAS[0m [37m`User_user_id`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`user_email`[0m [94mAS[0m [37m`User_user_email`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`sub`[0m [94mAS[0m [37m`User_sub`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`role`[0m [94mAS[0m [37m`User_role`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`profile_url`[0m [94mAS[0m [37m`User_profile_url`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`created_at`[0m [94mAS[0m [37m`User_created_at`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`User_modified_at`[0m [94mFROM[0m [37m`users`[0m [37m`User`[0m [94mWHERE[0m [37m([0m[37m([0m[37m`User`[0m[37m.[0m[37m`user_id`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m [94mLIMIT[0m [32m1[0m [90m-- PARAMETERS: ["10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT DISTINCT[0m [37m`distinctAlias`[0m[37m.[0m[37m`Document_documents_id`[0m [94mAS[0m [37m`ids_Document_documents_id`[0m [94mFROM[0m [37m([0m[94mSELECT[0m [37m`Document`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document_documents_id`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`type`[0m [94mAS[0m [37m`Document_type`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`title`[0m [94mAS[0m [37m`Document_title`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`created_at`[0m [94mAS[0m [37m`Document_created_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`Document_modified_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`user_id`[0m [94mAS[0m [37m`Document_user_id`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`portfolios_id`[0m [94mAS[0m [37m`Document__Document_portfolio_portfolios_id`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`content`[0m [94mAS[0m [37m`Document__Document_portfolio_content`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document__Document_portfolio_documents_id`[0m [94mFROM[0m [37m`documents`[0m [37m`Document`[0m [94mLEFT JOIN[0m [37m`portfolios`[0m [37m`Document__Document_portfolio`[0m [94mON[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`documents_id`[0m[37m=[0m[37m`Document`[0m[37m.[0m[37m`documents_id`[0m  [94mLEFT JOIN[0m [37m`users`[0m [37m`Document__Document_user`[0m [94mON[0m [37m`Document__Document_user`[0m[37m.[0m[37m`user_id`[0m[37m=[0m[37m`Document`[0m[37m.[0m[37m`user_id`[0m [94mWHERE[0m [37m([0m[37m([0m[37m`Document`[0m[37m.[0m[37m`documents_id`[0m [37m=[0m [37m?[0m[37m)[0m [94mAND[0m [37m([0m[37m([0m[37m([0m[37m`Document__Document_user`[0m[37m.[0m[37m`user_id`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m[37m)[0m [94mAND[0m [37m([0m[37m`Document`[0m[37m.[0m[37m`type`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m[37m)[0m [37m`distinctAlias`[0m [94mORDER BY[0m [37m`Document_documents_id`[0m [94mASC[0m [94mLIMIT[0m [32m1[0m [90m-- PARAMETERS: ["10","10","PORTFOLIO"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT[0m [37m`Document`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document_documents_id`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`type`[0m [94mAS[0m [37m`Document_type`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`title`[0m [94mAS[0m [37m`Document_title`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`created_at`[0m [94mAS[0m [37m`Document_created_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`Document_modified_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`user_id`[0m [94mAS[0m [37m`Document_user_id`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`portfolios_id`[0m [94mAS[0m [37m`Document__Document_portfolio_portfolios_id`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`content`[0m [94mAS[0m [37m`Document__Document_portfolio_content`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document__Document_portfolio_documents_id`[0m [94mFROM[0m [37m`documents`[0m [37m`Document`[0m [94mLEFT JOIN[0m [37m`portfolios`[0m [37m`Document__Document_portfolio`[0m [94mON[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`documents_id`[0m[37m=[0m[37m`Document`[0m[37m.[0m[37m`documents_id`[0m  [94mLEFT JOIN[0m [37m`users`[0m [37m`Document__Document_user`[0m [94mON[0m [37m`Document__Document_user`[0m[37m.[0m[37m`user_id`[0m[37m=[0m[37m`Document`[0m[37m.[0m[37m`user_id`[0m [94mWHERE[0m [37m([0m [37m([0m[37m([0m[37m`Document`[0m[37m.[0m[37m`documents_id`[0m [37m=[0m [37m?[0m[37m)[0m [94mAND[0m [37m([0m[37m([0m[37m([0m[37m`Document__Document_user`[0m[37m.[0m[37m`user_id`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m[37m)[0m [94mAND[0m [37m([0m[37m`Document`[0m[37m.[0m[37m`type`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m [37m)[0m [94mAND[0m [37m([0m [37m`Document`[0m[37m.[0m[37m`documents_id`[0m [94mIN[0m [37m([0m[37m?[0m[37m)[0m [37m)[0m [90m-- PARAMETERS: ["10","10","PORTFOLIO","10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT[0m [37m`User`[0m[37m.[0m[37m`user_id`[0m [94mAS[0m [37m`User_user_id`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`user_email`[0m [94mAS[0m [37m`User_user_email`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`sub`[0m [94mAS[0m [37m`User_sub`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`role`[0m [94mAS[0m [37m`User_role`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`profile_url`[0m [94mAS[0m [37m`User_profile_url`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`created_at`[0m [94mAS[0m [37m`User_created_at`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`User_modified_at`[0m [94mFROM[0m [37m`users`[0m [37m`User`[0m [94mWHERE[0m [37m([0m[37m([0m[37m`User`[0m[37m.[0m[37m`user_id`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m [94mLIMIT[0m [32m1[0m [90m-- PARAMETERS: ["10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT DISTINCT[0m [37m`distinctAlias`[0m[37m.[0m[37m`Document_documents_id`[0m [94mAS[0m [37m`ids_Document_documents_id`[0m [94mFROM[0m [37m([0m[94mSELECT[0m [37m`Document`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document_documents_id`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`type`[0m [94mAS[0m [37m`Document_type`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`title`[0m [94mAS[0m [37m`Document_title`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`created_at`[0m [94mAS[0m [37m`Document_created_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`Document_modified_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`user_id`[0m [94mAS[0m [37m`Document_user_id`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`portfolios_id`[0m [94mAS[0m [37m`Document__Document_portfolio_portfolios_id`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`content`[0m [94mAS[0m [37m`Document__Document_portfolio_content`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document__Document_portfolio_documents_id`[0m [94mFROM[0m [37m`documents`[0m [37m`Document`[0m [94mLEFT JOIN[0m [37m`portfolios`[0m [37m`Document__Document_portfolio`[0m [94mON[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`documents_id`[0m[37m=[0m[37m`Document`[0m[37m.[0m[37m`documents_id`[0m  [94mLEFT JOIN[0m [37m`users`[0m [37m`Document__Document_user`[0m [94mON[0m [37m`Document__Document_user`[0m[37m.[0m[37m`user_id`[0m[37m=[0m[37m`Document`[0m[37m.[0m[37m`user_id`[0m [94mWHERE[0m [37m([0m[37m([0m[37m`Document`[0m[37m.[0m[37m`documents_id`[0m [37m=[0m [37m?[0m[37m)[0m [94mAND[0m [37m([0m[37m([0m[37m([0m[37m`Document__Document_user`[0m[37m.[0m[37m`user_id`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m[37m)[0m [94mAND[0m [37m([0m[37m`Document`[0m[37m.[0m[37m`type`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m[37m)[0m [37m`distinctAlias`[0m [94mORDER BY[0m [37m`Document_documents_id`[0m [94mASC[0m [94mLIMIT[0m [32m1[0m [90m-- PARAMETERS: ["10","10","PORTFOLIO"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT[0m [37m`Document`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document_documents_id`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`type`[0m [94mAS[0m [37m`Document_type`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`title`[0m [94mAS[0m [37m`Document_title`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`created_at`[0m [94mAS[0m [37m`Document_created_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`Document_modified_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`user_id`[0m [94mAS[0m [37m`Document_user_id`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`portfolios_id`[0m [94mAS[0m [37m`Document__Document_portfolio_portfolios_id`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`content`[0m [94mAS[0m [37m`Document__Document_portfolio_content`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document__Document_portfolio_documents_id`[0m [94mFROM[0m [37m`documents`[0m [37m`Document`[0m [94mLEFT JOIN[0m [37m`portfolios`[0m [37m`Document__Document_portfolio`[0m [94mON[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`documents_id`[0m[37m=[0m[37m`Document`[0m[37m.[0m[37m`documents_id`[0m  [94mLEFT JOIN[0m [37m`users`[0m [37m`Document__Document_user`[0m [94mON[0m [37m`Document__Document_user`[0m[37m.[0m[37m`user_id`[0m[37m=[0m[37m`Document`[0m[37m.[0m[37m`user_id`[0m [94mWHERE[0m [37m([0m [37m([0m[37m([0m[37m`Document`[0m[37m.[0m[37m`documents_id`[0m [37m=[0m [37m?[0m[37m)[0m [94mAND[0m [37m([0m[37m([0m[37m([0m[37m`Document__Document_user`[0m[37m.[0m[37m`user_id`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m[37m)[0m [94mAND[0m [37m([0m[37m`Document`[0m[37m.[0m[37m`type`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m [37m)[0m [94mAND[0m [37m([0m [37m`Document`[0m[37m.[0m[37m`documents_id`[0m [94mIN[0m [37m([0m[37m?[0m[37m)[0m [37m)[0m [90m-- PARAMETERS: ["10","10","PORTFOLIO","10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT[0m [37m`Document`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document_documents_id`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`type`[0m [94mAS[0m [37m`Document_type`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`title`[0m [94mAS[0m [37m`Document_title`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`created_at`[0m [94mAS[0m [37m`Document_created_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`Document_modified_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`user_id`[0m [94mAS[0m [37m`Document_user_id`[0m [94mFROM[0m [37m`documents`[0m [37m`Document`[0m [94mWHERE[0m [37m`Document`[0m[37m.[0m[37m`documents_id`[0m [94mIN[0m [37m([0m[37m?[0m[37m)[0m [90m-- PARAMETERS: ["10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+          at async Promise.all (index 0)
+          at async Promise.all (index 0)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT[0m [37m`Portfolio`[0m[37m.[0m[37m`portfolios_id`[0m [94mAS[0m [37m`Portfolio_portfolios_id`[0m[37m,[0m [37m`Portfolio`[0m[37m.[0m[37m`content`[0m [94mAS[0m [37m`Portfolio_content`[0m[37m,[0m [37m`Portfolio`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Portfolio_documents_id`[0m [94mFROM[0m [37m`portfolios`[0m [37m`Portfolio`[0m [94mWHERE[0m [37m`Portfolio`[0m[37m.[0m[37m`portfolios_id`[0m [94mIN[0m [37m([0m[37m?[0m[37m)[0m [90m-- PARAMETERS: ["9"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+          at async Promise.all (index 1)
+          at async Promise.all (index 0)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT[0m [37m`portfolios`[0m[37m.[0m[37m`portfolios_id`[0m [94mAS[0m [37m`portfolios_id`[0m[37m,[0m [37m`portfolios`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`documents_id`[0m [94mFROM[0m [37m`portfolios`[0m [37m`portfolios`[0m [94mWHERE[0m [37m([0m[37m([0m[37m`portfolios`[0m[37m.[0m[37m`documents_id`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m [90m-- PARAMETERS: ["10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+          at async Promise.all (index 0)
+
+  console.log
+    [90m[4mquery:[24m[39m [37mSTART[0m [37mTRANSACTION[0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mUPDATE[0m [37m`documents`[0m [94mSET[0m [37m`title`[0m [37m=[0m [37m?[0m[37m,[0m [37m`modified_at`[0m [37m=[0m [37mCURRENT_TIMESTAMP[0m [94mWHERE[0m [37m`documents_id`[0m [94mIN[0m [37m([0m[37m?[0m[37m)[0m [90m-- PARAMETERS: ["Updated Portfolio","10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+          at async Promise.all (index 0)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mUPDATE[0m [37m`portfolios`[0m [94mSET[0m [37m`content`[0m [37m=[0m [37m?[0m [94mWHERE[0m [37m`portfolios_id`[0m [94mIN[0m [37m([0m[37m?[0m[37m)[0m [90m-- PARAMETERS: ["Updated Content","9"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+          at async Promise.all (index 1)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT[0m [37m`Document`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document_documents_id`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`Document_modified_at`[0m [94mFROM[0m [37m`documents`[0m [37m`Document`[0m [94mWHERE[0m [37m`Document`[0m[37m.[0m[37m`documents_id`[0m [37m=[0m [37m?[0m [90m-- PARAMETERS: ["10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+          at async Promise.all (index 0)
+          at async Promise.all (index 0)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mCOMMIT[0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT[0m [37m`User`[0m[37m.[0m[37m`user_id`[0m [94mAS[0m [37m`User_user_id`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`user_email`[0m [94mAS[0m [37m`User_user_email`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`sub`[0m [94mAS[0m [37m`User_sub`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`role`[0m [94mAS[0m [37m`User_role`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`profile_url`[0m [94mAS[0m [37m`User_profile_url`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`created_at`[0m [94mAS[0m [37m`User_created_at`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`User_modified_at`[0m [94mFROM[0m [37m`users`[0m [37m`User`[0m [94mWHERE[0m [37m([0m[37m([0m[37m`User`[0m[37m.[0m[37m`user_id`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m [94mLIMIT[0m [32m1[0m [90m-- PARAMETERS: ["10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT DISTINCT[0m [37m`distinctAlias`[0m[37m.[0m[37m`Document_documents_id`[0m [94mAS[0m [37m`ids_Document_documents_id`[0m [94mFROM[0m [37m([0m[94mSELECT[0m [37m`Document`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document_documents_id`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`type`[0m [94mAS[0m [37m`Document_type`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`title`[0m [94mAS[0m [37m`Document_title`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`created_at`[0m [94mAS[0m [37m`Document_created_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`Document_modified_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`user_id`[0m [94mAS[0m [37m`Document_user_id`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`portfolios_id`[0m [94mAS[0m [37m`Document__Document_portfolio_portfolios_id`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`content`[0m [94mAS[0m [37m`Document__Document_portfolio_content`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document__Document_portfolio_documents_id`[0m [94mFROM[0m [37m`documents`[0m [37m`Document`[0m [94mLEFT JOIN[0m [37m`portfolios`[0m [37m`Document__Document_portfolio`[0m [94mON[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`documents_id`[0m[37m=[0m[37m`Document`[0m[37m.[0m[37m`documents_id`[0m  [94mLEFT JOIN[0m [37m`users`[0m [37m`Document__Document_user`[0m [94mON[0m [37m`Document__Document_user`[0m[37m.[0m[37m`user_id`[0m[37m=[0m[37m`Document`[0m[37m.[0m[37m`user_id`[0m [94mWHERE[0m [37m([0m[37m([0m[37m`Document`[0m[37m.[0m[37m`documents_id`[0m [37m=[0m [37m?[0m[37m)[0m [94mAND[0m [37m([0m[37m([0m[37m([0m[37m`Document__Document_user`[0m[37m.[0m[37m`user_id`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m[37m)[0m [94mAND[0m [37m([0m[37m`Document`[0m[37m.[0m[37m`type`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m[37m)[0m [37m`distinctAlias`[0m [94mORDER BY[0m [37m`Document_documents_id`[0m [94mASC[0m [94mLIMIT[0m [32m1[0m [90m-- PARAMETERS: ["10","10","PORTFOLIO"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT[0m [37m`Document`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document_documents_id`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`type`[0m [94mAS[0m [37m`Document_type`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`title`[0m [94mAS[0m [37m`Document_title`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`created_at`[0m [94mAS[0m [37m`Document_created_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`Document_modified_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`user_id`[0m [94mAS[0m [37m`Document_user_id`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`portfolios_id`[0m [94mAS[0m [37m`Document__Document_portfolio_portfolios_id`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`content`[0m [94mAS[0m [37m`Document__Document_portfolio_content`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document__Document_portfolio_documents_id`[0m [94mFROM[0m [37m`documents`[0m [37m`Document`[0m [94mLEFT JOIN[0m [37m`portfolios`[0m [37m`Document__Document_portfolio`[0m [94mON[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`documents_id`[0m[37m=[0m[37m`Document`[0m[37m.[0m[37m`documents_id`[0m  [94mLEFT JOIN[0m [37m`users`[0m [37m`Document__Document_user`[0m [94mON[0m [37m`Document__Document_user`[0m[37m.[0m[37m`user_id`[0m[37m=[0m[37m`Document`[0m[37m.[0m[37m`user_id`[0m [94mWHERE[0m [37m([0m [37m([0m[37m([0m[37m`Document`[0m[37m.[0m[37m`documents_id`[0m [37m=[0m [37m?[0m[37m)[0m [94mAND[0m [37m([0m[37m([0m[37m([0m[37m`Document__Document_user`[0m[37m.[0m[37m`user_id`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m[37m)[0m [94mAND[0m [37m([0m[37m`Document`[0m[37m.[0m[37m`type`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m [37m)[0m [94mAND[0m [37m([0m [37m`Document`[0m[37m.[0m[37m`documents_id`[0m [94mIN[0m [37m([0m[37m?[0m[37m)[0m [37m)[0m [90m-- PARAMETERS: ["10","10","PORTFOLIO","10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT[0m [37m`User`[0m[37m.[0m[37m`user_id`[0m [94mAS[0m [37m`User_user_id`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`user_email`[0m [94mAS[0m [37m`User_user_email`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`sub`[0m [94mAS[0m [37m`User_sub`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`role`[0m [94mAS[0m [37m`User_role`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`profile_url`[0m [94mAS[0m [37m`User_profile_url`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`created_at`[0m [94mAS[0m [37m`User_created_at`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`User_modified_at`[0m [94mFROM[0m [37m`users`[0m [37m`User`[0m [94mWHERE[0m [37m([0m[37m([0m[37m`User`[0m[37m.[0m[37m`user_id`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m [94mLIMIT[0m [32m1[0m [90m-- PARAMETERS: ["10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT DISTINCT[0m [37m`distinctAlias`[0m[37m.[0m[37m`Document_documents_id`[0m [94mAS[0m [37m`ids_Document_documents_id`[0m [94mFROM[0m [37m([0m[94mSELECT[0m [37m`Document`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document_documents_id`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`type`[0m [94mAS[0m [37m`Document_type`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`title`[0m [94mAS[0m [37m`Document_title`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`created_at`[0m [94mAS[0m [37m`Document_created_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`Document_modified_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`user_id`[0m [94mAS[0m [37m`Document_user_id`[0m[37m,[0m [37m`Document__Document_coverLetter`[0m[37m.[0m[37m`cover_letters_id`[0m [94mAS[0m [37m`Document__Document_coverLetter_cover_letters_id`[0m[37m,[0m [37m`Document__Document_coverLetter`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document__Document_coverLetter_documents_id`[0m[37m,[0m [37m`608db4fa264cad186d7a18feb707ccf3096c00a9`[0m[37m.[0m[37m`cover_letters_question_answer_id`[0m [94mAS[0m [37m`edf5b09616b6ec68e4467e1097e1366cbbf54038`[0m[37m,[0m [37m`608db4fa264cad186d7a18feb707ccf3096c00a9`[0m[37m.[0m[37m`question`[0m [94mAS[0m [37m`608db4fa264cad186d7a18feb707ccf3096c00a9_question`[0m[37m,[0m [37m`608db4fa264cad186d7a18feb707ccf3096c00a9`[0m[37m.[0m[37m`answer`[0m [94mAS[0m [37m`608db4fa264cad186d7a18feb707ccf3096c00a9_answer`[0m[37m,[0m [37m`608db4fa264cad186d7a18feb707ccf3096c00a9`[0m[37m.[0m[37m`cover_letter_id`[0m [94mAS[0m [37m`608db4fa264cad186d7a18feb707ccf3096c00a9_cover_letter_id`[0m [94mFROM[0m [37m`documents`[0m [37m`Document`[0m [94mLEFT JOIN[0m [37m`cover_letters`[0m [37m`Document__Document_coverLetter`[0m [94mON[0m [37m`Document__Document_coverLetter`[0m[37m.[0m[37m`documents_id`[0m[37m=[0m[37m`Document`[0m[37m.[0m[37m`documents_id`[0m  [94mLEFT JOIN[0m [37m`cover_letters_question_answer`[0m [37m`608db4fa264cad186d7a18feb707ccf3096c00a9`[0m [94mON[0m [37m`608db4fa264cad186d7a18feb707ccf3096c00a9`[0m[37m.[0m[37m`cover_letter_id`[0m[37m=[0m[37m`Document__Document_coverLetter`[0m[37m.[0m[37m`cover_letters_id`[0m  [94mLEFT JOIN[0m [37m`users`[0m [37m`Document__Document_user`[0m [94mON[0m [37m`Document__Document_user`[0m[37m.[0m[37m`user_id`[0m[37m=[0m[37m`Document`[0m[37m.[0m[37m`user_id`[0m [94mWHERE[0m [37m([0m[37m([0m[37m`Document`[0m[37m.[0m[37m`documents_id`[0m [37m=[0m [37m?[0m[37m)[0m [94mAND[0m [37m([0m[37m([0m[37m([0m[37m`Document__Document_user`[0m[37m.[0m[37m`user_id`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m[37m)[0m [94mAND[0m [37m([0m[37m`Document`[0m[37m.[0m[37m`type`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m[37m)[0m [37m`distinctAlias`[0m [94mORDER BY[0m [37m`Document_documents_id`[0m [94mASC[0m [94mLIMIT[0m [32m1[0m [90m-- PARAMETERS: ["undefined","10","COVER"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT[0m [37m`document`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`document_documents_id`[0m[37m,[0m [37m`document`[0m[37m.[0m[37m`type`[0m [94mAS[0m [37m`document_type`[0m[37m,[0m [37m`document`[0m[37m.[0m[37m`title`[0m [94mAS[0m [37m`document_title`[0m[37m,[0m [37m`document`[0m[37m.[0m[37m`created_at`[0m [94mAS[0m [37m`document_created_at`[0m[37m,[0m [37m`document`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`document_modified_at`[0m[37m,[0m [37m`document`[0m[37m.[0m[37m`user_id`[0m [94mAS[0m [37m`document_user_id`[0m [94mFROM[0m [37m`documents`[0m [37m`document`[0m [94mWHERE[0m [37m`document`[0m[37m.[0m[37m`user_id`[0m [37m=[0m [37m?[0m [94mORDER BY[0m [37m`document`[0m[37m.[0m[37m`created_at`[0m [94mDESC[0m [94mLIMIT[0m [32m6[0m [37mOFFSET[0m [32m0[0m [90m-- PARAMETERS: ["10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT[0m [37m`Document`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document_documents_id`[0m [94mFROM[0m [37m`documents`[0m [37m`Document`[0m [94mLEFT JOIN[0m [37m`users`[0m [37m`Document__Document_user`[0m [94mON[0m [37m`Document__Document_user`[0m[37m.[0m[37m`user_id`[0m[37m=[0m[37m`Document`[0m[37m.[0m[37m`user_id`[0m [94mWHERE[0m [37m([0m[37m([0m[37m`Document`[0m[37m.[0m[37m`documents_id`[0m [94mIN[0m [37m([0m[37m?[0m[37m,[0m [37m?[0m[37m)[0m[37m)[0m [94mAND[0m [37m([0m[37m([0m[37m([0m[37m`Document__Document_user`[0m[37m.[0m[37m`user_id`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m[37m)[0m[37m)[0m [90m-- PARAMETERS: ["10","undefined","10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mDELETE[0m [94mFROM[0m [37m`documents`[0m [94mWHERE[0m [37m`documents_id`[0m [94mIN[0m [37m([0m[37m?[0m[37m)[0m [90m-- PARAMETERS: ["10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT[0m [37m`User`[0m[37m.[0m[37m`user_id`[0m [94mAS[0m [37m`User_user_id`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`user_email`[0m [94mAS[0m [37m`User_user_email`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`sub`[0m [94mAS[0m [37m`User_sub`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`role`[0m [94mAS[0m [37m`User_role`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`profile_url`[0m [94mAS[0m [37m`User_profile_url`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`created_at`[0m [94mAS[0m [37m`User_created_at`[0m[37m,[0m [37m`User`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`User_modified_at`[0m [94mFROM[0m [37m`users`[0m [37m`User`[0m [94mWHERE[0m [37m([0m[37m([0m[37m`User`[0m[37m.[0m[37m`user_id`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m [94mLIMIT[0m [32m1[0m [90m-- PARAMETERS: ["10"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+  console.log
+    [90m[4mquery:[24m[39m [94mSELECT DISTINCT[0m [37m`distinctAlias`[0m[37m.[0m[37m`Document_documents_id`[0m [94mAS[0m [37m`ids_Document_documents_id`[0m [94mFROM[0m [37m([0m[94mSELECT[0m [37m`Document`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document_documents_id`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`type`[0m [94mAS[0m [37m`Document_type`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`title`[0m [94mAS[0m [37m`Document_title`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`created_at`[0m [94mAS[0m [37m`Document_created_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`modified_at`[0m [94mAS[0m [37m`Document_modified_at`[0m[37m,[0m [37m`Document`[0m[37m.[0m[37m`user_id`[0m [94mAS[0m [37m`Document_user_id`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`portfolios_id`[0m [94mAS[0m [37m`Document__Document_portfolio_portfolios_id`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`content`[0m [94mAS[0m [37m`Document__Document_portfolio_content`[0m[37m,[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`documents_id`[0m [94mAS[0m [37m`Document__Document_portfolio_documents_id`[0m [94mFROM[0m [37m`documents`[0m [37m`Document`[0m [94mLEFT JOIN[0m [37m`portfolios`[0m [37m`Document__Document_portfolio`[0m [94mON[0m [37m`Document__Document_portfolio`[0m[37m.[0m[37m`documents_id`[0m[37m=[0m[37m`Document`[0m[37m.[0m[37m`documents_id`[0m  [94mLEFT JOIN[0m [37m`users`[0m [37m`Document__Document_user`[0m [94mON[0m [37m`Document__Document_user`[0m[37m.[0m[37m`user_id`[0m[37m=[0m[37m`Document`[0m[37m.[0m[37m`user_id`[0m [94mWHERE[0m [37m([0m[37m([0m[37m`Document`[0m[37m.[0m[37m`documents_id`[0m [37m=[0m [37m?[0m[37m)[0m [94mAND[0m [37m([0m[37m([0m[37m([0m[37m`Document__Document_user`[0m[37m.[0m[37m`user_id`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m[37m)[0m [94mAND[0m [37m([0m[37m`Document`[0m[37m.[0m[37m`type`[0m [37m=[0m [37m?[0m[37m)[0m[37m)[0m[37m)[0m [37m`distinctAlias`[0m [94mORDER BY[0m [37m`Document_documents_id`[0m [94mASC[0m [94mLIMIT[0m [32m1[0m [90m-- PARAMETERS: ["10","10","PORTFOLIO"][0m
+
+      at Function.logInfo (../../../node_modules/.pnpm/typeorm@0.3.28_mysql2@3.16.0_ts-node@10.9.2_@types+node@22.19.3_typescript@5.9.3_/src/platform/PlatformTools.ts:262:17)
+
+FAIL test/blackbox/document.blackbox-test.ts
+  Document (Blackbox)
+    Portfolio
+      ✓ 1. 포트폴리오 생성 (POST /document/portfolio/create) (41 ms)
+      ✓ 2. 포트폴리오 상세 조회 (GET /document/{id}/portfolio) (8 ms)
+      ✓ 3. 포트폴리오 수정 (PATCH /document/{id}/portfolio) (29 ms)
+    Cover Letter
+      ✕ 4. 자소서 생성 (POST /document/cover-letter/create) (3 ms)
+      ✕ 5. 자소서 상세 조회 (GET /document/{id}/cover-letter) (5 ms)
+      ✕ 6. 자소서 수정 (PUT /document/{id}/cover-letter) (2 ms)
+    Document List & Deletion
+      ✕ 7. 문서 목록 조회 (GET /document) (7 ms)
+      ✓ 8. 문서 삭제 (DELETE /document) (12 ms)
+
+  ● Document (Blackbox) › Cover Letter › 4. 자소서 생성 (POST /document/cover-letter/create)
+
+    expected 201 "Created", got 400 "Bad Request"
+
+      110 |           ]
+      111 |         })
+    > 112 |         .expect(201);
+          |          ^
+      113 |
+      114 |       expect(response.body).toHaveProperty('documentId');
+      115 |       coverLetterId = response.body.documentId;
+
+      at Object.<anonymous> (blackbox/document.blackbox-test.ts:112:10)
+      ----
+      at Test._assertStatus (../../../node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at ../../../node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../../../node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../../../node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../../../node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../../../node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Document (Blackbox) › Cover Letter › 5. 자소서 상세 조회 (GET /document/{id}/cover-letter)
+
+    expected 200 "OK", got 404 "Not Found"
+
+      120 |           .get(`/document/${coverLetterId}/cover-letter`)
+      121 |           .set('Authorization', `Bearer ${accessToken}`)
+    > 122 |           .expect(200);
+          |            ^
+      123 |   
+      124 |         // Response format structure check (might be body.title, body.content array?)
+      125 |         // Let's assume standard response based on plan/previous context
+
+      at Object.<anonymous> (blackbox/document.blackbox-test.ts:122:12)
+      ----
+      at Test._assertStatus (../../../node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at ../../../node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../../../node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../../../node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../../../node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../../../node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Document (Blackbox) › Cover Letter › 6. 자소서 수정 (PUT /document/{id}/cover-letter)
+
+    expected 200 "OK", got 400 "Bad Request"
+
+      141 |                 ]
+      142 |             })
+    > 143 |             .expect(200);
+          |              ^
+      144 |         
+      145 |         const getResponse = await request(app.getHttpServer())
+      146 |           .get(`/document/${coverLetterId}/cover-letter`)
+
+      at Object.<anonymous> (blackbox/document.blackbox-test.ts:143:14)
+      ----
+      at Test._assertStatus (../../../node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at ../../../node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (../../../node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (../../../node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (../../../node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (../../../node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Document (Blackbox) › Document List & Deletion › 7. 문서 목록 조회 (GET /document)
+
+    expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 2
+    Received:    1
+
+      160 |         
+      161 |         expect(Array.isArray(response.body.documents)).toBe(true);
+    > 162 |         expect(response.body.documents.length).toBeGreaterThanOrEqual(2); // Portfolio + Cover Letter
+          |                                                ^
+      163 |     });
+      164 |
+      165 |     it('8. 문서 삭제 (DELETE /document)', async () => {
+
+      at Object.<anonymous> (blackbox/document.blackbox-test.ts:162:48)
+
+Test Suites: 1 failed, 1 total
+Tests:       4 failed, 4 passed, 8 total
+Snapshots:   0 total
+Time:        0.948 s, estimated 2 s
+Ran all test suites matching test/blackbox/document.blackbox-test.ts.
+Jest did not exit one second after the test run has completed.
+
+'This usually means that there are asynchronous operations that weren't stopped in your tests. Consider running Jest with `--detectOpenHandles` to troubleshoot this issue.

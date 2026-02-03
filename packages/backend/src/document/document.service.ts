@@ -388,35 +388,41 @@ export class DocumentService {
       documentIds,
     );
 
-    if (documents.length === 0) {
+    const foundIds = documents.map((d) => d.documentId);
+
+    const missingIds = documentIds.filter((id) => !foundIds.includes(id));
+    if (missingIds.length > 0) {
       this.logger.warn(
-        `문서를 찾을 수 없습니다. documentIds=${documentIds.join(',')}`,
+        `문서를 찾을 수 없습니다. missing=${missingIds.join(',')}`,
       );
       throw new BadRequestException(`문서를 찾을 수 없습니다.`);
     }
 
-    const foundIds = documents.map((d) => d.documentId);
-    const failedDocuments = documentIds.filter(
-      (id) => !this.isFoundDocumentId(id, foundIds),
-    );
+    // 2) 삭제 시도
+    const deleteResult = await this.documentRepository.delete({
+      documentId: In(foundIds),
+    });
 
-    if (foundIds.length > 0) {
-      await this.documentRepository.delete({ documentId: In(foundIds) });
+    const deletedCount = deleteResult.affected ?? 0;
+
+    // 3) “삭제 실패한 ID”가 필요하면 재조회로 남아있는 것만 추출
+    let failedIds: string[] = [];
+    if (deletedCount !== foundIds.length) {
+      const remaining = await this.documentRepository.find({
+        select: { documentId: true },
+        where: { user: { userId }, documentId: In(foundIds) },
+      });
+      failedIds = remaining.map((r) => r.documentId);
+      this.logger.warn(
+        `일부 문서 삭제 실패. expected=${foundIds.length}, deleted=${deletedCount}, failed=${failedIds.join(',')}`,
+      );
     }
 
     return {
-      success: true,
+      success: failedIds.length === 0,
       requestedCount: documentIds.length,
-      deletedCount: foundIds.length,
-      failedDocuments,
+      deletedCount: deletedCount,
+      failedDocuments: failedIds,
     };
-  }
-
-  private isFoundDocumentId(id: string, ids: string[]) {
-    if (ids.includes(id)) {
-      return true;
-    }
-    this.logger.warn(`pk가 ${id}인 문서 삭제에 실패했습니다.`);
-    return false;
   }
 }

@@ -7,6 +7,7 @@ import { DocumentModule } from './document/document.module';
 import { InterviewModule } from './interview/interview.module';
 import { UserModule } from './user/user.module';
 import { SeedModule } from './seed/seed.module';
+import { HealthModule } from './health/health.module';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -41,6 +42,7 @@ import { winstonOptions } from './common/logger/winston.config';
     DocumentModule,
     InterviewModule,
     SeedModule,
+    HealthModule,
   ],
   controllers: [],
   providers: [
