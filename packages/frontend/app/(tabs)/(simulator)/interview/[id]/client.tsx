@@ -161,15 +161,32 @@ export default function InterviewClient({
     };
   }, [stopMediaStream]);
 
-  // 보이스 모드 진입 시: 바로 녹음 시작(전송 버튼은 "멈추고 전송" 역할)
+  // 보이스 모드 진입 시: 화면 전환(애니메이션/레이아웃) 이후에 녹음을 시작해
+  // 클릭 시 버벅임과 "더블 start" 가능성을 줄인다.
+  const voiceStartRafRef = useRef<number | null>(null);
+
   useEffect(() => {
-    if (inputMode !== "voice") return;
+    return () => {
+      if (voiceStartRafRef.current != null) {
+        cancelAnimationFrame(voiceStartRafRef.current);
+        voiceStartRafRef.current = null;
+      }
+    };
+  }, []);
+
+  const enterVoiceMode = useCallback(() => {
+    setInputMode("voice");
+
     if (aiState !== "idle") return;
     if (!audioStream) return;
     if (isVoiceRecording) return;
+    if (voiceStartRafRef.current != null) return;
 
-    startAudioRecording();
-  }, [aiState, audioStream, inputMode, isVoiceRecording, startAudioRecording]);
+    voiceStartRafRef.current = requestAnimationFrame(() => {
+      voiceStartRafRef.current = null;
+      startAudioRecording();
+    });
+  }, [aiState, audioStream, isVoiceRecording, startAudioRecording]);
 
   const appendMessage = useCallback(
     (message: Omit<IChatMessage, "id"> & { id?: string }) => {
@@ -332,6 +349,7 @@ export default function InterviewClient({
 
     // 1) 첫 클릭: 녹음 시작
     if (!isVoiceRecording) {
+      if (voiceStartRafRef.current != null) return;
       startAudioRecording();
       return;
     }
@@ -418,6 +436,10 @@ export default function InterviewClient({
 
   const handleCancelVoice = useCallback(async () => {
     try {
+      if (voiceStartRafRef.current != null) {
+        cancelAnimationFrame(voiceStartRafRef.current);
+        voiceStartRafRef.current = null;
+      }
       if (isVoiceRecording) {
         await stopAudioRecording();
       }

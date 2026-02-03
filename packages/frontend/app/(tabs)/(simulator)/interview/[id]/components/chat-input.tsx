@@ -9,6 +9,7 @@ interface IChatInputProps {
   setInputMode: (mode: "text" | "voice") => void;
   textInput: string;
   onSend: () => void;
+  onEnterVoice?: () => void;
 }
 
 export default function ChatInput({
@@ -16,6 +17,7 @@ export default function ChatInput({
   setInputMode,
   textInput,
   onSend,
+  onEnterVoice,
 }: IChatInputProps) {
   return (
     <div className="flex gap-1 rounded-full bg-white px-6 py-4 shadow-lg">
@@ -42,7 +44,13 @@ export default function ChatInput({
         <ActionButton
           key="mic"
           icon={<Mic className="size-5" />}
-          onClick={() => setInputMode("voice")}
+          onClick={() => {
+            if (onEnterVoice) {
+              onEnterVoice();
+              return;
+            }
+            setInputMode("voice");
+          }}
         />
       )}
     </div>
