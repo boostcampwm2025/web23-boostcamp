@@ -1,9 +1,9 @@
 "use client";
 
-import { Calendar, Check } from "lucide-react";
+import { useState } from "react";
+import { Calendar, Check, Search } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Card, CardContent } from "@/app/components/ui/card";
-import { Checkbox } from "@/app/components/ui/checkbox";
 import { cn } from "@/app/lib/utils";
 
 export type DocType = "COVER" | "PORTFOLIO";
@@ -22,8 +22,7 @@ interface DocumentCardProps {
   onSelect?: (id: string) => void;
   isSelectable?: boolean;
   showDeleteAction?: boolean;
-  showCheckbox?: boolean;
-  onCardClick?: (doc: DocumentItem) => void;
+  onDetailClick?: (doc: DocumentItem) => void;
 }
 
 export function DocumentCard({
@@ -32,53 +31,68 @@ export function DocumentCard({
   onSelect,
   isSelectable = true,
   showDeleteAction = false,
-  showCheckbox = false,
-  onCardClick,
+  onDetailClick,
 }: DocumentCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
   const canClick = isSelectable && !!onSelect;
 
-  const handleCheckboxClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onSelect) {
-      onSelect(doc.documentId);
+  const handleCardClick = () => {
+    if (canClick) {
+      onSelect!(doc.documentId);
     }
   };
 
-  const handleCardClick = () => {
-    if (onCardClick) {
-      onCardClick(doc);
-    } else if (canClick) {
-      onSelect!(doc.documentId);
+  const handleDetailClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (onDetailClick) {
+      onDetailClick(doc);
     }
   };
 
   return (
     <motion.div
-      whileTap={onCardClick || canClick ? { scale: 0.98 } : {}}
+      whileTap={canClick ? { scale: 0.98 } : {}}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       className="h-full"
     >
       <Card
         onClick={handleCardClick}
         className={cn(
           "relative h-[180px] overflow-hidden rounded-2xl border-2 transition-all select-none",
-          onCardClick || canClick ? "cursor-pointer" : "cursor-default",
+          canClick ? "cursor-pointer" : "cursor-default",
           isSelected
             ? "border-emerald-500 bg-emerald-50/20 shadow-md ring-1 ring-emerald-500"
             : "border-border shadow-sm hover:border-emerald-200",
         )}
       >
         <CardContent className="flex h-full flex-col justify-between p-5">
-          {showCheckbox && (
-            <div
-              onClick={handleCheckboxClick}
-              className="absolute top-3 left-3 z-20 -m-2 cursor-pointer p-2"
-            >
-              <Checkbox
-                checked={isSelected}
-                className="h-4 w-4 border-2 data-checked:border-emerald-500 data-checked:bg-emerald-500"
-              />
-            </div>
-          )}
+          {/* 호버 시 상단 overlay + 상세보기 버튼 */}
+          <AnimatePresence>
+            {isHovered && onDetailClick && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                onClick={handleDetailClick}
+                className="absolute inset-0 z-30 flex cursor-pointer items-start justify-center bg-gradient-to-b from-emerald-500/90 to-emerald-500/50 pt-12"
+              >
+                <motion.div
+                  initial={{ y: -8, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -8, opacity: 0 }}
+                  transition={{ duration: 0.2, delay: 0.05 }}
+                  className="flex items-center gap-2 rounded-lg bg-white px-4 py-2 shadow-lg"
+                >
+                  <Search className="h-4 w-4 text-emerald-600" />
+                  <span className="text-sm font-semibold text-emerald-600">
+                    상세보기
+                  </span>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -104,7 +118,7 @@ export function DocumentCard({
             </div>
           </div>
           <AnimatePresence>
-            {showDeleteAction && isSelectable && isSelected && (
+            {isSelected && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
