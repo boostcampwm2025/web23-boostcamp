@@ -11,7 +11,8 @@ export function buildChatHistory(history: IHistoryItem[]) {
         sender: "Interviewer",
         role: "ai",
         content: item.question.content,
-        timestamp: new Date(item.question.createdAt),
+        // Server Component -> Client Component 경계를 넘어갈 수 있도록 문자열로 유지
+        timestamp: item.question.createdAt,
       });
     }
 
@@ -21,7 +22,8 @@ export function buildChatHistory(history: IHistoryItem[]) {
         sender: "You",
         role: "user",
         content: item.answer.content,
-        timestamp: new Date(item.answer.createdAt),
+        // Server Component -> Client Component 경계를 넘어갈 수 있도록 문자열로 유지
+        timestamp: item.answer.createdAt,
       });
     }
 

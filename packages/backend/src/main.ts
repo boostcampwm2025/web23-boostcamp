@@ -20,9 +20,12 @@ async function bootstrap() {
       },
     }),
   );
-  // 개발 환경 등에서 자동 시딩 실행
-  const seedService = app.get(SeedService);
-  await seedService.seed();
+
+  if (process.env.NODE_ENV === 'local') {
+    // 개발 환경 등에서 자동 시딩 실행
+    const seedService = app.get(SeedService);
+    await seedService.seed();
+  }
 
   //도메인 발급 받으면 수정 필요.
   app.enableCors();

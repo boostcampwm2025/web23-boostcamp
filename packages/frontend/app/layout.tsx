@@ -1,18 +1,56 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import localFont from "next/font/local";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import MSWWorker from "@/app/components/msw/Worker";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const pretendard = localFont({
+  src: [
+    {
+      path: "../public/fonts/pretendard/Pretendard-Thin.woff2",
+      weight: "100",
+    },
+    {
+      path: "../public/fonts/pretendard/Pretendard-ExtraLight.woff2",
+      weight: "200",
+    },
+    {
+      path: "../public/fonts/pretendard/Pretendard-Light.woff2",
+      weight: "300",
+    },
+    {
+      path: "../public/fonts/pretendard/Pretendard-Regular.woff2",
+      weight: "400",
+    },
+    {
+      path: "../public/fonts/pretendard/Pretendard-Medium.woff2",
+      weight: "500",
+    },
+    {
+      path: "../public/fonts/pretendard/Pretendard-SemiBold.woff2",
+      weight: "600",
+    },
+    {
+      path: "../public/fonts/pretendard/Pretendard-Bold.woff2",
+      weight: "700",
+    },
+    {
+      path: "../public/fonts/pretendard/Pretendard-ExtraBold.woff2",
+      weight: "800",
+    },
+    {
+      path: "../public/fonts/pretendard/Pretendard-Black.woff2",
+      weight: "900",
+    },
+  ],
+  variable: "--font-pretendard",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -26,10 +64,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={inter.variable}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html
+      lang="ko"
+      className={`${pretendard.variable} ${jetbrainsMono.variable}`}
+    >
+      <body className={`${pretendard.className} bg-neutral-50`}>
         <MSWWorker />
         {children}
       </body>

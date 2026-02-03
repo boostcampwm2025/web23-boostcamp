@@ -2,9 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UnauthorizedException } from '@nestjs/common';
-import { JwtTokenProvider } from './jwt-token.provider';
-import { JwtTokenDecoder } from './jwt-token.decoder';
-import { UserRole } from '../user/entities/user.entity';
+import { JwtTokenProvider } from '../../../src/auth/jwt-token.provider';
+import { JwtTokenDecoder } from '../../../src/auth/jwt-token.decoder';
+import { UserRole } from '../../../src/user/entities/user.entity';
 
 describe('Jwt 발급/디코딩 통합 테스트', () => {
   let provider: JwtTokenProvider;

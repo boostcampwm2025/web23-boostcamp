@@ -1,10 +1,7 @@
-import { Heart, HeartOff } from "lucide-react";
-
 import { redirect } from "next/navigation";
 /* import { unstable_cache as nextCache } from "next/cache";
  */
 import ChatHistory from "@/app/components/chat-history";
-import { Button } from "@/app/components/ui/button";
 import { buildChatHistory } from "@/app/lib/client/chat";
 
 import { getFeedback, startFeedback } from "./actions";
@@ -33,31 +30,39 @@ export default async function InterviewResultPage({
   // await new Promise((resolve) => setTimeout(resolve, 1000000));
 
   const { id: interviewId } = await params;
-  const { history } = await getHistory({
-    interviewId,
-    userToken: user.token,
-  });
-
-  let feedbackResult = { score: "0", feedback: "" };
-  feedbackResult = await getFeedback({
-    interviewId,
-    userToken: user.token,
-  });
-
-  if (!feedbackResult.score || !feedbackResult.feedback) {
-    feedbackResult = await startFeedback({
+  let history: Awaited<ReturnType<typeof getHistory>>["history"] = [];
+  try {
+    const res = await getHistory({
       interviewId,
       userToken: user.token,
     });
+    history = res.history;
+  } catch (error) {
+    console.error("히스토리 조회 실패:", error);
+    history = [];
   }
 
-  const lastCreatedAt = new Date(
-    history[history.length - 1].question.createdAt,
-  );
+  let feedbackResult = { score: "0", feedback: "" };
+  try {
+    feedbackResult = await getFeedback({
+      interviewId,
+      userToken: user.token,
+    });
 
-  if (!history) {
-    throw new Error(`인터뷰 ID:${interviewId}의 기록이 없습니다.`);
+    if (!feedbackResult.score || !feedbackResult.feedback) {
+      feedbackResult = await startFeedback({
+        interviewId,
+        userToken: user.token,
+      });
+    }
+  } catch (error) {
+    console.error("피드백 조회/생성 실패:", error);
+    feedbackResult = { score: "0", feedback: "" };
   }
+
+  const lastCreatedAt = history.length
+    ? new Date(history[history.length - 1].question.createdAt)
+    : null;
 
   return (
     <div className="mt-5 w-full pb-5">
@@ -70,7 +75,9 @@ export default async function InterviewResultPage({
             </span>
           </div>
           <div>
-            <h6 className="text-sm">{timeAgo(lastCreatedAt)}</h6>
+            {lastCreatedAt ? (
+              <h6 className="text-sm">{timeAgo(lastCreatedAt)}</h6>
+            ) : null}
           </div>
         </div>
         <div className="flex flex-col gap-6 md:flex-row">
@@ -82,14 +89,14 @@ export default async function InterviewResultPage({
           </Panel>
         </div>
         <div className="flex flex-col gap-6 md:flex-row">
-          <Panel className="flex flex-1 flex-col overflow-y-scroll p-5">
+          <Panel className="flex min-h-0 flex-1 flex-col p-5">
             <ChatHistory
               chatMessages={buildChatHistory(history)}
               className="max-h-120"
             />
           </Panel>
           <Panel className="flex-1 p-5">
-            <AISummary summary={feedbackResult.feedback} />
+            <AISummary summary={feedbackResult.feedback || ""} />
           </Panel>
         </div>
         <div className="flex">

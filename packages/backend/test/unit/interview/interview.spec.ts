@@ -1,6 +1,6 @@
-import { Interview } from './interview.entity';
+import { Interview } from '../../../src/interview/entities/interview.entity';
 import { ForbiddenException } from '@nestjs/common';
-import { User } from '../../user/entities/user.entity';
+import { User } from '../../../src/user/entities/user.entity';
 
 describe('InterviewEntity 단위 테스트', () => {
   it('인터뷰 진행 시간을 계산한다.', () => {

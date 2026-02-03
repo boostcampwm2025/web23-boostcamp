@@ -7,6 +7,7 @@ import { DocumentModule } from './document/document.module';
 import { InterviewModule } from './interview/interview.module';
 import { UserModule } from './user/user.module';
 import { SeedModule } from './seed/seed.module';
+import { HealthModule } from './health/health.module';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -31,9 +32,15 @@ import { winstonOptions } from './common/logger/winston.config';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: process.env.NODE_ENV === 'development',
-        dropSchema: process.env.NODE_ENV === 'development',
+        synchronize:
+          process.env.NODE_ENV === 'local' || process.env.NODE_ENV === 'test',
+        dropSchema:
+          process.env.NODE_ENV === 'local' || process.env.NODE_ENV === 'test',
         logging: true,
+        migrations: [__dirname + '/migrations/*{.ts,.js}'],
+        migrationsRun:
+          process.env.NODE_ENV === 'local' ||
+          process.env.NODE_ENV === 'development',
       }),
     }),
     UserModule,
@@ -41,6 +48,7 @@ import { winstonOptions } from './common/logger/winston.config';
     DocumentModule,
     InterviewModule,
     SeedModule,
+    HealthModule,
   ],
   controllers: [],
   providers: [

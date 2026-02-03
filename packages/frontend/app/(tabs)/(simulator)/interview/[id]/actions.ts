@@ -5,6 +5,18 @@ import { isApiMockEnabled } from "@/app/lib/server/env";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+async function readResponsePayload(response: Response) {
+  try {
+    const contentType = response.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      return JSON.stringify(await response.json());
+    }
+    return await response.text();
+  } catch {
+    return "<failed to read response body>";
+  }
+}
+
 export interface IAnswerResponse {
   answer: string;
 }
@@ -39,14 +51,25 @@ export async function speakAnswer({
 
   const formData = new FormData();
   formData.append("interviewId", interviewId);
-  formData.append("file", audio, "answer.webm");
 
   if (isApiMockEnabled()) {
     await new Promise((r) => setTimeout(r, 120));
     return { answer: "[MOCK] 음성 응답(서버사이드)" } as IAnswerResponse;
   }
 
-  const reponse = await fetch(
+  const mime = audio.type || "application/octet-stream";
+  const ext = mime.includes("ogg")
+    ? "ogg"
+    : mime.includes("webm")
+      ? "webm"
+      : mime.includes("wav")
+        ? "wav"
+        : mime.includes("mp4")
+          ? "m4a"
+          : "bin";
+  formData.append("file", audio, `answer.${ext}`);
+
+  const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/interview/answer/voice`,
     {
       method: "POST",
@@ -57,11 +80,15 @@ export async function speakAnswer({
     },
   );
 
-  if (!reponse.ok) {
-    throw new Error("API 요청 실패");
+  if (!response.ok) {
+    // 백엔드가 내려주는 에러 메시지를 최대한 노출해 디버깅 가능하게
+    const payload = await readResponsePayload(response);
+    throw new Error(
+      `API 요청 실패 (${response.status} ${response.statusText}) - ${payload}`,
+    );
   }
 
-  const data = (await reponse.json()) as IAnswerResponse;
+  const data = (await response.json()) as IAnswerResponse;
   return data;
 }
 
@@ -97,7 +124,10 @@ export async function sendAnswer({
   );
 
   if (!response.ok) {
-    throw new Error("API 요청 실패");
+    const payload = await readResponsePayload(response);
+    throw new Error(
+      `API 요청 실패 (${response.status} ${response.statusText}) - ${payload}`,
+    );
   }
 
   const data = (await response.json()) as IAnswerResponse;
@@ -161,7 +191,10 @@ export async function getHistory({
   );
 
   if (!response.ok) {
-    throw new Error("API 요청에 실패하였습니다.");
+    const payload = await readResponsePayload(response);
+    throw new Error(
+      `API 요청 실패 (${response.status} ${response.statusText}) - ${payload}`,
+    );
   }
 
   const { history } = (await response.json()) as IHistoryResponse;
@@ -207,7 +240,10 @@ export async function generateQuestion({
   );
 
   if (!response.ok) {
-    throw new Error("API 요청 실패");
+    const payload = await readResponsePayload(response);
+    throw new Error(
+      `API 요청 실패 (${response.status} ${response.statusText}) - ${payload}`,
+    );
   }
 
   const data = (await response.json()) as IGenerateQuestion;

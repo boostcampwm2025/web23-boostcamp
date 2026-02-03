@@ -42,13 +42,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
-      # 1. 린트, 빌드, 테스트 한 번에 실행 (변경된 패키지만)
-      - name: Run Lint & Build (Affected)
-        run: npx turbo run lint build --filter=backend
+      # 1. 린트 (변경된 패키지만)
+      - name: Run Lint
+        run: npx turbo run lint --filter=backend
+
+      # 2. 빌드 (변경된 패키지만)
+      - name: Run Build
+        run: npx turbo run build --filter=backend
 #        env:
 #          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
 
-      # 2. 유닛 테스트 (항상 실행)
+      # 3. 유닛 테스트 (항상 실행)
       - name: Run Unit Tests
         run: npx turbo run test:ci --filter=backend
 
@@ -58,7 +62,7 @@ jobs:
           cd packages/backend
           npm run test:e2e:ci
         env:
-          NODE_ENV: development
+          NODE_ENV: test
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
           DB_USERNAME: root
