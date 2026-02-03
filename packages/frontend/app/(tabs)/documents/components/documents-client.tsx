@@ -150,8 +150,7 @@ export default function DocumentsClient({ initialDocuments }: Props) {
             onSelect={toggleDocumentSelection}
             isSelectable={true}
             showDeleteAction={true}
-            showCheckbox={true}
-            onCardClick={(doc) => setDetailDocument(doc)}
+            onDetailClick={(doc) => setDetailDocument(doc)}
           />
         ))}
       </div>
