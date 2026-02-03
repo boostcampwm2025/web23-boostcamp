@@ -1,8 +1,0 @@
-[2026-01-28T08:50:21.302Z] >>> Starting Duplicate Question Termination Verification on http://localhost:8001 
-[2026-01-28T08:50:21.306Z] [1] Creating Interview... 
-[2026-01-28T08:50:21.370Z] [+] Interview Created. ID: 7 
-[2026-01-28T08:50:21.370Z] [+] Q1: 중복 테스트 질문입니다. 
-[2026-01-28T08:50:21.370Z] [2] Sending Answer to provoke duplicate next question... 
-[2026-01-28T08:50:21.413Z] [Server Res] isLast: true 
-[2026-01-28T08:50:21.413Z] [Server Res] Question: 중복 테스트 질문입니다. 
-[2026-01-28T08:50:21.413Z] ✅ SUCCESS: Interview terminated due to repetitive duplicate questions.
