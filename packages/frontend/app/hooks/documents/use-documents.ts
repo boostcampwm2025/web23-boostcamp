@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { DocumentItem } from "@/app/(tabs)/(simulator)/components/document-card";
-import { FALLBACK_MOCK_DATA } from "@/app/lib/mock/documents";
 import { formatIsoDateToDot } from "@/app/lib/utils";
 import { getDocuments } from "./actions";
 
@@ -22,8 +21,8 @@ export function useDocuments() {
           modifiedAt: formatIsoDateToDot(item.createdAt),
         }));
         setDocuments(mapped);
-      } catch (err) {
-        setDocuments(FALLBACK_MOCK_DATA);
+      } catch {
+        setDocuments([]);
       } finally {
         setIsLoading(false);
       }

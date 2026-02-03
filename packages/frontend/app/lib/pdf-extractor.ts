@@ -8,14 +8,14 @@ const MAX_PAGES = 50;
 const MIN_TEXT_LENGTH_FOR_OCR = 30; // 이 글자수 미만이면 OCR 실행
 const MIN_QUALITY_THRESHOLD = 0.3; // 텍스트 품질이 낮으면 OCR 사용
 
-export interface PdfExtractionProgress {
+export interface IPdfExtractionProgress {
   currentPage: number;
   totalPages: number;
   status: "parsing" | "extracting" | "ocr" | "completed" | "error";
   message: string;
 }
 
-export interface PdfExtractionResult {
+export interface IPdfExtractionResult {
   text: string;
   totalCharacters: number;
   pageCount: number;
@@ -32,8 +32,8 @@ export interface PdfExtractionResult {
  */
 export async function extractTextFromPdf(
   file: File,
-  onProgress?: (progress: PdfExtractionProgress) => void,
-): Promise<PdfExtractionResult> {
+  onProgress?: (progress: IPdfExtractionProgress) => void,
+) {
   let ocrWorker: Awaited<ReturnType<typeof createWorker>> | null = null;
   let ocrPagesCount = 0;
   try {
@@ -120,7 +120,7 @@ export async function extractTextFromPdf(
       totalCharacters: cleanedText.length,
       pageCount: totalPages,
       ocrPagesCount,
-    };
+    } as IPdfExtractionResult;
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "알 수 없는 오류";
@@ -138,7 +138,7 @@ export async function extractTextFromPdf(
     }
   }
 }
-interface TextItem {
+interface ITextItem {
   str: string;
   transform: number[];
 }
@@ -146,12 +146,12 @@ interface TextItem {
  * 텍스트 아이템을 좌표 기준으로 정렬하여 문자열로 변환
  */
 function sortTextByCoordinates(
-  items: Array<TextItem | { type: string }>,
+  items: Array<ITextItem | { type: string }>,
 ): string {
   if (items.length === 0) return "";
-  // TextItem만 필터링
+  // ITextItem만 필터링
   const textItems = items.filter(
-    (item): item is TextItem => "str" in item && "transform" in item,
+    (item): item is ITextItem => "str" in item && "transform" in item,
   );
   const mappedItems = textItems.map((item) => ({
     str: item.str,

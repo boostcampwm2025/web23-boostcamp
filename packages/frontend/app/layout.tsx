@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import MSWWorker from "@/app/components/msw/Worker";
 
 const pretendard = localFont({
   src: [
@@ -68,6 +69,7 @@ export default function RootLayout({
       className={`${pretendard.variable} ${jetbrainsMono.variable}`}
     >
       <body className={`${pretendard.className} bg-neutral-50`}>
+        <MSWWorker />
         {children}
       </body>
     </html>
