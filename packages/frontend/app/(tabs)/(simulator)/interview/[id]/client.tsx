@@ -490,6 +490,7 @@ export default function InterviewClient({
                   setTextInput={setTextInput}
                   textInput={textInput}
                   setInputMode={setInputMode}
+                  onEnterVoice={enterVoiceMode}
                   onSend={handleSendText}
                 />
               </motion.div>
