@@ -20,6 +20,7 @@ export interface IPdfExtractionResult {
   totalCharacters: number;
   pageCount: number;
   ocrPagesCount: number;
+  ocrUsedPages: number[];
 }
 
 /**
@@ -36,6 +37,7 @@ export async function extractTextFromPdf(
 ) {
   let ocrWorker: Awaited<ReturnType<typeof createWorker>> | null = null;
   let ocrPagesCount = 0;
+  const ocrUsedPages: number[] = [];
   try {
     if (typeof window !== "undefined" && !pdfjsLib) {
       pdfjsLib = await import("pdfjs-dist");
@@ -89,12 +91,15 @@ export async function extractTextFromPdf(
           ocrWorker = await createWorker("kor+eng");
         }
         pageText = await runPageOCR(page, ocrWorker);
-        const ocrQuality = calculateTextQuality(pageText);
-        // OCR 결과도 품질이 낮으면 버림
-        if (ocrQuality < MIN_QUALITY_THRESHOLD) {
-          pageText = "";
-        } else {
+        const filteredText = filterLowQualitySentences(pageText);
+
+        // 필터링 후에도 텍스트가 있으면 OCR 사용 페이지로 기록
+        if (filteredText.trim().length > 0) {
+          pageText = `[📄 페이지 ${pageNum} - OCR 추출]\n${filteredText}`;
           ocrPagesCount++;
+          ocrUsedPages.push(pageNum);
+        } else {
+          pageText = "";
         }
       }
       // 페이지별 텍스트 추가 (빈 줄로 구분)
@@ -120,6 +125,7 @@ export async function extractTextFromPdf(
       totalCharacters: cleanedText.length,
       pageCount: totalPages,
       ocrPagesCount,
+      ocrUsedPages,
     } as IPdfExtractionResult;
   } catch (error) {
     const errorMessage =
@@ -196,7 +202,6 @@ function sortTextByCoordinates(
   return result.trim();
 }
 /**
- * 페이지를 캔버스로 렌더링하고 OCR 실행
  * 텍스트 품질 평가 (한글/영문 비율, 특수문자 비율 등)
  */
 function calculateTextQuality(text: string): number {
@@ -212,6 +217,37 @@ function calculateTextQuality(text: string): number {
   // 특수문자가 너무 많으면 품질 저하
   const specialRatio = specialCount / totalCount;
   return validRatio * (1 - specialRatio * 0.5);
+}
+
+/**
+ * 텍스트를 문장 단위로 분리
+ * 문장 종결 기호(. ! ? \n) 뒤에 공백이나 줄바꿈이 오는 경우 분리
+ */
+function splitIntoSentences(text: string): string[] {
+  if (!text) return [];
+
+  // 문장 종결 부호 뒤 공백/줄바꿈을 기준으로 분리 (숫자 사이 점은 제외)
+  // 예: "안녕하세요. 반갑습니다" → ["안녕하세요.", "반갑습니다"]
+  const sentences = text
+    .split(/(?<=[.!?])\s+|\n+/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
+  return sentences;
+}
+
+/**
+ * 문장 단위로 품질을 평가하여 품질 좋은 문장만 필터링
+ */
+function filterLowQualitySentences(text: string): string {
+  const sentences = splitIntoSentences(text);
+
+  const filteredSentences = sentences.filter((sentence) => {
+    const quality = calculateTextQuality(sentence);
+    return quality >= MIN_QUALITY_THRESHOLD;
+  });
+
+  return filteredSentences.join(" ");
 }
 /**
  * 페이지를 캔버스로 렌더링하고 OCR 실행

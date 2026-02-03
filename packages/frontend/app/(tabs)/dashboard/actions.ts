@@ -1,7 +1,6 @@
 "use server";
 
 import { getUserSession } from "@/app/lib/server/session";
-import { isApiMockEnabled } from "@/app/lib/server/env";
 import { redirect } from "next/navigation";
 
 export interface IInterview {
@@ -17,20 +16,6 @@ export async function getInterviews() {
 
   if (!user) {
     return redirect("/");
-  }
-
-  if (isApiMockEnabled()) {
-    return {
-      interviews: [
-        {
-          interviewId: "mock-1",
-          title: "모의 인터뷰 #1",
-          type: "tech",
-          createdAt: new Date().toISOString(),
-          score: "50",
-        },
-      ],
-    } as { interviews: IInterview[] };
   }
 
   const res = await fetch(

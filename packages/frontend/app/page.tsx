@@ -4,7 +4,6 @@ import Header from "./components/header";
 import { getUserSession } from "./lib/server/session";
 import StatusBadge from "./components/ui/status-badge";
 import { Button } from "./components/ui/button";
-import { ArrowRight } from "lucide-react";
 import GoogleLoginButton from "./(auth)/components/google-login-button";
 
 export default async function Home() {

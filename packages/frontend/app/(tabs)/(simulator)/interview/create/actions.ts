@@ -2,7 +2,6 @@
 
 import { getUserSession } from "@/app/lib/server/session";
 import { redirect } from "next/navigation";
-import { isApiMockEnabled } from "@/app/lib/server/env";
 
 export interface ICreateInterviewResponse {
   interviewId: string;
@@ -19,12 +18,6 @@ export async function createTechInterview({
 
   if (!user) {
     return redirect("/");
-  }
-
-  if (isApiMockEnabled()) {
-    return {
-      interviewId: `mock-${Date.now()}`,
-    };
   }
 
   const res = await fetch(
