@@ -410,3 +410,7 @@ sketch
 .env.local
 .env.development
 .env.production
+
+.vscode
+.vscode/**
+.turbo
