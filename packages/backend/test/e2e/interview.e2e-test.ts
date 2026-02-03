@@ -4,6 +4,8 @@ import request from 'supertest';
 import { Server } from 'http';
 import { AppModule } from '../../src/app.module';
 import { JwtService } from '@nestjs/jwt';
+import { DataSource } from 'typeorm';
+import { seedDatabase } from '../utils/seed-db';
 import { setupApp } from '../utils/setup-app';
 
 describe('InterviewController (e2e)', () => {
@@ -18,6 +20,10 @@ describe('InterviewController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     setupApp(app);
     await app.init();
+
+    // Seed Database
+    const dataSource = app.get(DataSource);
+    await seedDatabase(dataSource);
 
     // Setup Auth Token
     const jwtService = app.get(JwtService);
@@ -47,7 +53,7 @@ describe('InterviewController (e2e)', () => {
     it('기술 면접을 생성하고 201 상태코드를 반환해야 한다', async () => {
       const dto = {
         simulationTitle: 'New Tech Interview',
-        documentsIds: [1, 2], // IDs from seed
+        documentIds: ['1', '2'], // IDs from seed
       };
 
       const response = await request(app.getHttpServer() as Server)

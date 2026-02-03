@@ -7,43 +7,90 @@ interface IFeedback {
 
 export async function getFeedback({
   interviewId,
+  userToken,
 }: {
   interviewId: string;
-}): Promise<IFeedback> {
-  if (process.env.NODE_ENV === "development") {
-    return {
-      score: "84",
-      feedback:
-        "[DEV] The candidate gave concise answers with clear impact. Focus on adding more metrics and structure (STAR).",
-    };
-  }
-
+  userToken: string;
+}) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/interview/${interviewId}/feedback`,
-    { headers: { "Content-Type": "application/json" }, cache: "no-store" },
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+      cache: "no-store",
+    },
   );
-  if (!res.ok) throw new Error("피드백 조회 실패");
+
+  if (!res.ok) {
+    throw new Error("피드백 조회 실패");
+  }
 
   return (await res.json()) as IFeedback;
 }
 
-// 현재 사용하고 있지 않아 lint 에러가 나긴 하나, 나중에 추가될 것 같아서 놔둡니다.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function startFeedback({ interviewId }: { interviewId?: string }) {
-  if (process.env.NODE_ENV === "development") {
-    await new Promise((r) => setTimeout(r, 200));
-    return {
-      score: "84",
-      feedback:
-        "[DEV] The candidate gave concise answers with clear impact. Focus on adding more metrics and structure (STAR).",
-    };
+export async function startFeedback({
+  interviewId,
+  userToken,
+}: {
+  interviewId?: string;
+  userToken: string;
+}) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/interview/feedback`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+      body: JSON.stringify({ interviewId }),
+    },
+  );
+
+  if (!res.ok) {
+    throw new Error("피드백 시작 실패");
   }
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/feedback/start`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (!res.ok) throw new Error("피드백 시작 실패");
   return (await res.json()) as IFeedback;
+}
+
+export async function like({
+  interviewId,
+  userToken,
+}: {
+  interviewId: string;
+  userToken: string;
+}) {
+  fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/interview/${interviewId}/feedback/like`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+    },
+  );
+}
+
+export async function dislike({
+  interviewId,
+  userToken,
+}: {
+  interviewId: string;
+  userToken: string;
+}) {
+  fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/interview/${interviewId}/feedback/dislike`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+    },
+  );
 }

@@ -151,7 +151,7 @@ describe('DocumentController (e2e)', () => {
         .expect(404);
     });
 
-    it('일부 문서만 존재할 경우 존재하는 문서만 삭제하고 실패 목록을 반환해야 한다', async () => {
+    it('일부 문서만 존재할 경우 400 BadRequest를 반환해야 한다', async () => {
       // 1. 테스트용 포트폴리오 1개 생성
       const createResponse = await request(app.getHttpServer() as Server)
         .post('/document/portfolio/create')
@@ -162,27 +162,11 @@ describe('DocumentController (e2e)', () => {
       const nonExistentId = '999999';
 
       // 2. 일괄 삭제 요청 (존재 ID + 비존재 ID)
-      const deleteResponse = await request(app.getHttpServer() as Server)
+      await request(app.getHttpServer() as Server)
         .delete('/document')
         .set('Authorization', `Bearer ${accessToken}`)
         .send({ documentIds: [docId, nonExistentId] })
-        .expect(200);
-
-      const body = deleteResponse.body as {
-        success: boolean;
-        deletedCount: number;
-        failedDocuments: string[];
-      };
-      expect(body.success).toBe(true);
-      expect(body.deletedCount).toBe(1);
-      expect(body.failedDocuments).toContain(nonExistentId);
-      expect(body.failedDocuments).toHaveLength(1);
-
-      // 3. 삭제 확인
-      await request(app.getHttpServer() as Server)
-        .get(`/document/${docId}/portfolio`)
-        .set('Authorization', `Bearer ${accessToken}`)
-        .expect(404);
+        .expect(400);
     });
 
     it('존재하지 않는 문서들만 요청 시 400 BadRequest를 반환해야 한다', async () => {

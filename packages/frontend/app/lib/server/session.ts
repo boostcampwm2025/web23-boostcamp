@@ -5,17 +5,20 @@ import { getIronSession } from "iron-session";
 
 import "server-only";
 
-interface SessionContent {
+interface ISessionContent {
   user?: {
-    id: number;
+    id: string;
     email: string;
+    profileUrl: string | null;
+    token: string;
+    refreshToken: string;
   };
 }
 
 export async function getUserSession() {
   const cookie = await cookies();
 
-  return await getIronSession<SessionContent>(cookie, {
+  return await getIronSession<ISessionContent>(cookie, {
     password: process.env.SESSION_PASSWORD as string,
     cookieName: "user-session",
   });

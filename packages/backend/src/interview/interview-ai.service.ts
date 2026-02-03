@@ -49,12 +49,6 @@ export class InterviewAIService {
     visitedTopics: string[],
     isLastQuestion: boolean,
   ): Promise<ClovaInterviewResponse> {
-    // Index Out of Bounds 방지: 질문이 없거나, 질문과 답변 수가 같을 때(새 질문 생성 직전) 처리
-    const currentQuestion =
-      questions.length > 0 && questions.length > answers.length
-        ? questions[answers.length].content
-        : '';
-
     const { historyMessages, currentAnswer } = this.createHistoryMessages(
       questions,
       answers,
@@ -68,13 +62,28 @@ export class InterviewAIService {
 
     let aiAnswer = await this.fetchAIQuestion(historyMessages, userPrompt);
 
-    if (aiAnswer.question === currentQuestion) {
-      aiAnswer = await this.fetchAIQuestion(historyMessages, userPrompt);
-      if (aiAnswer.question === currentQuestion) {
-        aiAnswer.isLast = true;
-        return aiAnswer;
-      }
-      return aiAnswer;
+    let isDuplicated = false;
+    if (questions.length > 0) {
+      isDuplicated = questions
+        .map((q) => q.content)
+        .includes(aiAnswer.question);
+    }
+
+    this.logger.debug(`${JSON.stringify(historyMessages, null, 2)}`);
+    this.logger.debug(`AI question: ${aiAnswer.question}`);
+    this.logger.debug(
+      `${isDuplicated ? 'Duplicated' : 'Not duplicated'} questions: [${questions.map((q) => q.content).join(', ')}]`,
+    );
+
+    if (isDuplicated) {
+      const lastUserPrompt = this.constructUserPrompt(
+        userInfo,
+        visitedTopics,
+        currentAnswer,
+        true,
+      );
+      aiAnswer = await this.fetchAIQuestion(historyMessages, lastUserPrompt);
+      aiAnswer.isLast = true;
     }
 
     return aiAnswer;
@@ -131,8 +140,9 @@ export class InterviewAIService {
             ***[컨텍스트: 현재 입력]***
             - 직전 지원자 답변: ${currentAnswer || '없음 (첫 질문)'}
 
-            !!! 반드시 시스템 프롬프트에 정의된 JSON 형식으로만 답변하십시오. !!!
-            Format: { "question": "...", "tags": [...], "isLast": boolean }
+             ***[필수 규칙]***
+            - **빈 값 금지**: "question" 및 "tags" 배열의 항목은 절대 빈 문자열("")이어서는 안 됩니다. 반드시 유의미한 내용을 포함하십시오.
+            - 최소 10자 이상의 질문을 생성하십시오.
         
             ${isLastQuestion ? lastQuestPrompt : ''}
         `;
@@ -142,83 +152,118 @@ export class InterviewAIService {
     historyMessages: { role: string; content: string }[],
     userPrompt: string,
   ): Promise<ClovaInterviewResponse> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    const maxRetries = 1;
+    let attempt = 0;
+    let lastError: unknown;
 
-    try {
-      const systemPrompt = SYSTEM_PROMPT;
+    while (attempt <= maxRetries) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-      const response = await fetch(this.apiUrl, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          messages: [
-            { role: 'system', content: systemPrompt },
-            ...historyMessages,
-            {
-              role: 'user',
-              content: userPrompt,
+      try {
+        const systemPrompt = SYSTEM_PROMPT;
+
+        const response = await fetch(this.apiUrl, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${this.apiKey}`,
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            messages: [
+              { role: 'system', content: systemPrompt },
+              ...historyMessages,
+              {
+                role: 'user',
+                content: userPrompt,
+              },
+            ],
+            thinking: { effort: 'none' },
+            topP: 0.1,
+            topK: 0,
+            maxCompletionTokens: 1024,
+            temperature: 0.4,
+            repeatPenalty: 1.1,
+            seed: 0,
+            responseFormat: {
+              type: 'json',
+              schema: {
+                type: 'object',
+                properties: {
+                  question: {
+                    type: 'string',
+                    minLength: 10,
+                  },
+                  tags: {
+                    type: 'array',
+                    minItems: 1,
+                    items: {
+                      type: 'string',
+                      minLength: 1,
+                    },
+                  },
+                  isLast: { type: 'boolean' },
+                },
+                required: ['question', 'tags', 'isLast'],
+                additionalProperties: false,
+              },
             },
-          ],
-          thinking: { effort: 'none' },
-          topP: 0.1,
-          topK: 0,
-          maxCompletionTokens: 1024,
-          temperature: 0.4,
-          repeatPenalty: 1.1,
-          seed: 0,
-        }),
-        signal: controller.signal,
-      });
+          }),
+          signal: controller.signal,
+        });
 
-      clearTimeout(timeoutId);
+        clearTimeout(timeoutId);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new InternalServerErrorException(
-          `Clova API Error: ${response.status} - ${errorText}`,
-        );
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new InternalServerErrorException(
+            `Clova API Error: ${response.status} - ${errorText}`,
+          );
+        }
+
+        const data = (await response.json()) as ClovaApiResponse;
+
+        this.logger.log('Clova API response:', JSON.stringify(data, null, 2));
+
+        const content: string = data.result?.message?.content;
+        if (!content)
+          throw new InternalServerErrorException('Empty response from Clova');
+
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        const parsed = jsonMatch
+          ? (JSON.parse(jsonMatch[0]) as ClovaInterviewResponse)
+          : null;
+
+        if (!parsed)
+          throw new InternalServerErrorException('Invalid JSON response');
+
+        return parsed;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        lastError = error;
+        this.logger.warn(`Attempt ${attempt + 1} failed: ${error}`);
+        attempt++;
+        if (attempt <= maxRetries) {
+          this.logger.log(`Retrying... (${attempt}/${maxRetries})`);
+        }
       }
-
-      const data = (await response.json()) as ClovaApiResponse;
-
-      this.logger.log('Clova API response:', JSON.stringify(data, null, 2));
-
-      const content: string = data.result?.message?.content;
-      if (!content)
-        throw new InternalServerErrorException('Empty response from Clova');
-
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      const parsed = jsonMatch
-        ? (JSON.parse(jsonMatch[0]) as ClovaInterviewResponse)
-        : null;
-
-      if (!parsed)
-        throw new InternalServerErrorException('Invalid JSON response');
-
-      return parsed;
-    } catch (error) {
-      clearTimeout(timeoutId);
-
-      if (error instanceof Error && error.name === 'AbortError') {
-        this.logger.error('Clova API request timed out');
-        throw new InternalServerErrorException('Clova API request timed out');
-      }
-
-      this.logger.error('Error fetching AI question:', error);
-      if (error instanceof Error) {
-        this.logger.error(error.stack);
-      }
-
-      throw new InternalServerErrorException(
-        error instanceof Error
-          ? error.message
-          : `Unknown error: ${JSON.stringify(error)}`,
-      );
     }
+
+    if (lastError instanceof Error && lastError.name === 'AbortError') {
+      this.logger.error('Clova API request timed out');
+      throw new InternalServerErrorException('Clova API request timed out');
+    }
+
+    this.logger.error('Error fetching AI question after retries:', lastError);
+    if (lastError instanceof Error) {
+      this.logger.error(lastError.stack);
+    }
+
+    throw new InternalServerErrorException(
+      lastError instanceof Error
+        ? lastError.message
+        : `Unknown error: ${JSON.stringify(lastError)}`,
+    );
   }
 }

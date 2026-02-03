@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Safety Tester</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .box { border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+        .log { background: #f0f0f0; padding: 10px; height: 300px; overflow-y: scroll; white-space: pre-wrap; font-family: monospace; border: 1px solid #999; }
+        .status { font-weight: bold; margin-bottom: 10px; }
+        button { padding: 10px 20px; cursor: pointer; }
+        input[type="text"] { width: 70%; padding: 10px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1>Interview Safety Tester</h1>
+    <div class="box">
+        <h3>1. Configuration</h3>
+        <label>Backend URL: <input type="text" id="baseUrl" value="http://localhost:8000"></label>
+    </div>
+
+    <div class="box">
+        <h3>2. Actions</h3>
+        <div id="startSection">
+            <button onclick="startInterview()">Start Interview</button>
+        </div>
+        <div id="chatSection" class="hidden">
+            <div class="status">Current Question: <span id="currentQuestion" style="color: blue;"></span></div>
+            <div class="status">Turn Count: <span id="turnCount">0</span></div>
+            <div class="status">Is Last: <span id="isLast" style="color: red;">false</span></div>
+            <br>
+            <input type="text" id="userAnswer" placeholder="Type your answer here..." value="네, 알겠습니다.">
+            <button onclick="submitAnswer()">Submit Answer & Get Next</button>
+        </div>
+    </div>
+
+    <div class="box">
+        <h3>3. Logs</h3>
+        <div class="log" id="logArea"></div>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <script>
+        let interviewId = null;
+        let turnCount = 0;
+
+        function log(msg, data = null) {
+            const logArea = document.getElementById('logArea');
+            const time = new Date().toLocaleTimeString();
+            let text = `[${time}] ${msg}`;
+            if (data) {
+                text += '\n' + JSON.stringify(data, null, 2);
+            }
+            logArea.innerText += text + '\n\n';
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('logArea').innerText = '';
+        }
+
+        async function startInterview() {
+            const baseUrl = document.getElementById('baseUrl').value;
+            turnCount = 0;
+            updateUI();
+
+            try {
+                log('Starting Interview...');
+                const res = await fetch(`${baseUrl}/interview/tech/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ documentIds: [] }) // Empty documents for simple test
+                });
+                
+                if (!res.ok) throw new Error(await res.text());
+                
+                const data = await res.json();
+                interviewId = data.interviewId;
+                log('Interview Started!', data);
+                
+                document.getElementById('currentQuestion').innerText = data.question;
+                document.getElementById('startSection').classList.add('hidden');
+                document.getElementById('chatSection').classList.remove('hidden');
+                
+                // First turn is the initial question
+                turnCount = 1;
+                updateUI();
+
+            } catch (err) {
+                log('Error starting interview:', err);
+                alert('Failed to start interview. Check console/logs.');
+            }
+        }
+
+        async function submitAnswer() {
+            if (!interviewId) return;
+            const baseUrl = document.getElementById('baseUrl').value;
+            const answer = document.getElementById('userAnswer').value;
+
+            try {
+                log(`Sending Answer: ${answer}`);
+                
+                // 1. Submit Answer
+                const answerRes = await fetch(`${baseUrl}/interview/answer/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ interviewId, answer })
+                });
+
+                if (!answerRes.ok) throw new Error(await answerRes.text());
+                log('Answer Submitted. Fetching next question...');
+
+                // 2. Get Next Question
+                const questionRes = await fetch(`${baseUrl}/interview/tech/question`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ interviewId })
+                });
+
+                if (!questionRes.ok) throw new Error(await questionRes.text());
+                
+                const data = await questionRes.json();
+                log('Next Question Received:', data);
+
+                document.getElementById('currentQuestion').innerText = data.question;
+                document.getElementById('isLast').innerText = data.isLast;
+                
+                turnCount++;
+                updateUI();
+
+                if (data.isLast) {
+                    alert('Interview Ended (isLast: true)');
+                    log('--- INTERVIEW ENDED ---');
+                }
+
+            } catch (err) {
+                log('Error during flow:', err);
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('turnCount').innerText = turnCount;
+        }
+    </script>
+</body>
+</html>
