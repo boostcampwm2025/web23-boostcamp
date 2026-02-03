@@ -18,7 +18,7 @@ export class CoverLetterQuestionAnswer {
   @Column({ type: 'varchar', length: 255 })
   question: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'text' })
   answer: string;
 
   @ManyToOne(() => CoverLetter, (coverLetter) => coverLetter.questionAnswers, {

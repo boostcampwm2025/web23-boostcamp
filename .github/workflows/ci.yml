@@ -62,7 +62,7 @@ jobs:
           cd packages/backend
           npm run test:e2e:ci
         env:
-          NODE_ENV: development
+          NODE_ENV: test
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
           DB_USERNAME: root

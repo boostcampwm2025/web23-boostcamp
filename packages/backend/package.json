@@ -23,7 +23,12 @@
     "test:e2e": "cross-env DB_HOST=${DB_HOST:-127.0.0.1} jest --config ./test/jest-e2e.json --runInBand",
     "test:e2e:ci": "jest --config test/jest-e2e.json --runInBand --ci --reporters=default --reporters=jest-junit --forceExit",
     "test:ci": "jest --config test/jest-unit.json --ci --reporters=default --reporters=jest-junit",
-    "test:unit": "jest --config test/jest-unit.json"
+    "test:unit": "jest --config test/jest-unit.json",
+    "typeorm": "cross-env TS_NODE_PROJECT=tsconfig.migration.json ts-node --transpile-only -r tsconfig-paths/register ./node_modules/typeorm/cli",
+    "migration:create": "npm run typeorm -- migration:create",
+    "migration:generate": "npm run typeorm -- -d ./src/typeorm-datasource.ts migration:generate",
+    "migration:run": "npm run typeorm -- -d ./src/typeorm-datasource.ts migration:run",
+    "migration:revert": "npm run typeorm -- -d ./src/typeorm-datasource.ts migration:revert"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -47,10 +52,12 @@
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
+    "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.10.7",
     "@types/supertest": "^6.0.2",
+    "dotenv": "^17.2.3",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
@@ -69,7 +76,11 @@
     "typescript-eslint": "^8.20.0"
   },
   "jest": {
-    "moduleFileExtensions": ["js", "json", "ts"],
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
     "rootDir": ".",
     "testRegex": ".spec.ts$",
     "transform": {
@@ -85,19 +96,19 @@
       "!./src/**/*.constant.ts",
       "!./src/**/*.constants.ts",
       "!./src/**/*.decorator.ts",
-
       "!./src/common/logger/**/*.ts",
       "!./src/common/middlewares/**/*.ts",
       "!./src/seed/**/*.ts",
-
       "!./src/**/repositories/**/*.ts"
     ],
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
-    "roots": ["<rootDir>/src/", "<rootDir>/test/"],
+    "roots": [
+      "<rootDir>/src/",
+      "<rootDir>/test/"
+    ],
     "moduleNameMapper": {
       "^src/(.*)$": "<rootDir>/src/$1"
     }
   }
-
 }

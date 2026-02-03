@@ -32,9 +32,15 @@ import { winstonOptions } from './common/logger/winston.config';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: process.env.NODE_ENV === 'development',
-        dropSchema: process.env.NODE_ENV === 'development',
+        synchronize:
+          process.env.NODE_ENV === 'local' || process.env.NODE_ENV === 'test',
+        dropSchema:
+          process.env.NODE_ENV === 'local' || process.env.NODE_ENV === 'test',
         logging: true,
+        migrations: [__dirname + '/migrations/*{.ts,.js}'],
+        migrationsRun:
+          process.env.NODE_ENV === 'local' ||
+          process.env.NODE_ENV === 'development',
       }),
     }),
     UserModule,
