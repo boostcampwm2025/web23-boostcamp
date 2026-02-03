@@ -18,12 +18,11 @@ export default async function Page({
     return redirect("/");
   }
 
-  /*   const { history } = await getHistory({ interviewId, userToken: user.token });
-   */ // sthrow new Error("인터뷰 목록을 가져오는데 실패하였습니다: 테스트 에러");
+  const { history } = await getHistory({ interviewId, userToken: user.token });
 
   return (
     <div className="mx-auto flex size-full">
-      <InterviewClient history={[]} interviewId={interviewId} />
+      <InterviewClient history={history} interviewId={interviewId} />
     </div>
   );
 }

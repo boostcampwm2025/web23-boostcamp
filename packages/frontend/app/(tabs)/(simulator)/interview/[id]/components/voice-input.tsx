@@ -1,5 +1,4 @@
 import { Send, X } from "lucide-react";
-import { motion } from "motion/react";
 
 import { useAudioViz } from "@/app/hooks/use-audio-viz";
 
@@ -7,17 +6,22 @@ import PinsCanvas from "./pins-canvas";
 import ActionButton from "./action-button";
 
 interface IVoiceInputProps {
-  changeToTextMode: (mode: "text" | "voice") => void;
+  onCancel: () => void;
   audioStream: MediaStream | null;
+  isRecording: boolean;
+  onSend: () => void;
 }
 
 export default function VoiceInput({
-  changeToTextMode,
+  onCancel,
   audioStream,
+  isRecording,
+  onSend,
 }: IVoiceInputProps) {
   // 오디오 시각화 (테스트: 항상 표시 / 실제: aiState === "speaking"일 때만)
-  const { audioLevel, timeDataRef } = useAudioViz({
-    open: !!audioStream, // 테스트용: 항상 작동
+  const { audioLevel } = useAudioViz({
+    // 녹음 중일 때만 WebAudio를 켜서 버벅임/잔상 방지
+    open: !!audioStream && isRecording,
     // open: !!audioStream && aiState === "speaking", // 실제 사용 시 주석 해제
     audioStream: audioStream!,
   });
@@ -26,8 +30,11 @@ export default function VoiceInput({
     <div className="flex items-center gap-1 rounded-full bg-white px-6 py-2 shadow-lg">
       <PinsCanvas audioLevel={audioLevel} className="h-11 w-64" />
       <div className="flex gap-0.5">
-        <ActionButton onClick={() => changeToTextMode("text")} icon={<X />} />
-        <ActionButton icon={<Send />} />
+        <ActionButton onClick={onCancel} icon={<X />} />
+        <ActionButton
+          icon={<Send className={isRecording ? "text-red-500" : undefined} />}
+          onClick={onSend}
+        />
       </div>
     </div>
   );

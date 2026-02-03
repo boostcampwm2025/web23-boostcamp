@@ -9,9 +9,9 @@ const VIDEO_MIME_CANDIDATES = [
   "video/webm",
 ];
 const AUDIO_MIME_CANDIDATES = [
+  "audio/ogg;codecs=opus",
   "audio/webm;codecs=opus",
   "audio/webm;codecs=flac",
-  "audio/ogg;codecs=opus",
   "audio/webm",
   "audio/ogg",
 ];

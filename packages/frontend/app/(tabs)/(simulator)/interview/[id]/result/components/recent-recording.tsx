@@ -11,6 +11,7 @@ export default function RecentRecording({
 }) {
   const [url, setUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [playError, setPlayError] = useState<string | null>(null);
 
   useEffect(() => {
     let objectUrl: string | null = null;
@@ -51,9 +52,30 @@ export default function RecentRecording({
         src={url || ""}
         controls
         preload="metadata"
-        className="aspect-video"
+        className="aspect-video w-full rounded-lg bg-black"
         playsInline
+        onError={() => {
+          setPlayError(
+            "영상 재생에 실패했습니다. 브라우저가 해당 코덱(webm/vp8/vp9)을 지원하는지 확인해주세요.",
+          );
+        }}
       />
+
+      {playError ? (
+        <div className="mt-3 rounded-lg bg-primary/10 p-3 text-sm">
+          {playError}
+        </div>
+      ) : null}
+
+      <div className="mt-3 text-sm">
+        <a
+          className="underline"
+          href={url}
+          download={`interview-${interviewId}.webm`}
+        >
+          다운로드
+        </a>
+      </div>
     </div>
   );
 }
