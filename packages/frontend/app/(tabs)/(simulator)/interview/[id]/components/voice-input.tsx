@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Send, X } from "lucide-react";
 
 import { useAudioViz } from "@/app/hooks/use-audio-viz";
@@ -18,10 +19,27 @@ export default function VoiceInput({
   isRecording,
   onSend,
 }: IVoiceInputProps) {
+  const [vizOpen, setVizOpen] = useState(false);
+
+  useEffect(() => {
+    if (!audioStream || !isRecording) {
+      setVizOpen(false);
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      setVizOpen(true);
+    }, 150);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [audioStream, isRecording]);
+
   // 오디오 시각화 (테스트: 항상 표시 / 실제: aiState === "speaking"일 때만)
   const { audioLevel } = useAudioViz({
     // 녹음 중일 때만 WebAudio를 켜서 버벅임/잔상 방지
-    open: !!audioStream && isRecording,
+    open: !!audioStream && vizOpen,
     // open: !!audioStream && aiState === "speaking", // 실제 사용 시 주석 해제
     audioStream: audioStream!,
   });
