@@ -406,11 +406,11 @@ sketch
 # End of https://www.toptal.com/developers/gitignore/api/turbo
 
 
-.env
-.env.local
 .env.development
 .env.production
 
 .vscode
 .vscode/**
-.turbo
+
+.agent
+.agent/**
