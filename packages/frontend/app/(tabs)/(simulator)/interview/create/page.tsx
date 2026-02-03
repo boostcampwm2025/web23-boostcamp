@@ -177,8 +177,7 @@ export default function InterviewCreatePage() {
                   doc={doc}
                   isSelected={selectedDocs[doc.type] === doc.documentId}
                   onSelect={(id) => handleSelect(id, doc.type)}
-                  showCheckbox={true}
-                  onCardClick={(doc) => setDetailDocument(doc)}
+                  onDetailClick={(doc) => setDetailDocument(doc)}
                 />
               ))
             ) : (
