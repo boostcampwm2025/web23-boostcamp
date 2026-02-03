@@ -101,7 +101,7 @@ export default function DismissibleDraggablePanel({
     <motion.div
       {...motionProps}
       ref={panelRef}
-      className={cn(className, "cursor-pointer p-3")}
+      className={cn("flex flex-col", className)}
       style={{ ...(motionProps.style ?? {}), x, y }}
       drag
       dragMomentum={false}
@@ -156,7 +156,7 @@ export default function DismissibleDraggablePanel({
       {showHeader && (
         <div
           className={cn(
-            "mb-3 flex items-center border-b p-2",
+            "mb-3 flex cursor-pointer items-center border-b p-3.5",
             title ? "justify-between" : "justify-end",
           )}
         >
@@ -174,7 +174,7 @@ export default function DismissibleDraggablePanel({
           </div>
         </div>
       )}
-      {children}
+      <div className="min-h-0 flex-1">{children}</div>
     </motion.div>
   );
 }

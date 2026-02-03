@@ -3,8 +3,8 @@ import {
   Conversation,
   ConversationContent,
   ConversationEmptyState,
+  ConversationScrollButton,
 } from "./ui/conversation";
-import { Monitor, X } from "lucide-react";
 import { Message, MessageContent } from "./ui/message";
 
 export interface IChatMessage {
@@ -30,9 +30,8 @@ export default function ChatHistory({
   emptyDescription,
 }: IChatHistory) {
   return (
-    <div>
-      <Conversation className={className}>
-        {/*     {chatMessages.map((message) => {
+    <Conversation className={cn("h-full", className)}>
+      {/*     {chatMessages.map((message) => {
         // 날짜 객체 안전하게 생성
         const date = new Date(message.timestamp);
         const isValidDate = !isNaN(date.getTime());
@@ -62,28 +61,26 @@ export default function ChatHistory({
           </div>
         );
       })} */}
-        <ConversationContent>
-          {chatMessages.length === 0 ? (
-            <ConversationEmptyState
-              title={emptyMessage || "대화 내역이 없습니다"}
-              description={
-                emptyDescription || "아직 대화가 시작되지 않았습니다."
-              }
-            />
-          ) : (
-            <>
-              {chatMessages.map((message) => (
-                <Message
-                  from={message.role === "user" ? "user" : "assistant"}
-                  key={message.id}
-                >
-                  <MessageContent>{message.content}</MessageContent>
-                </Message>
-              ))}
-            </>
-          )}
-        </ConversationContent>
-      </Conversation>
-    </div>
+      <ConversationContent className="p-1.5 pb-3">
+        {chatMessages.length === 0 ? (
+          <ConversationEmptyState
+            title={emptyMessage || "대화 내역이 없습니다"}
+            description={emptyDescription || "아직 대화가 시작되지 않았습니다."}
+          />
+        ) : (
+          <>
+            {chatMessages.map((message) => (
+              <Message
+                from={message.role === "user" ? "user" : "assistant"}
+                key={message.id}
+              >
+                <MessageContent>{message.content}</MessageContent>
+              </Message>
+            ))}
+          </>
+        )}
+      </ConversationContent>
+      <ConversationScrollButton />
+    </Conversation>
   );
 }
