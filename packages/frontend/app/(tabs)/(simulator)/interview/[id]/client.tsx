@@ -135,25 +135,29 @@ export default function InterviewClient({
 
   // 인터뷰 시작 시: interviewId 기준으로 비디오 녹화 자동 시작
   const sessionRecordingInitRef = useRef(false);
+
   useEffect(() => {
     if (sessionRecordingInitRef.current) return;
     if (!videoStream) return;
     if (!sessionStream) return;
-    if (isSessionRecording) return;
 
     sessionRecordingInitRef.current = true;
     startSessionVideoRecording();
-
-    return () => {
-      void stopSessionVideoRecording();
-    };
   }, [
-    isSessionRecording,
-    sessionStream,
-    startSessionVideoRecording,
-    stopSessionVideoRecording,
     videoStream,
+    sessionStream,
+    isSessionRecording,
+    startSessionVideoRecording,
   ]);
+
+  // cleanup은 별도 useEffect로 분리 (컴포넌트 언마운트 시에만)
+  useEffect(() => {
+    return () => {
+      if (sessionRecordingInitRef.current) {
+        void stopSessionVideoRecording();
+      }
+    };
+  }, [stopSessionVideoRecording]);
 
   useEffect(() => {
     return () => {

@@ -78,7 +78,7 @@ export default function RecentRecording({
       <video
         src={url || ""}
         controls
-        preload="metadata"
+        preload="auto"
         className="aspect-video w-full rounded-lg bg-black"
         playsInline
         onError={() => {
