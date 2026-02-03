@@ -1,9 +1,20 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 
 export const useMediaPermissions = () => {
   // 비디오와 오디오 스트림을 완전히 분리하여 관리
   const [videoStream, setVideoStream] = useState<MediaStream | null>(null);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
+
+  const videoStreamRef = useRef<MediaStream | null>(null);
+  const audioStreamRef = useRef<MediaStream | null>(null);
+
+  useEffect(() => {
+    videoStreamRef.current = videoStream;
+  }, [videoStream]);
+
+  useEffect(() => {
+    audioStreamRef.current = audioStream;
+  }, [audioStream]);
 
   const [videoDeviceId, setVideoDeviceId] = useState<string | null>(null);
   const [audioDeviceId, setAudioDeviceId] = useState<string | null>(null);
@@ -19,12 +30,8 @@ export const useMediaPermissions = () => {
   const getMediaDevices = useCallback(async () => {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
-      setVideoDevices(
-        devices.filter((devices) => devices.kind === "videoinput"),
-      );
-      setAudioDevices(
-        devices.filter((devices) => devices.kind === "audioinput"),
-      );
+      setVideoDevices(devices.filter((device) => device.kind === "videoinput"));
+      setAudioDevices(devices.filter((device) => device.kind === "audioinput"));
     } catch (error) {
       setMediaError(error as Error);
     }
@@ -34,9 +41,13 @@ export const useMediaPermissions = () => {
   const requestVideo = useCallback(
     async (deviceId?: string) => {
       try {
-        if (videoStream) {
-          videoStream.getTracks().forEach((track) => track.stop());
+        if (!deviceId && videoStreamRef.current) {
+          return videoStreamRef.current;
         }
+
+        // 기존 스트림이 있으면 정리
+        videoStreamRef.current?.getTracks().forEach((track) => track.stop());
+
         const stream = await navigator.mediaDevices.getUserMedia({
           video: deviceId ? { deviceId: { exact: deviceId } } : true,
         });
@@ -54,16 +65,19 @@ export const useMediaPermissions = () => {
         return null;
       }
     },
-    [videoStream, getMediaDevices],
+    [getMediaDevices],
   );
 
   /** 오디오 권한 및 스트림 요청 */
   const requestAudio = useCallback(
     async (deviceId?: string) => {
       try {
-        if (audioStream) {
-          audioStream.getTracks().forEach((track) => track.stop());
+        if (!deviceId && audioStreamRef.current) {
+          return audioStreamRef.current;
         }
+
+        // 기존 스트림이 있으면 정리
+        audioStreamRef.current?.getTracks().forEach((track) => track.stop());
 
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: deviceId ? { deviceId: { exact: deviceId } } : true,
@@ -83,7 +97,7 @@ export const useMediaPermissions = () => {
         return null;
       }
     },
-    [audioStream, getMediaDevices],
+    [getMediaDevices],
   );
 
   /**  통합 권한 요청 (초기 설정용) */
@@ -109,13 +123,15 @@ export const useMediaPermissions = () => {
 
   /** 스트림 종료 (전체 또는 개별) */
   const stopMediaStream = useCallback(() => {
-    videoStream?.getTracks().forEach((track) => track.stop());
-    audioStream?.getTracks().forEach((track) => track.stop());
+    videoStreamRef.current?.getTracks().forEach((track) => track.stop());
+    audioStreamRef.current?.getTracks().forEach((track) => track.stop());
+    videoStreamRef.current = null;
+    audioStreamRef.current = null;
     setVideoStream(null);
     setAudioStream(null);
     setIsVideoEnabled(false);
     setIsAudioEnabled(false);
-  }, [videoStream, audioStream]);
+  }, []);
 
   // 트랙 상태 감시 (시스템에 의한 종료 대응)
   useEffect(() => {

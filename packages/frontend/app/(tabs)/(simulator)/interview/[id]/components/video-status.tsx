@@ -5,26 +5,20 @@ import { Aperture, CircleAlert, CircleCheck } from "lucide-react";
 
 import { useMediaPermissions } from "@/app/hooks/use-media-permissions";
 
-export default function VideoStatus() {
-  const {
-    requestVideo,
-    requestAudio,
-    videoStream,
-    audioStream,
-    hasAudioPermission,
-    isAudioEnabled,
-    hasVideoPermission,
-    isVideoEnabled,
-  } = useMediaPermissions();
-
+export function VideoStatusPanel({
+  videoStream,
+  hasVideoPermission,
+  isVideoEnabled,
+  hasAudioPermission,
+  isAudioEnabled,
+}: {
+  videoStream: MediaStream | null;
+  hasVideoPermission: boolean;
+  isVideoEnabled: boolean;
+  hasAudioPermission: boolean;
+  isAudioEnabled: boolean;
+}) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-
-  useEffect(() => {
-    if (requestAudio && requestVideo && !videoStream && !audioStream) {
-      requestVideo();
-      requestAudio();
-    }
-  }, [requestAudio, requestVideo, videoStream, audioStream]);
 
   useEffect(() => {
     if (videoRef.current && videoStream) {
@@ -41,7 +35,7 @@ export default function VideoStatus() {
             preview activate
           </span>
         </div>
-        <video ref={videoRef} autoPlay muted />
+        <video ref={videoRef} autoPlay muted playsInline />
       </div>
       <div className="mt-4 grid grid-cols-2 gap-3">
         <div className="flex justify-between rounded-xl border p-4">
@@ -70,5 +64,35 @@ export default function VideoStatus() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VideoStatus() {
+  const {
+    requestVideo,
+    requestAudio,
+    videoStream,
+    audioStream,
+    hasAudioPermission,
+    isAudioEnabled,
+    hasVideoPermission,
+    isVideoEnabled,
+  } = useMediaPermissions();
+
+  useEffect(() => {
+    if (requestAudio && requestVideo && !videoStream && !audioStream) {
+      requestVideo();
+      requestAudio();
+    }
+  }, [requestAudio, requestVideo, videoStream, audioStream]);
+
+  return (
+    <VideoStatusPanel
+      videoStream={videoStream}
+      hasVideoPermission={hasVideoPermission}
+      isVideoEnabled={isVideoEnabled}
+      hasAudioPermission={hasAudioPermission}
+      isAudioEnabled={isAudioEnabled}
+    />
   );
 }
