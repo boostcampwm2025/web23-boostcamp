@@ -1,7 +1,6 @@
 "use server";
 import { DocumentItem } from "@/app/(tabs)/(simulator)/components/document-card";
 import { getUserSession } from "../server/session";
-import { isApiMockEnabled } from "../server/env";
 
 import { z } from "zod";
 import { redirect } from "next/navigation";
@@ -10,11 +9,6 @@ import { formatIsoDateToDot } from "../utils";
 interface IQuestionAnswer {
   question: string;
   answer: string;
-}
-
-interface ICreateCoverLetterParameters {
-  title: string;
-  qa: IQuestionAnswer[];
 }
 
 interface ICreatePortfolioParameters {
@@ -67,10 +61,6 @@ export async function deleteDocumentsClientSideBulk(
   }
 
   const deletionPromises = documentIds.map(async (documentId) => {
-    if (isApiMockEnabled()) {
-      await new Promise((r) => setTimeout(r, 50));
-      return { documentId, isSuccess: true } as IDeleteDocumentResult;
-    }
     try {
       const document = documentsMap ? documentsMap[documentId] : undefined;
       const documentType = document?.type ?? "PORTFOLIO";
@@ -127,20 +117,19 @@ export async function createPortfolio(parameters: ICreatePortfolioParameters) {
     return redirect("/");
   }
 
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/document/portfolio/create`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user?.token}`,
-      },
-      body: JSON.stringify({
-        title: parameters.title,
-        content: parameters.content,
-      }),
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/document/portfolio/create`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${user?.token}`,
     },
-  );
+    body: JSON.stringify({
+      title: parameters.title,
+      content: parameters.content,
+    }),
+  });
 
   if (!response.ok) {
     throw new Error("포트폴리오 생성에 실패했습니다");
@@ -165,18 +154,6 @@ export async function getPortfolioDetail(documentId: string) {
 
   if (!user) {
     throw new Error("Unauthorized");
-  }
-
-  if (isApiMockEnabled()) {
-    return {
-      documentId,
-      type: "PORTFOLIO",
-      portfolioId: `mock-${documentId}`,
-      title: "모의 포트폴리오 제목",
-      content: "이것은 모의 포트폴리오 내용입니다.",
-      createdAt: new Date().toISOString(),
-      modifiedAt: new Date().toISOString(),
-    } as IPortfolioDetailResponse;
   }
 
   const response = await fetch(
@@ -205,20 +182,6 @@ export async function getCoverLetterDetail(documentId: string) {
 
   if (!user) {
     throw new Error("Unauthorized");
-  }
-
-  if (isApiMockEnabled()) {
-    return {
-      documentId,
-      coverLetterId: `mock-${documentId}`,
-      type: "COVER",
-      title: "모의 자기소개서",
-      content: [
-        { question: "자기소개", answer: "안녕하세요, 모의 지원자입니다." },
-      ],
-      createdAt: new Date().toISOString(),
-      modifiedAt: new Date().toISOString(),
-    } as ICoverLetterDetailResponse;
   }
 
   const response = await fetch(
@@ -252,10 +215,6 @@ export async function updatePortfolio(
     throw new Error("Unauthorized");
   }
 
-  if (isApiMockEnabled()) {
-    return { ...params, documentId } as IPortfolioDetailResponse;
-  }
-
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/document/${documentId}/portfolio`,
     {
@@ -286,10 +245,6 @@ export async function updateCoverLetter(
 
   if (!user) {
     throw new Error("Unauthorized");
-  }
-
-  if (isApiMockEnabled()) {
-    return { ...params, documentId } as ICoverLetterDetailResponse;
   }
 
   const response = await fetch(
@@ -344,16 +299,6 @@ export async function createCoverLetter(params: {
     return redirect("/");
   }
 
-  if (isApiMockEnabled()) {
-    return {
-      documentId: `mock-${Date.now()}`,
-      type: "COVER",
-      title: parseResult.data.title,
-      createdAt: formatIsoDateToDot(new Date().toISOString()),
-      modifiedAt: formatIsoDateToDot(new Date().toISOString()),
-    } as ICoverLetterDetailResponse;
-  }
-
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/document/cover-letter/create`,
     {
@@ -396,25 +341,6 @@ export async function getDocuments({
 
   if (!user) {
     return redirect("/");
-  }
-
-  if (isApiMockEnabled()) {
-    return {
-      documents: [
-        {
-          documentId: "mock-cover-1",
-          type: "COVER",
-          title: "모의 이력서 (샘플)",
-          createdAt: formatIsoDateToDot(new Date().toISOString()),
-        },
-        {
-          documentId: "mock-portfolio-1",
-          type: "PORTFOLIO",
-          title: "포트폴리오 예시",
-          createdAt: formatIsoDateToDot(new Date().toISOString()),
-        },
-      ],
-    } as IDocumentsResponse;
   }
 
   const res = await fetch(

@@ -1,7 +1,6 @@
 "use server";
 
 import { getUserSession } from "@/app/lib/server/session";
-import { isApiMockEnabled } from "@/app/lib/server/env";
 import { redirect } from "next/navigation";
 
 // API 응답 타입 정의
@@ -21,25 +20,6 @@ export async function getDocuments() {
 
   if (!user) {
     return redirect("/");
-  }
-
-  if (isApiMockEnabled()) {
-    return {
-      documents: [
-        {
-          documentId: "mock-cover-1",
-          type: "COVER",
-          title: "모의 이력서 (샘플)",
-          createdAt: new Date().toISOString(),
-        },
-        {
-          documentId: "mock-portfolio-1",
-          type: "PORTFOLIO",
-          title: "포트폴리오 예시",
-          createdAt: new Date().toISOString(),
-        },
-      ],
-    } as IDocumentResponse;
   }
 
   const res = await fetch(
