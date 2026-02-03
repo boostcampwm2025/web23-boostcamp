@@ -67,29 +67,22 @@ export function DocumentCard({
         )}
       >
         <CardContent className="flex h-full flex-col justify-between p-5">
-          {/* 호버 시 상단 overlay + 상세보기 버튼 */}
+          {/* 호버 시 상단 상세보기 버튼 */}
           <AnimatePresence>
             {isHovered && onDetailClick && (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
+                key="detail-button"
+                initial={{ y: -12, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -12, opacity: 0 }}
+                transition={{ duration: 0.15 }}
                 onClick={handleDetailClick}
-                className="absolute inset-0 z-30 flex cursor-pointer items-start justify-center bg-gradient-to-b from-emerald-500/90 to-emerald-500/50 pt-12"
+                className="absolute top-0 right-0 left-0 z-30 flex w-full cursor-pointer items-center justify-center gap-2 bg-emerald-600/95 px-4 py-3 shadow-lg"
               >
-                <motion.div
-                  initial={{ y: -8, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -8, opacity: 0 }}
-                  transition={{ duration: 0.2, delay: 0.05 }}
-                  className="flex items-center gap-2 rounded-lg bg-white px-4 py-2 shadow-lg"
-                >
-                  <Search className="h-4 w-4 text-emerald-600" />
-                  <span className="text-sm font-semibold text-emerald-600">
-                    상세보기
-                  </span>
-                </motion.div>
+                <Search className="h-4 w-4 text-white" />
+                <span className="text-sm font-semibold text-white">
+                  상세보기
+                </span>
               </motion.div>
             )}
           </AnimatePresence>
