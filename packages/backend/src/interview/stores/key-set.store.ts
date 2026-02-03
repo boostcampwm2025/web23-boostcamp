@@ -92,6 +92,7 @@ export class KeySetStore implements OnModuleInit {
    */
   clear(key: string): void {
     this.store.delete(key);
+    this.numberStore.delete(key);
     // 스케줄러에서도 제거
     this.scheduler.remove(key);
   }
