@@ -1,11 +1,11 @@
-import Header from "@/app/components/header";
+import { SidebarProvider } from "@/app/components/ui/sidebar";
+import { AppSidebar } from "./components/app-sidebar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <main>
-      <Header />
-
+    <SidebarProvider>
+      <AppSidebar />
       <main className="h-full w-full">{children}</main>
-    </main>
+    </SidebarProvider>
   );
 }

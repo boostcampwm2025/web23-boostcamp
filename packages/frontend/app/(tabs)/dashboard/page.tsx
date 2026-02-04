@@ -22,7 +22,7 @@ export default async function Page() {
     return redirect("/");
   }
 
-  const { interviews } = await getInterviews();
+  const interviews = await getInterviews();
 
   return (
     <div>
@@ -33,10 +33,11 @@ export default async function Page() {
         <div className="mt-8">
           <InterviewStartBox href="/interview/create" />
         </div>
-        <div className="mt-12">
-          {/* FIXME: 이후에 interview 리스트 가 없을경우 or [] 인경우 */}
-          <InterviewList interviews={interviews} />
-        </div>
+        {interviews.length > 0 && (
+          <div className="mt-12">
+            <InterviewList interviews={interviews} />
+          </div>
+        )}
         <div className="mt-12">
           <div className="rounded-2xl bg-primary/10 p-5">
             <Tip />
