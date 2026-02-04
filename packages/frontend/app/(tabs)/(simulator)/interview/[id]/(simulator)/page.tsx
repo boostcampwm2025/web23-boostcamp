@@ -1,8 +1,8 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { getHistory } from "./actions";
-import InterviewClient from "./client";
+import { getHistory } from "../actions";
+import InterviewClient from "../client";
 import { getUserSession } from "@/app/lib/server/session";
 
 export default async function Page({

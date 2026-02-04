@@ -5,9 +5,9 @@ import { saveVideo, saveAudio } from "@/app/lib/client/media-storage";
 // NOTE: MediaRecorder 인코딩 지원과 <video> 디코딩/재생 지원은 다를 수 있습니다.
 // 결과 페이지에서 재생 호환성을 높이기 위해 VP8+Opus를 우선합니다.
 const VIDEO_MIME_CANDIDATES = [
+  "video/webm;codecs=vp9,opus",
   "video/webm;codecs=vp8,opus",
   "video/webm",
-  "video/webm;codecs=vp9,opus",
 ];
 const AUDIO_MIME_CANDIDATES = [
   "audio/ogg;codecs=opus",

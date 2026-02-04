@@ -6,7 +6,7 @@ import IconBox from "@/app/components/ui/icon-box";
 import { getUserSession } from "@/app/lib/server/session";
 import { Button } from "@/app/components/ui/button";
 
-import VideoStatus from "../components/video-status";
+import VideoStatus from "@/app/(tabs)/(simulator)/interview/[id]/components/video-status";
 
 export default async function InterviewReadyPage() {
   const { user } = await getUserSession();
@@ -16,19 +16,19 @@ export default async function InterviewReadyPage() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-360 flex-col gap-8 lg:flex-row">
+    <div className="mx-auto flex w-full max-w-360 flex-col gap-8 px-5 lg:flex-row">
       {/* <InterviewClient history={history} /> */}
       <div className="flex-1">
         <VideoStatus />
       </div>
-      <div className="flex-1">
+      <div className="min-w-0 flex-1">
         <div className="flex w-fit items-center gap-2 rounded-sm bg-primary/20 px-2 py-1">
           <Sparkles className="size-3 text-primary" />
           <h5 className="text-xs font-semibold text-primary"> 준비 완료</h5>
         </div>
-        <div className="mt-4 flex flex-col gap-1 text-4xl font-bold text-pretty">
-          <h3>{user.email} 님,</h3>
-          <h3>준비되셨나요?</h3>
+        <div className="mt-4 flex min-w-0 flex-col gap-1 text-4xl font-bold text-pretty">
+          <span className="min-w-0 wrap-break-word">{user.email} 님,</span>
+          <span>준비되셨나요?</span>
         </div>
         <span className="mt-4 block text-base font-semibold text-muted-foreground">
           선택하신 정보를 바탕으로 직무 시뮬레이션이 준비되었습니다. 실제 면접과

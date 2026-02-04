@@ -2,10 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { DocumentItem } from "@/app/(tabs)/(simulator)/components/document-card";
-import {
-  createCoverLetter,
-  createPortfolio,
-} from "../../../lib/actions/document";
+import { createCoverLetter, createPortfolio } from "@/app/lib/actions/document";
 import { Button } from "@/app/components/ui/button";
 import {
   extractTextFromPdf,
@@ -16,7 +13,7 @@ import { motion } from "motion/react";
 import { CoverLetterForm } from "./cover-letter-form";
 import { PortfolioForm } from "./portfolio-form";
 
-const MAX_CONTENT_LENGTH = 30000; // 최대 3만자 제한
+const MAX_CONTENT_LENGTH = 8000; // 최대 8000 제한
 
 // OCR 마커 템플릿
 const getOcrMarker = (pageNum: number) => `[📄 페이지 ${pageNum} - OCR 추출]`;
@@ -184,7 +181,8 @@ export default function DocumentCreateModal({
     setIsLoading(true);
 
     try {
-      let createdDocument: DocumentItem | undefined = undefined;
+      let createdDocument: DocumentItem | { error: string } | undefined =
+        undefined;
       if (documentType === "COVER") {
         const result = await createCoverLetter({
           title,
@@ -207,7 +205,7 @@ export default function DocumentCreateModal({
         });
       }
 
-      if (!createdDocument) {
+      if (!createdDocument || "error" in createdDocument) {
         throw new Error("Document creation returned no data");
       }
 

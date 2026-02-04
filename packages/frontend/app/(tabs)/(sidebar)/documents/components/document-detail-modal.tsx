@@ -9,14 +9,14 @@ import {
   updatePortfolio,
   ICoverLetterDetailResponse,
   IPortfolioDetailResponse,
-} from "../../../lib/actions/document";
+} from "@/app/lib/actions/document";
 import { Button } from "@/app/components/ui/button";
 import { Card } from "@/app/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Plus, Trash2, AlertCircle, Save, X } from "lucide-react";
 import { formatIsoDateToDot } from "@/app/lib/utils";
 
-const MAX_CONTENT_LENGTH = 30000;
+const MAX_CONTENT_LENGTH = 8000;
 
 interface IProps {
   documentId: string | null;
@@ -43,6 +43,7 @@ export default function DocumentDetailModal({
   const [questionAnswerList, setQuestionAnswerList] = useState<
     IQuestionAnswer[]
   >([]);
+
   const [portfolioContent, setPortfolioContent] = useState("");
 
   const portfolioLength = portfolioContent.length;
@@ -208,7 +209,7 @@ export default function DocumentDetailModal({
                     </Button>
                   </div>
 
-                  <AnimatePresence mode="popLayout">
+                  <AnimatePresence mode="wait">
                     {questionAnswerList.map((item, index) => (
                       <motion.div
                         key={index}

@@ -5,7 +5,7 @@ import { Progress } from "@/app/components/ui/progress";
 import { IPdfExtractionProgress } from "@/app/lib/pdf-extractor";
 import { OcrInfoBox } from "./ocr-info-box";
 
-const MAX_CONTENT_LENGTH = 30000;
+const MAX_CONTENT_LENGTH = 8000; // 최대 8000자 제한
 
 interface PortfolioFormProps {
   portfolioContent: string;
