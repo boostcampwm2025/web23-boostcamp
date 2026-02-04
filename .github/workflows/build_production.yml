@@ -1,54 +1,46 @@
 name: Build and Push Production Image
 
 on:
-#  pull_request:
-#    types: [closed]
-#    branches: ["main"]
   push:
     branches: ["test/cicd"]
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Image tag version (e.g. v0.1.0)"
+        required: true
+        default: "v0.1.0"
 
 jobs:
   build-push:
-#    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Git tag 생성을 위해 필요
+      contents: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # 태그 푸시를 위해 전체 히스토리 필요
+          fetch-depth: 0
 
-      - name: Extract Version from PR Title
-        id: version
+      - name: Set VERSION (hardcoded/input)
         run: |
-          # PR 제목에서 버전 추출 (예: v1.0.0, Release v2.3.1)
-          PR_TITLE="${{ github.event.pull_request.title }}"
-          echo "PR Title: $PR_TITLE"
-          
-          # 정규식으로 vX.Y.Z 패턴 찾기
-          if [[ $PR_TITLE =~ v([0-9]+\.[0-9]+\.[0-9]+) ]]; then
-            VERSION="v${BASH_REMATCH[1]}"
-            echo "Extracted Version: $VERSION"
-            echo "VERSION=$VERSION" >> $GITHUB_ENV
-          else
-            echo "❌ No valid version found in PR title. Expected format like 'v1.0.0'."
-            VERSION="v0.1.0"
-            "VERSION=$VERSION" >> $GITHUB_ENV
-            exit 1
-          fi
+          VERSION="vTEST-DEPLOY"
+          echo "Using Hardcoded Version: $VERSION"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
 
       - name: Create and Push Git Tag
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # 태그 생성 및 푸시
-          git tag ${{ env.VERSION }}
-          git push origin ${{ env.VERSION }}
-          echo "✅ Git Tag ${{ env.VERSION }} created and pushed."
+
+          # 이미 태그가 있으면 실패하므로 방지 (원하면 전략 변경 가능)
+          if git rev-parse "${{ env.VERSION }}" >/dev/null 2>&1; then
+            echo "Tag already exists: ${{ env.VERSION }} (skip)"
+            exit 0
+          fi
+
+          git tag "${{ env.VERSION }}"
+          git push origin "${{ env.VERSION }}"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -60,7 +52,6 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Calculate Short SHA
-        id: vars
         run: echo "SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
 
       - name: Build and Push Image
