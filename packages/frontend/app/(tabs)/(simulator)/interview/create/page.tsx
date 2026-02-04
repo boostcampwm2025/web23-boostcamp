@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Plus } from "lucide-react";
+import { Loader2, Plus, ShieldCheck } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
@@ -17,6 +17,7 @@ import { useDocuments } from "@/app/hooks/documents/use-documents";
 import DocumentCreateModal from "@/app/(tabs)/documents/components/document-create-modal";
 import DocumentDetailModal from "@/app/(tabs)/documents/components/document-detail-modal";
 import { createTechInterview } from "./actions";
+import IconBox from "@/app/components/ui/icon-box";
 
 type InterviewMode = "live" | "tech";
 
@@ -107,7 +108,6 @@ export default function InterviewCreatePage() {
           시뮬레이션 정보를 입력하고 인터뷰에 활용할 서류를 지정하세요.
         </p>
       </header>
-
       <div className="space-y-12">
         {/* 1. 시뮬레이션 제목 */}
         <section className="flex flex-col items-start gap-3">
@@ -188,7 +188,7 @@ export default function InterviewCreatePage() {
           </div>
         </section>
 
-        <footer className="flex justify-end border-t pt-8">
+        <footer className="flex items-center justify-end border-t pt-8">
           <Button
             size="lg"
             className="h-14 cursor-pointer px-12 text-base font-bold shadow-md transition-all active:scale-95"
@@ -210,7 +210,18 @@ export default function InterviewCreatePage() {
           </Button>
         </footer>
       </div>
-
+      <div className="absolute bottom-8 left-1/2 flex w-lg -translate-x-1/2 gap-3 rounded-lg border px-4 py-6 shadow-sm">
+        <IconBox>
+          <ShieldCheck className="size-5 text-primary" />
+        </IconBox>
+        <div>
+          <h3 className="text-sm font-semibold">개인정보 및 보안 안내</h3>
+          <span className="text-xs text-muted-foreground">
+            서류는 면접 시뮬레이션(질문 생성/분석) 목적에만 활용되며, 보관 및
+            처리 과정은 보안 정책에 따라 보호됩니다.
+          </span>
+        </div>
+      </div>
       <DocumentCreateModal
         open={isDocModalOpen}
         onClose={() => setIsDocModalOpen(false)}
@@ -219,7 +230,6 @@ export default function InterviewCreatePage() {
           setIsDocModalOpen(false);
         }}
       />
-
       <DocumentDetailModal
         documentId={detailDocument?.documentId || null}
         documentType={detailDocument?.type || "PORTFOLIO"}
