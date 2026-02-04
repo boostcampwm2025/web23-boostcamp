@@ -1,5 +1,9 @@
 {
-  "moduleFileExtensions": ["js", "json", "ts"],
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
   "rootDir": ".",
   "testEnvironment": "node",
   "testRegex": ".blackbox-(test|spec).ts$",
@@ -11,10 +15,15 @@
   },
   "reporters": [
     "default",
-    ["jest-html-reporter", {
-      "pageTitle": "Blackbox Test Report",
-      "outputPath": "./blackbox-test-report.html",
-      "includeFailureMsg": true
-    }]
-  ]
+    [
+      "jest-html-reporter",
+      {
+        "pageTitle": "Blackbox Test Report",
+        "outputPath": "./blackbox-test-report.html",
+        "includeFailureMsg": true
+      }
+    ]
+  ],
+  "forceExit": true,
+  "detectOpenHandles": true
 }
