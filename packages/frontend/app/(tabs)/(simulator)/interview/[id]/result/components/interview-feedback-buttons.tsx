@@ -1,3 +1,4 @@
+/* TODO: 백엔드 like/dislike API 구현 후 활성화
 "use client";
 
 import { useState } from "react";
@@ -79,4 +80,9 @@ export default function InterviewFeedbackButtons({
       )}
     </div>
   );
+}
+*/
+
+export default function InterviewFeedbackButtons() {
+  return null;
 }

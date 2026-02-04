@@ -57,6 +57,7 @@ export async function startFeedback({
   return (await res.json()) as IFeedback;
 }
 
+/* TODO: 백엔드 API 구현 후 활성화
 export async function like({
   interviewId,
   userToken,
@@ -94,6 +95,7 @@ export async function dislike({
     },
   );
 }
+*/
 
 export async function deleteInterview({
   interviewId,

@@ -97,12 +97,14 @@ export default async function InterviewResultPage({
             <AISummary summary={feedbackResult.feedback || ""} />
           </Panel>
         </div>
+        {/* TODO: 백엔드 like/dislike API 구현 후 활성화
         <div className="mt-6">
           <InterviewFeedbackButtons
             interviewId={interviewId}
             userToken={user.token}
           />
         </div>
+        */}
         <div className="flex">
           <Panel className="flex-1 flex-row justify-start bg-primary/5 p-5">
             <Tip />
