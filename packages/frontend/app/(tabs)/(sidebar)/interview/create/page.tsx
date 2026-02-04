@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Plus, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Loader2, Plus, ShieldCheck } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
@@ -101,6 +101,17 @@ export default function InterviewCreatePage() {
   return (
     <div className="mx-auto w-full max-w-7xl px-6 py-12">
       <header className="mb-10 space-y-2">
+        <div>
+          <Button
+            type="button"
+            variant="ghost"
+            className="-ml-3 cursor-pointer px-3"
+            onClick={() => router.back()}
+          >
+            <ArrowLeft className="size-4" />
+            뒤로가기
+          </Button>
+        </div>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
           인터뷰 시뮬레이션 생성
         </h1>
