@@ -5,7 +5,7 @@ import ChatHistory from "@/app/components/chat-history";
 import { buildChatHistory } from "@/app/lib/client/chat";
 
 import { getFeedback, startFeedback } from "./actions";
-import { getHistory } from "../actions";
+import { getHistory } from "@/app/(tabs)/(simulator)/interview/[id]/actions";
 import RecentRecording from "./components/recent-recording";
 import Panel from "./components/panel";
 import Score from "./components/score";

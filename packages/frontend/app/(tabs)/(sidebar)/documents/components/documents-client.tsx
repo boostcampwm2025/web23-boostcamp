@@ -10,7 +10,7 @@ import {
 } from "@/app/(tabs)/(simulator)/components/document-card";
 import DocumentCreateModal from "./document-create-modal";
 import DocumentDetailModal from "./document-detail-modal";
-import { deleteDocumentsClientSideBulk } from "../../../lib/actions/document";
+import { deleteDocumentsClientSideBulk } from "@/app/lib/actions/document";
 
 interface Props {
   initialDocuments: DocumentItem[];
