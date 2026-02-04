@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-push:
-    if: github.event.pull_request.merged == true
+#    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: write # Git tag 생성을 위해 필요
@@ -35,6 +35,7 @@ jobs:
             echo "VERSION=$VERSION" >> $GITHUB_ENV
           else
             echo "❌ No valid version found in PR title. Expected format like 'v1.0.0'."
+            "VERSION=v0.1.0" >> $GITHUB_ENV
             exit 1
           fi
 
