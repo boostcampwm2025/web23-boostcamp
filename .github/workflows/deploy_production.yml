@@ -106,9 +106,9 @@ jobs:
             cd web23-PSI
             
             # 2. 최신 설정(docker-compose.prod.yml 등) 가져오기
-            git fetch origin main
-            git checkout main
-            git pull origin main
+#            git fetch origin main
+            git checkout develop
+#            git pull origin main
             
             # 3. 환경 변수 주입
             export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
