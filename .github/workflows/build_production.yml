@@ -1,14 +1,9 @@
 name: Build and Push Production Image
 
 on:
-  push:
-    branches: ["test/cicd"]
-  workflow_dispatch:
-    inputs:
-      version:
-        description: "Image tag version (e.g. v0.1.0)"
-        required: true
-        default: "v0.1.0"
+  pull_request:
+    types: [closed]
+    branches: ["main"]
 
 jobs:
   build-push:
