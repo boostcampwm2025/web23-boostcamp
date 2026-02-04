@@ -80,9 +80,9 @@ jobs:
             echo "Manual Trigger: Deploying version ${{ inputs.version }}"
             echo "TARGET_VERSION=${{ inputs.version }}" >> $GITHUB_ENV
           else
-            echo "Auto Trigger: Deploying hardcoded test version"
-            # 자동 배포는 항상 hardcoded version
-            echo "TARGET_VERSION=vTEST-DEPLOY" >> $GITHUB_ENV
+            echo "Auto Trigger: Deploying latest version"
+            # 자동 배포는 항상 latest (혹은 직전 빌드된 태그를 가져올 수도 있음)
+            echo "TARGET_VERSION=latest" >> $GITHUB_ENV
           fi
 
       - name: Deploy to Server components using SSH

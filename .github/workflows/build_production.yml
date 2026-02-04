@@ -22,11 +22,22 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set VERSION (hardcoded/input)
+      - name: Extract Version from PR Title
+        id: version
         run: |
-          VERSION="vTEST-DEPLOY"
-          echo "Using Hardcoded Version: $VERSION"
-          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          # PR 제목에서 버전 추출 (예: v1.0.0, Release v2.3.1)
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          echo "PR Title: $PR_TITLE"
+          
+          # 정규식으로 vX.Y.Z 패턴 찾기
+          if [[ $PR_TITLE =~ v([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+            VERSION="v${BASH_REMATCH[1]}"
+            echo "Extracted Version: $VERSION"
+            echo "VERSION=$VERSION" >> $GITHUB_ENV
+          else
+            echo "❌ No valid version found in PR title. Expected format like 'v1.0.0'."
+            exit 1
+          fi
 
       - name: Create and Push Git Tag
         run: |
