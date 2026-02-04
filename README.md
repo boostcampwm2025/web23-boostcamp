@@ -6,6 +6,8 @@
 
 실전과 같은 환경에서 내가 무엇을 모르는지(메타인지)를 발견하고, 경험을 구조적으로 설명하는 능력을 기를 수 있어요.
 
+<br>
+
 ## 기획 배경 및 목적
 
 취업 준비 과정에서 신입 개발자들은 기술 면접에 **큰 부담감**을 느끼고 있어요.
@@ -22,36 +24,63 @@
 
 여기에 더해 AI가 답변 내용을 분석하여 논리 전개, 구조화된 말하기, 전반적인 응답 흐름 등을 **루브릭 지표**로 평가하여 피드백함으로써, 보다 객관적인 면접 준비 경험을 제공하려고 노력하고 있어요.
 
+<br>
+
 ## 프로젝트 개발 기간
 
 `2025-01-05 ~ 2026-02-06`
+
+<br>
 
 ## 핵심 기능 소개
 
 ### 1. 면접 서류 등록
 
+
 > "나의 경험이 면접 질문이 됩니다."
 
 * **자기소개서 등록**: 지원자의 강점과 경험이 담긴 자기소개서를 등록하면, AI가 내용을 분석해 예상 질문을 추출합니다.
 
+ <img src="https://github.com/user-attachments/assets/2123af78-5778-4a9c-8ab6-d86c63fe598d" width="700" />
+
+<br>
+<br>
+
 * **포트폴리오 등록 (PDF 지원)**: PDF 포트폴리오를 업로드하면, 사용된 기술 스택과 문제 해결 과정을 파악하여 검증 질문을 생성합니다.
+
+ <img src="https://github.com/user-attachments/assets/7d576de2-e4ab-47f5-8a12-8af1fe278cb5" width="700" />
+
+ <br>
+ <br>
 
 ### 2. 음성으로 질문에 답변하기 (STT)
 
 > "실전처럼 말하면서 연습하세요."
 
+ <img src="https://github.com/user-attachments/assets/fb92ad04-ae6c-43b9-b5ee-d3bbf9680ae0" width="700" />
+
+<br>
+
+
 * **Real-time STT**: 사용자의 음성을 실시간으로 텍스트로 변환하여 AI 면접관과 자연스럽게 대화할 수 있습니다.
-  
+
 * **말하기 훈련**: 실제로 내뱉는 연습을 통해 면접장에서의 자신감을 키울 수 있습니다.
+
+<br>
 
 ### 3. 면접 피드백과 리플레이 보기
 
 > "나의 면접을 객관적으로 회고합니다."
-  
+
+<img src="https://github.com/user-attachments/assets/56292d2d-8bcd-4095-b1b5-afb9f6828bd2" width="700" />
+
+<br>
+
 * **AI 상세 피드백**: 답변의 논리성, 적절성, 구체성 등을 분석하여 구조화된 피드백 리포트를 제공합니다.
-  
+
 * **리플레이(Replay)**: 면접 녹화 영상을 통해 시선 처리, 표정, 말투 등 비언어적인 습관을 점검할 수 있습니다.
 
+<br>
 
 ## 배포주소
 
@@ -59,26 +88,33 @@
 
 **[배포주소](https://www.web23psi.shop/)**
 
+<br>
 
 ## 기술 스택
 
 * **Front-end**: `zod`, `iron-session`, `motion`, `tailwindcss`, `nextjs`, `chadcn`, `tw-animate-css`, `MSW`, `lucide-react`
-  
+
 * **Common**: `turbo`, `pnpm`, `eslint`, `prettier`
-  
+
 * **DevOps(CI/CD)**: `docker`, `docker-compose`, `github action`, `NCP (Naver Cloud Platform)`, `Vercel`
 
 * **Back-end**: `nest.js`, `TypeORM`, `typescript`, `mysql`, `clova studio`, `winston`
-  
+
 * **Collaboration**: `Slack`, `Github`
+
+<br>
 
 ## 시스템 아키텍처
 
 <img width="1024" height="379" alt="image" src="https://github.com/user-attachments/assets/38d7f75e-392e-4225-875d-6b517da45838" />
 
+<br>
+
 ## 기술적 고민
 
 > 팀에서 문제 해결 과정을 고민한 기록들입니다!
+
+<br>
 
 ### [FE] MSW와 환경변수로 프론트엔드-백엔드 개발 독립성 확보하기
 
@@ -93,6 +129,8 @@ Next.js의 Server/Client Component 혼재 환경에서 MSW만으로는 서버 �
 > 작성자: 임건혁
 >
 > [[FE] MSW와 환경변수로 프론트엔드-백엔드 개발 독립성 확보하기](https://github.com/boostcampwm2025/web23-PSI/wiki/%5BFE%5D-MSW%EC%99%80-%ED%99%98%EA%B2%BD%EB%B3%80%EC%88%98%EB%A1%9C-%ED%94%84%EB%A1%A0%ED%8A%B8%EC%97%94%EB%93%9C%E2%80%90%EB%B0%B1%EC%97%94%EB%93%9C-%EA%B0%9C%EB%B0%9C-%EB%8F%85%EB%A6%BD%EC%84%B1-%ED%99%95%EB%B3%B4%ED%95%98%EA%B8%B0)
+
+<br>
 
 ### [FE] PDF 텍스트 추출 - 서버 없이 브라우저만으로 텍스트 추출하기
 
@@ -109,3 +147,25 @@ PDF.js로 텍스트 레이어를 우선 추출하되, 이미지형 PDF의 경우
 > 작성자: 임건혁
 >
 > [[FE] PDF 텍스트 추출 - 서버 없이 브라우저만으로 텍스트 추출하기](https://github.com/boostcampwm2025/web23-PSI/wiki/%5BFE%5D-PDF-%ED%85%8D%EC%8A%A4%ED%8A%B8-%EC%B6%94%EC%B6%9C-%E2%80%90-%EC%84%9C%EB%B2%84-%EC%97%86%EC%9D%B4-%EB%B8%8C%EB%9D%BC%EC%9A%B0%EC%A0%80%EB%A7%8C%EC%9C%BC%EB%A1%9C-%ED%85%8D%EC%8A%A4%ED%8A%B8-%EC%B6%94%EC%B6%9C%ED%95%98%EA%B8%B0)
+
+<br>
+
+### [BE] Nest.js 커스텀 데코레이터로 컨트롤러 관심사 분리하기
+
+Nest.js 서버를 개발하며, 컨트롤러에서 인증된 사용자 정보를 직접 추출하는 코드가 여러 곳에 반복되는 문제를 겪었습니다.
+
+createParamDecorator()를 활용해 인증 사용자 정보 추출 로직을 커스텀 데코레이터로 분리하고, 컨트롤러의 책임을 명확히 한 과정을 소개합니다.
+
+> 작성자: 박영규
+> 
+> [[BE] Nest.js 커스텀 데코레이터로 컨트롤러 관심사 분리하기](https://github.com/boostcampwm2025/web23-PSI/wiki/%5BBE%5D-Nest.js-%EC%BB%A4%EC%8A%A4%ED%85%80-%EB%8D%B0%EC%BD%94%EB%A0%88%EC%9D%B4%ED%84%B0%EB%A1%9C-%EC%BB%A8%ED%8A%B8%EB%A1%A4%EB%9F%AC-%EA%B4%80%EC%8B%AC%EC%82%AC-%EB%B6%84%EB%A6%AC%ED%95%98%EA%B8%B0)
+
+<br>
+
+### [BE] 루브릭지표를 활용해 면접 피드백하기
+
+이 문서는 **Synapse**의 면접 피드백의 목적, LLM 모델 선택 이유, 그리고 루브릭(Rubric) 지표를 활용한 면접 평가 방식 어떻게 설계되고 구현되었는지를 소개합니다.
+
+> 작성자: 박영규
+>
+> [[BE] 루브릭지표를 활용해 면접 피드백하기](https://github.com/boostcampwm2025/web23-PSI/wiki/%5BBE%5D-%EB%A3%A8%EB%B8%8C%EB%A6%AD%EC%A7%80%ED%91%9C%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%B4-%EB%A9%B4%EC%A0%91-%ED%94%BC%EB%93%9C%EB%B0%B1%ED%95%98%EA%B8%B0)
