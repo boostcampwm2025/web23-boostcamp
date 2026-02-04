@@ -180,10 +180,10 @@ export class InterviewAIService {
               },
             ],
             thinking: { effort: 'none' },
-            topP: 0.1,
+            topP: 0.8,
             topK: 0,
             maxCompletionTokens: 1024,
-            temperature: 0.4,
+            temperature: 0.7,
             repeatPenalty: 1.1,
             seed: 0,
             responseFormat: {
