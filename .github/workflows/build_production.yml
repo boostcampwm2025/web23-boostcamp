@@ -7,16 +7,15 @@ on:
 
 jobs:
   build-push:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Git tag 생성을 위해 필요
+      contents: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # 태그 푸시를 위해 전체 히스토리 필요
+          fetch-depth: 0
 
       - name: Extract Version from PR Title
         id: version
@@ -39,11 +38,15 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # 태그 생성 및 푸시
-          git tag ${{ env.VERSION }}
-          git push origin ${{ env.VERSION }}
-          echo "✅ Git Tag ${{ env.VERSION }} created and pushed."
+
+          # 이미 태그가 있으면 실패하므로 방지 (원하면 전략 변경 가능)
+          if git rev-parse "${{ env.VERSION }}" >/dev/null 2>&1; then
+            echo "Tag already exists: ${{ env.VERSION }} (skip)"
+            exit 0
+          fi
+
+          git tag "${{ env.VERSION }}"
+          git push origin "${{ env.VERSION }}"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -55,7 +58,6 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Calculate Short SHA
-        id: vars
         run: echo "SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
 
       - name: Build and Push Image
