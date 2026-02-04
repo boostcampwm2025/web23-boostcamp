@@ -94,3 +94,26 @@ export async function dislike({
     },
   );
 }
+
+export async function deleteInterview({
+  interviewId,
+  userToken,
+}: {
+  interviewId: string;
+  userToken: string;
+}) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/interview/${interviewId}`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+    },
+  );
+
+  if (!res.ok) {
+    throw new Error("면접 삭제 실패");
+  }
+}
