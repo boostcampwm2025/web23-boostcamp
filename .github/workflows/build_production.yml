@@ -1,9 +1,12 @@
 name: Build and Push Production Image
 
 on:
-  pull_request:
-    types: [closed]
-    branches: ["main"]
+#  pull_request:
+#    types: [closed]
+#    branches: ["main"]
+  push:
+    branches: ["test/cicd"]
+  workflow_dispatch:
 
 jobs:
   build-push:
