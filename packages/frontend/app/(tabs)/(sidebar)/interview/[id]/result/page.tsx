@@ -11,6 +11,7 @@ import Panel from "./components/panel";
 import Score from "./components/score";
 import AISummary from "./components/ai-summary";
 import Tip from "./components/tip";
+import DeleteInterviewButton from "./components/delete-interview-button";
 import { getUserSession } from "@/app/lib/server/session";
 import { timeAgo } from "@/app/lib/utils";
 
@@ -24,10 +25,6 @@ export default async function InterviewResultPage({
   if (!user) {
     return redirect("/");
   }
-
-  // sleep(2000);
-
-  // await new Promise((resolve) => setTimeout(resolve, 1000000));
 
   const { id: interviewId } = await params;
   let history: Awaited<ReturnType<typeof getHistory>>["history"] = [];
@@ -99,22 +96,25 @@ export default async function InterviewResultPage({
             <AISummary summary={feedbackResult.feedback || ""} />
           </Panel>
         </div>
+        {/* TODO: 백엔드 like/dislike API 구현 후 활성화
+        <div className="mt-6">
+          <InterviewFeedbackButtons
+            interviewId={interviewId}
+            userToken={user.token}
+          />
+        </div>
+        */}
         <div className="flex">
           <Panel className="flex-1 flex-row justify-start bg-primary/5 p-5">
             <Tip />
           </Panel>
         </div>
-        {/*  <div className="mt-12 flex w-full items-center justify-between">
-          <span className="text-sm text-black/60">도움이 되었을까요?</span>
-          <div className="flex gap-2">
-            <Button className="cursor-pointer">
-              <Heart className="text-white" />
-            </Button>
-            <Button className="cursor-pointer">
-              <HeartOff className="text-white" />
-            </Button>
-          </div>
-        </div> */}
+        <div className="flex justify-end">
+          <DeleteInterviewButton
+            interviewId={interviewId}
+            userToken={user.token}
+          />
+        </div>
       </div>
     </div>
   );

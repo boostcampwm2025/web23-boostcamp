@@ -539,4 +539,28 @@ export const handlers = [
       { status: 200 },
     );
   }),
+
+  // 면접 삭제
+  http.delete(absolute(`/interview/:interviewId`), async () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
+  http.delete(`/interview/:interviewId`, async () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  // 피드백 좋아요
+  http.post(absolute(`/interview/:interviewId/feedback/like`), async () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
+  http.post(`/interview/:interviewId/feedback/like`, async () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  // 피드백 싫어요
+  http.post(absolute(`/interview/:interviewId/feedback/dislike`), async () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
+  http.post(`/interview/:interviewId/feedback/dislike`, async () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
 ];
