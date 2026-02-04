@@ -1,0 +1,17 @@
+services:
+  backend:
+    image: ${DOCKER_USERNAME}/web23-backend:${IMAGE_TAG}
+    container_name: web23-backend-prod
+    restart: always
+    environment:
+      - NODE_ENV=production
+    ports:
+      - '${PORT}:${PORT}'
+    env_file:
+      - .env
+    networks:
+      - web23-network-prod
+
+networks:
+  web23-network-prod:
+    driver: bridge

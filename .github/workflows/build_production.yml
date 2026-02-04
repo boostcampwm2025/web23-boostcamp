@@ -1,0 +1,72 @@
+name: Build and Push Production Image
+
+on:
+  pull_request:
+    types: [closed]
+    branches: ["main"]
+
+jobs:
+  build-push:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Git tag 생성을 위해 필요
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 태그 푸시를 위해 전체 히스토리 필요
+
+      - name: Extract Version from PR Title
+        id: version
+        run: |
+          # PR 제목에서 버전 추출 (예: v1.0.0, Release v2.3.1)
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          echo "PR Title: $PR_TITLE"
+          
+          # 정규식으로 vX.Y.Z 패턴 찾기
+          if [[ $PR_TITLE =~ v([0-9]+\.[0-9]+\.[0-9]+) ]]; then
+            VERSION="v${BASH_REMATCH[1]}"
+            echo "Extracted Version: $VERSION"
+            echo "VERSION=$VERSION" >> $GITHUB_ENV
+          else
+            echo "❌ No valid version found in PR title. Expected format like 'v1.0.0'."
+            exit 1
+          fi
+
+      - name: Create and Push Git Tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 태그 생성 및 푸시
+          git tag ${{ env.VERSION }}
+          git push origin ${{ env.VERSION }}
+          echo "✅ Git Tag ${{ env.VERSION }} created and pushed."
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Calculate Short SHA
+        id: vars
+        run: echo "SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+
+      - name: Build and Push Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: packages/backend/Dockerfile.dev
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/web23-backend:latest
+            ${{ secrets.DOCKER_USERNAME }}/web23-backend:${{ env.VERSION }}
+            ${{ secrets.DOCKER_USERNAME }}/web23-backend:sha-${{ env.SHORT_SHA }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
