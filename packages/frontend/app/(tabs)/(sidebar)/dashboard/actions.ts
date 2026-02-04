@@ -35,5 +35,7 @@ export async function getInterviews() {
 
   const json = (await res.json()) as { interviews: IInterview[] };
 
-  return json.interviews.filter((interview) => !isNaN(Number(interview.score)));
+  return json.interviews.filter(
+    (interview) => !isNaN(Number(interview.score)) && interview.score !== null,
+  );
 }
