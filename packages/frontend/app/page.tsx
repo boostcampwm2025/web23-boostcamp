@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import Header from "./components/header";
 import { getUserSession } from "./lib/server/session";
 import StatusBadge from "./components/ui/status-badge";
-import { Button } from "./components/ui/button";
 import GoogleLoginButton from "./(auth)/components/google-login-button";
 
 export default async function Home() {
@@ -23,9 +22,9 @@ export default async function Home() {
           <br /> Interview.
         </h1>
         <p className="text-center text-lg text-pretty text-muted-foreground">
-          단순한 연습을 넘어, AI 실시간 분석 엔진과 라이브 코딩 동기화 기술로
+          단순한 연습을 넘어, AI 실시간 분석과 맞춤형 질문으로
           <br />
-          당신의 기술적 역량을 정밀하게 측정하고 개선하세요.
+          당신의 기술 면접 역량을 정확히 진단하고 빠르게 개선하세요.
         </p>
         <div className="flex flex-col gap-4 sm:flex-row">
           <GoogleLoginButton />

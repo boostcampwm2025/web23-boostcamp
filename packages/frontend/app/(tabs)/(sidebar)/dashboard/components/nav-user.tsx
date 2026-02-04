@@ -1,4 +1,5 @@
 "use client";
+import { logout } from "@/app/(auth)/actions/auth";
 import {
   Avatar,
   AvatarFallback,
@@ -86,7 +87,7 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => logout()}>
               <LogOut />
               Log out
             </DropdownMenuItem>
