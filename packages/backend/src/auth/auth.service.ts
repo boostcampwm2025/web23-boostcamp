@@ -1,0 +1,54 @@
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { UserService } from '../user/user.service';
+import { GoogleOAuthService } from './google-oauth.service';
+import { JwtTokenProvider } from './jwt-token.provider';
+import { TokenResponse } from './dto/token-response.dto';
+
+@Injectable()
+export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly userService: UserService,
+    private readonly googleOAuthService: GoogleOAuthService,
+    private readonly jwtTokenProvider: JwtTokenProvider,
+  ) {}
+
+  async googleLogin(code: string): Promise<TokenResponse> {
+    const googleAccessToken =
+      await this.googleOAuthService.exchangeCodeForToken(code);
+    const userData =
+      await this.googleOAuthService.getUserInfo(googleAccessToken);
+
+    const email = userData.email;
+    const profileUrl = userData.profileUrl;
+    const sub = userData.sub;
+
+    // 기존에 회원이 존재하는지 찾는다.
+    let user = await this.userService.findOneBySub(sub);
+
+    // 신규 회원이라면 회원 정보를 DB에 등록한다.
+    if (!user) {
+      user = await this.userService.registerUser(email, profileUrl, sub);
+    }
+
+    const now = Date.now();
+    const refreshToken = await this.jwtTokenProvider.generateRefreshToken(
+      user.userId,
+      user.role,
+      now,
+    );
+
+    const accessToken = await this.jwtTokenProvider.generateAccessToken(
+      user.userId,
+      user.role,
+      now,
+    );
+
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+}

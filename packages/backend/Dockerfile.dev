@@ -1,0 +1,55 @@
+# -----------------------------------------------------------------------------
+# Stage 1: Builder - 의존성 설치 및 빌드
+# -----------------------------------------------------------------------------
+FROM node:22-alpine AS builder
+
+# 메모리 제한 설정 (1GB 서버 기준 안전장치)
+# OS 및 다른 프로세스(Docker 데몬 등)를 위해 약 500MB 여유를 두고, Node.js가 일찍 GC를 돌리도록 함
+ENV NODE_OPTIONS="--max-old-space-size=512"
+
+# pnpm 활성화
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+WORKDIR /app
+
+# 프로젝트 설정 파일들 복사 (캐시 활용을 위해 의존성 설치 전 수행)
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+
+# 백엔드 패키지 설정 복사
+COPY packages/backend/package.json ./packages/backend/
+
+# 의존성 설치 (메모리 절약을 위해 백엔드와 관련된 것만 필터링)
+# --frozen-lockfile: lock 파일과 불일치 시 에러 발생 (CI/CD 환경 권장)
+RUN pnpm install --filter backend --frozen-lockfile
+
+# 소스 코드 복사
+COPY packages/backend ./packages/backend
+
+# 애플리케이션 빌드
+RUN pnpm --filter backend build
+
+# 프로덕션 배포용 파일 추출
+# /app/deploy 경로에 실행에 필요한 node_modules와 빌드된 dist 파일들이 모입니다.
+# devDependencies는 제외되어 이미지 크기가 줄어듭니다.
+RUN pnpm --filter backend deploy --prod --legacy /app/deploy
+RUN cp -r packages/backend/dist /app/deploy/dist
+
+# -----------------------------------------------------------------------------
+# Stage 2: Runner - 실제 실행 환경 (가볍게 유지)
+# -----------------------------------------------------------------------------
+FROM node:22-alpine AS runner
+
+WORKDIR /app
+
+# 환경 변수를 프로덕션으로 설정하여 불필요한 개발 경고 로그 등을 억제
+ENV NODE_ENV=production
+
+# 빌더 단계에서 생성된 '가지치기된' 배포 파일들만 복사
+COPY --from=builder /app/deploy ./
+
+# 포트 노출
+EXPOSE 8000
+
+# NestJS는 빌드 후 dist/main.js로 실행하는 것이 가장 메모리 효율적
+# npm run start나 nest start 등을 거치지 않고 바로 node 프로세스 실행
+CMD ["node", "dist/main"]

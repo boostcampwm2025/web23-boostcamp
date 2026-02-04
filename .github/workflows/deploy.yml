@@ -1,0 +1,74 @@
+name: Deploy to Server
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Image"]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Server components using SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT }}
+          script: |
+            START_TIME=$(date +%s)
+            
+            # 1. 트리거된 정보 확인 (브랜치 및 커밋해시)
+            # workflow_run으로 실행된 경우 해당 정보 사용, 아니면 수동 실행으로 간주하고 develop/HEAD 사용
+            TARGET_BRANCH="${{ github.event.workflow_run.head_branch }}"
+            HEAD_SHA="${{ github.event.workflow_run.head_sha }}"
+            
+            if [ -z "$TARGET_BRANCH" ]; then TARGET_BRANCH="develop"; fi
+            if [ -z "$HEAD_SHA" ]; then 
+              # 수동 실행 시 현재 서버에 있는 git 기준 최신 해시 사용 (주의 필요)
+              HEAD_SHA=$(git rev-parse HEAD) 
+            fi
+
+            # 7자리 Short SHA 생성 -> 이미지 태그로 사용
+            SHORT_SHA=$(echo $HEAD_SHA | cut -c1-7)
+            IMAGE_TAG="sha-${SHORT_SHA}"
+
+            echo "🚀 Starting Deployment..."
+            echo "Target Branch: $TARGET_BRANCH"
+            echo "Target Image Tag: $IMAGE_TAG"
+
+            # 2. 프로젝트 디렉토리 준비
+            if [ ! -d "web23-PSI" ]; then
+              git clone https://github.com/boostcampwm2025/web23-PSI.git
+            fi
+            cd web23-PSI
+            
+            # 3. 최신 설정(docker-compose 등) 가져오기
+            # 해당 브랜치로 체크아웃
+            git fetch origin $TARGET_BRANCH
+            git checkout $TARGET_BRANCH
+            git pull origin $TARGET_BRANCH
+            
+            # 4. 환경 변수 주입 (Docker Compose가 참조함)
+            export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
+            export IMAGE_TAG=$IMAGE_TAG
+            
+            # 5. 배포 (이미지 Pull & Up)
+            echo "Download new image ($IMAGE_TAG)..."
+            docker-compose -f packages/backend/docker-compose.dev.yml pull
+            
+            echo "Deploy containers..."
+            # 혹시 모를 고아 컨테이너 방지(--remove-orphans)
+            docker-compose -f packages/backend/docker-compose.dev.yml up -d --remove-orphans
+            
+            # 6. 정리 (이전 버전 이미지 삭제)
+            docker image prune -a
+
+            END_TIME=$(date +%s)
+            DURATION=$((END_TIME - START_TIME))
+            echo "✅ Deployment Complete"
+            echo "⏱️ Time taken: ${DURATION} seconds"

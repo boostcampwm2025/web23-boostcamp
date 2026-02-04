@@ -1,0 +1,131 @@
+name: Deploy to Production Server
+
+on:
+  workflow_run:
+    workflows: ["Build and Push Production Image"]
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy (e.g. latest, v1.0.0, sha-xxxxxxx)'
+        required: true
+        default: 'latest'
+
+jobs:
+  verify-blackbox:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: test_db
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Run Blackbox Tests
+        run: |
+          cd packages/backend
+          npm run test:blackbox
+        env:
+          NODE_ENV: test
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_USERNAME: root
+          DB_PASSWORD: password
+          DB_DATABASE: test_db
+          # 필요한 다른 환경 변수들도 여기에 추가 (예: CLOVA API 등)
+          # 만약 블랙박스 테스트가 외부 API를 호출한다면 Secrets가 필요할 수 있음
+          CLOVA_SPEECH_API_URL: ${{ secrets.CLOVA_SPEECH_API_URL }}
+          CLOVA_SPEECH_API_KEY: ${{ secrets.CLOVA_SPEECH_API_KEY }}
+          CLOVA_API_URL: ${{ secrets.CLOVA_API_URL }}
+          CLOVA_API_KEY: ${{ secrets.CLOVA_API_KEY }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_ACCESS_TOKEN_EXPIRATION: 12h
+          JWT_REFRESH_TOKEN_EXPIRATION: 14d
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          OAUTH_REDIRECT_URI: http://localhost:8000/auth/signup/oauth
+
+
+  deploy:
+    needs: [verify-blackbox]
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine Version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "Manual Trigger: Deploying version ${{ inputs.version }}"
+            echo "TARGET_VERSION=${{ inputs.version }}" >> $GITHUB_ENV
+          else
+            echo "Auto Trigger: Deploying latest version"
+            # 자동 배포는 항상 latest (혹은 직전 빌드된 태그를 가져올 수도 있음)
+            echo "TARGET_VERSION=latest" >> $GITHUB_ENV
+          fi
+
+      - name: Deploy to Server components using SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PRODUCTION_SERVER_HOST }}
+          username: ${{ secrets.PRODUCTION_SERVER_USER }}
+          password: ${{ secrets.PRODUCTION_SERVER_PASSWORD }}
+          port: ${{ secrets.PRODUCTION_SERVER_PORT }}
+          script: |
+            START_TIME=$(date +%s)
+            IMAGE_TAG="${{ env.TARGET_VERSION }}"
+            
+            echo "🚀 Starting Production Deployment..."
+            echo "Target Image Tag: $IMAGE_TAG"
+            
+            # 1. 프로젝트 디렉토리 준비
+            if [ ! -d "web23-PSI" ]; then
+              git clone https://github.com/boostcampwm2025/web23-PSI.git
+            fi
+            cd web23-PSI
+            
+            # 2. 최신 설정(docker-compose.prod.yml 등) 가져오기
+            git fetch origin main
+            git checkout main
+            git pull origin main
+            
+            # 3. 환경 변수 주입
+            export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
+            export IMAGE_TAG=$IMAGE_TAG
+            # DB 정보 등은 .env 파일이 서버에 이미 존재한다고 가정하거나 Secrets에서 주입 필요
+            
+            # 4. 배포 (이미지 Pull & Up)
+            echo "Download new image ($IMAGE_TAG)..."
+            docker-compose -f packages/backend/docker-compose.prod.yml pull
+            
+            echo "Deploy containers..."
+            docker-compose -f packages/backend/docker-compose.prod.yml up -d --remove-orphans
+            
+            # 5. 정리 (이전 버전 이미지 삭제)
+            echo y | docker image prune -a -f
+            
+            END_TIME=$(date +%s)
+            DURATION=$((END_TIME - START_TIME))
+            echo "✅ Deployment Complete"
+            echo "⏱️ Time taken: ${DURATION} seconds"
