@@ -35,7 +35,8 @@ jobs:
             echo "VERSION=$VERSION" >> $GITHUB_ENV
           else
             echo "❌ No valid version found in PR title. Expected format like 'v1.0.0'."
-            "VERSION=v0.1.0" >> $GITHUB_ENV
+            VERSION="v0.1.0"
+            "VERSION=$VERSION" >> $GITHUB_ENV
             exit 1
           fi
 
