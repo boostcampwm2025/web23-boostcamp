@@ -19,8 +19,10 @@ export default async function SidebarLayout({
     <SidebarProvider defaultOpen={defaultOpen}>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex items-center gap-2 p-4">
-          <SidebarTrigger />
+        <header>
+          <div className="pt-4 pl-4">
+            <SidebarTrigger />
+          </div>
         </header>
         <main className="flex w-full flex-1 flex-col">{children}</main>
       </SidebarInset>
