@@ -35,10 +35,36 @@ export const handlers = [
         history: [
           {
             question: {
-              content: "What is your strongest skill?",
-              createdAt: new Date().toISOString(),
+              content: "가장 강점이라고 생각하는 기술은 무엇인가요?",
+              createdAt: new Date(Date.now() - 300000).toISOString(),
             },
-            answer: null,
+            answer: {
+              content:
+                "저의 가장 큰 강점은 문제 해결 능력입니다. 복잡한 문제를 작은 단위로 나누어 해결하는 것을 잘합니다.",
+              createdAt: new Date(Date.now() - 240000).toISOString(),
+            },
+          },
+          {
+            question: {
+              content: "가장 도전적이었던 프로젝트에 대해 말씀해주세요.",
+              createdAt: new Date(Date.now() - 180000).toISOString(),
+            },
+            answer: {
+              content:
+                "대규모 웹 애플리케이션의 성능 최적화 프로젝트를 진행했습니다. 수백만 명의 사용자를 위한 성능 개선이 핵심 목표였습니다.",
+              createdAt: new Date(Date.now() - 120000).toISOString(),
+            },
+          },
+          {
+            question: {
+              content: "촉박한 마감은 어떻게 처리하시나요?",
+              createdAt: new Date(Date.now() - 60000).toISOString(),
+            },
+            answer: {
+              content:
+                "작업의 우선순위를 정하고, 팀과 명확하게 소통하며, 가장 중요한 기능을 먼저 완성하는 데 집중합니다.",
+              createdAt: new Date(Date.now() - 30000).toISOString(),
+            },
           },
         ],
       } as IHistoryResponse,
@@ -51,10 +77,36 @@ export const handlers = [
         history: [
           {
             question: {
-              content: "What is your strongest skill?",
-              createdAt: new Date().toISOString(),
+              content: "가장 강점이라고 생각하는 기술은 무엇인가요?",
+              createdAt: new Date(Date.now() - 300000).toISOString(),
             },
-            answer: null,
+            answer: {
+              content:
+                "저의 가장 큰 강점은 문제 해결 능력입니다. 복잡한 문제를 작은 단위로 나누어 해결하는 것을 잘합니다.",
+              createdAt: new Date(Date.now() - 240000).toISOString(),
+            },
+          },
+          {
+            question: {
+              content: "가장 도전적이었던 프로젝트에 대해 말씀해주세요.",
+              createdAt: new Date(Date.now() - 180000).toISOString(),
+            },
+            answer: {
+              content:
+                "대규모 웹 애플리케이션의 성능 최적화 프로젝트를 진행했습니다. 수백만 명의 사용자를 위한 성능 개선이 핵심 목표였습니다.",
+              createdAt: new Date(Date.now() - 120000).toISOString(),
+            },
+          },
+          {
+            question: {
+              content: "촉박한 마감은 어떻게 처리하시나요?",
+              createdAt: new Date(Date.now() - 60000).toISOString(),
+            },
+            answer: {
+              content:
+                "작업의 우선순위를 정하고, 팀과 명확하게 소통하며, 가장 중요한 기능을 먼저 완성하는 데 집중합니다.",
+              createdAt: new Date(Date.now() - 30000).toISOString(),
+            },
           },
         ],
       } as IHistoryResponse,
@@ -95,7 +147,7 @@ export const handlers = [
     return HttpResponse.json(
       {
         questionId: `q-${Date.now()}`,
-        question: "Explain event loop.",
+        question: "JavaScript의 이벤트 루프에 대해 설명해주세요.",
         isLast: false,
         createdAt: new Date().toISOString(),
       } as IGenerateQuestion,
@@ -106,7 +158,7 @@ export const handlers = [
     return HttpResponse.json(
       {
         questionId: `q-${Date.now()}`,
-        question: "Explain event loop.",
+        question: "JavaScript의 이벤트 루프에 대해 설명해주세요.",
         isLast: false,
         createdAt: new Date().toISOString(),
       } as IGenerateQuestion,
@@ -205,6 +257,8 @@ export const handlers = [
     return HttpResponse.json(
       {
         documentId: "mock-portfolio-1",
+        type: "PORTFOLIO",
+        portfolioId: "mock-portfolio-id-1",
         title: "포트폴리오",
         content: "포트폴리오 내용입니다.",
         createdAt: new Date().toISOString(),
@@ -217,6 +271,8 @@ export const handlers = [
     return HttpResponse.json(
       {
         documentId: "mock-portfolio-1",
+        type: "PORTFOLIO",
+        portfolioId: "mock-portfolio-id-1",
         title: "포트폴리오",
         content: "포트폴리오 내용입니다.",
         createdAt: new Date().toISOString(),
@@ -227,11 +283,36 @@ export const handlers = [
   }),
 
   // 포트폴리오 수정
-  http.patch(absolute(`/document/:documentId/portfolio`), async () => {
-    return HttpResponse.json({ success: true }, { status: 200 });
-  }),
-  http.patch(`/document/:documentId/portfolio`, async () => {
-    return HttpResponse.json({ success: true }, { status: 200 });
+  http.patch(
+    absolute(`/document/:documentId/portfolio`),
+    async ({ params }) => {
+      return HttpResponse.json(
+        {
+          documentId: params.documentId,
+          type: "PORTFOLIO",
+          portfolioId: "mock-portfolio-id-1",
+          title: "수정된 포트폴리오",
+          content: "수정된 내용입니다.",
+          createdAt: new Date(Date.now() - 86400000).toISOString(),
+          modifiedAt: new Date().toISOString(),
+        },
+        { status: 200 },
+      );
+    },
+  ),
+  http.patch(`/document/:documentId/portfolio`, async ({ params }) => {
+    return HttpResponse.json(
+      {
+        documentId: params.documentId,
+        type: "PORTFOLIO",
+        portfolioId: "mock-portfolio-id-1",
+        title: "수정된 포트폴리오",
+        content: "수정된 내용입니다.",
+        createdAt: new Date(Date.now() - 86400000).toISOString(),
+        modifiedAt: new Date().toISOString(),
+      },
+      { status: 200 },
+    );
   }),
 
   // 포트폴리오 삭제
@@ -247,8 +328,10 @@ export const handlers = [
     return HttpResponse.json(
       {
         documentId: "mock-cover-1",
+        coverLetterId: "mock-cover-letter-1",
+        type: "COVER",
         title: "자기소개서",
-        qa: [
+        content: [
           { question: "지원 동기는?", answer: "열정적으로 일하고 싶습니다." },
         ],
         createdAt: new Date().toISOString(),
@@ -261,8 +344,10 @@ export const handlers = [
     return HttpResponse.json(
       {
         documentId: "mock-cover-1",
+        coverLetterId: "mock-cover-letter-1",
+        type: "COVER",
         title: "자기소개서",
-        qa: [
+        content: [
           { question: "지원 동기는?", answer: "열정적으로 일하고 싶습니다." },
         ],
         createdAt: new Date().toISOString(),
@@ -273,11 +358,40 @@ export const handlers = [
   }),
 
   // 자기소개서 수정
-  http.put(absolute(`/document/:documentId/cover-letter`), async () => {
-    return HttpResponse.json({ success: true }, { status: 200 });
-  }),
-  http.put(`/document/:documentId/cover-letter`, async () => {
-    return HttpResponse.json({ success: true }, { status: 200 });
+  http.put(
+    absolute(`/document/:documentId/cover-letter`),
+    async ({ params }) => {
+      return HttpResponse.json(
+        {
+          documentId: params.documentId,
+          coverLetterId: "mock-cover-letter-1",
+          type: "COVER",
+          title: "수정된 자기소개서",
+          content: [
+            { question: "지원 동기는?", answer: "열정적으로 일하고 싶습니다." },
+          ],
+          createdAt: new Date(Date.now() - 86400000).toISOString(),
+          modifiedAt: new Date().toISOString(),
+        },
+        { status: 200 },
+      );
+    },
+  ),
+  http.put(`/document/:documentId/cover-letter`, async ({ params }) => {
+    return HttpResponse.json(
+      {
+        documentId: params.documentId,
+        coverLetterId: "mock-cover-letter-1",
+        type: "COVER",
+        title: "수정된 자기소개서",
+        content: [
+          { question: "지원 동기는?", answer: "열정적으로 일하고 싶습니다." },
+        ],
+        createdAt: new Date(Date.now() - 86400000).toISOString(),
+        modifiedAt: new Date().toISOString(),
+      },
+      { status: 200 },
+    );
   }),
 
   // 자기소개서 삭제
@@ -313,13 +427,21 @@ export const handlers = [
   // 피드백 생성
   http.post(absolute(`/interview/feedback`), async () => {
     return HttpResponse.json(
-      { feedbackId: `feedback-${Date.now()}` },
+      {
+        score: "85",
+        feedback:
+          "전반적으로 좋은 답변이었습니다. 명확한 설명과 논리적 사고가 돋보였습니다.",
+      },
       { status: 200 },
     );
   }),
   http.post(`/interview/feedback`, async () => {
     return HttpResponse.json(
-      { feedbackId: `feedback-${Date.now()}` },
+      {
+        score: "85",
+        feedback:
+          "전반적으로 좋은 답변이었습니다. 명확한 설명과 논리적 사고가 돋보였습니다.",
+      },
       { status: 200 },
     );
   }),
@@ -336,10 +458,9 @@ export const handlers = [
   http.get(absolute(`/interview/:interviewId/feedback`), async () => {
     return HttpResponse.json(
       {
-        feedback: "전반적으로 좋은 답변이었습니다.",
-        score: 85,
-        strengths: ["명확한 설명", "논리적 사고"],
-        improvements: ["구체적인 예시 추가"],
+        score: "85",
+        feedback:
+          "전반적으로 좋은 답변이었습니다. 명확한 설명과 논리적 사고가 돋보였습니다.",
       },
       { status: 200 },
     );
@@ -347,10 +468,9 @@ export const handlers = [
   http.get(`/interview/:interviewId/feedback`, async () => {
     return HttpResponse.json(
       {
-        feedback: "전반적으로 좋은 답변이었습니다.",
-        score: 85,
-        strengths: ["명확한 설명", "논리적 사고"],
-        improvements: ["구체적인 예시 추가"],
+        score: "85",
+        feedback:
+          "전반적으로 좋은 답변이었습니다. 명확한 설명과 논리적 사고가 돋보였습니다.",
       },
       { status: 200 },
     );
@@ -364,10 +484,26 @@ export const handlers = [
           {
             interviewId: "mock-interview-1",
             title: "기술 면접 시뮬레이션",
-            createdAt: new Date().toISOString(),
-            status: "completed",
+            type: "TECH",
+            createdAt: new Date(Date.now() - 86400000).toISOString(),
+            score: "85",
+          },
+          {
+            interviewId: "mock-interview-2",
+            title: "프론트엔드 면접",
+            type: "TECH",
+            createdAt: new Date(Date.now() - 172800000).toISOString(),
+            score: "92",
+          },
+          {
+            interviewId: "mock-interview-3",
+            title: "React 전문가 면접",
+            type: "TECH",
+            createdAt: new Date(Date.now() - 259200000).toISOString(),
+            score: "78",
           },
         ],
+        totalPage: 1,
       },
       { status: 200 },
     );
@@ -379,12 +515,52 @@ export const handlers = [
           {
             interviewId: "mock-interview-1",
             title: "기술 면접 시뮬레이션",
-            createdAt: new Date().toISOString(),
-            status: "completed",
+            type: "TECH",
+            createdAt: new Date(Date.now() - 86400000).toISOString(),
+            score: "85",
+          },
+          {
+            interviewId: "mock-interview-2",
+            title: "프론트엔드 면접",
+            type: "TECH",
+            createdAt: new Date(Date.now() - 172800000).toISOString(),
+            score: "92",
+          },
+          {
+            interviewId: "mock-interview-3",
+            title: "React 전문가 면접",
+            type: "TECH",
+            createdAt: new Date(Date.now() - 259200000).toISOString(),
+            score: "78",
           },
         ],
+        totalPage: 1,
       },
       { status: 200 },
     );
+  }),
+
+  // 면접 삭제
+  http.delete(absolute(`/interview/:interviewId`), async () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
+  http.delete(`/interview/:interviewId`, async () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  // 피드백 좋아요
+  http.post(absolute(`/interview/:interviewId/feedback/like`), async () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
+  http.post(`/interview/:interviewId/feedback/like`, async () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
+
+  // 피드백 싫어요
+  http.post(absolute(`/interview/:interviewId/feedback/dislike`), async () => {
+    return new HttpResponse(null, { status: 204 });
+  }),
+  http.post(`/interview/:interviewId/feedback/dislike`, async () => {
+    return new HttpResponse(null, { status: 204 });
   }),
 ];
