@@ -11,7 +11,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   return (
-    <div className="flex size-full flex-col items-center justify-center gap-6 p-4">
+    <div className="flex h-dvh flex-col items-center justify-center gap-6 p-4">
       <MountainSnow className="size-12 text-primary" />
 
       <div className="text-center">

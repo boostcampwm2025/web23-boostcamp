@@ -54,7 +54,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PSI",
+  title: "SYNAPSE - AI 면접 연습 플랫폼",
   description: "AI 기반 면접 연습 플랫폼으로 기술 면접을 완벽하게 준비하세요",
 };
 

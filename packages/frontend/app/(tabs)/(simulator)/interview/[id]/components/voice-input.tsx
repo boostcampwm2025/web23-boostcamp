@@ -64,10 +64,7 @@ export default function VoiceInput({
       )}
       <div className="flex gap-0.5">
         <ActionButton onClick={onCancel} icon={<X />} />
-        <ActionButton
-          icon={<Send className={isRecording ? "text-red-500" : undefined} />}
-          onClick={onSend}
-        />
+        <ActionButton icon={<Send />} onClick={onSend} />
       </div>
     </div>
   );
