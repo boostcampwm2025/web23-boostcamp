@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/app/components/ui/button";
+import { toast } from "react-hot-toast";
+import { useConfirm } from "@/app/components/confirm/ConfirmProvider";
 import { Trash, Plus } from "lucide-react";
 import {
   DocumentCard,
@@ -18,6 +20,7 @@ interface Props {
 
 export default function DocumentsClient({ initialDocuments }: Props) {
   const router = useRouter();
+  const showConfirm = useConfirm();
   const [documents, setDocuments] = useState<DocumentItem[]>(
     initialDocuments || [],
   );
@@ -69,7 +72,7 @@ export default function DocumentsClient({ initialDocuments }: Props) {
   async function handleDeleteDocuments() {
     if (selectedDocumentIds.size === 0) return;
 
-    const shouldProceed = window.confirm(
+    const shouldProceed = await showConfirm(
       `${selectedDocumentIds.size}개의 서류를 삭제하시겠습니까?`,
     );
     if (!shouldProceed) return;
@@ -102,13 +105,13 @@ export default function DocumentsClient({ initialDocuments }: Props) {
       });
 
       if (failedIds.length > 0) {
-        alert(`${failedIds.length}개 항목 삭제에 실패했습니다.`);
+        toast.error(`${failedIds.length}개 항목 삭제에 실패했습니다.`);
       }
 
       router.refresh();
     } catch (error) {
       console.error("Bulk deletion failed:", error);
-      alert("삭제 중 오류가 발생했습니다.");
+      toast.error("삭제 중 오류가 발생했습니다.");
     } finally {
       setIsLoading(false);
     }

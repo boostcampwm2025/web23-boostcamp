@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Loader2, Plus, ShieldCheck } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "@/app/components/ui/button";
+import { toast } from "react-hot-toast";
 import { Input } from "@/app/components/ui/input";
 import { cn } from "@/app/lib/utils";
 
@@ -84,7 +85,7 @@ export default function InterviewCreatePage() {
       router.push(`/interview/${interviewId}/ready`);
     } catch (error) {
       console.error("Error:", error);
-      alert("생성 중 오류가 발생했습니다.");
+      toast.error("생성 중 오류가 발생했습니다.");
     } finally {
       setIsSubmitting(false);
     }

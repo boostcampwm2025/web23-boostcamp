@@ -14,6 +14,7 @@ import { Button } from "@/app/components/ui/button";
 import { Card } from "@/app/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Plus, Trash2, AlertCircle, Save, X } from "lucide-react";
+import { toast } from "react-hot-toast";
 import { formatIsoDateToDot } from "@/app/lib/utils";
 
 const MAX_CONTENT_LENGTH = 8000;
@@ -70,7 +71,7 @@ export default function DocumentDetailModal({
         }
       } catch (error) {
         console.error("문서 조회 실패:", error);
-        alert("문서를 불러오는데 실패했습니다.");
+        toast.error("문서를 불러오는데 실패했습니다.");
         onClose();
       } finally {
         setIsLoading(false);
@@ -138,7 +139,7 @@ export default function DocumentDetailModal({
       onClose();
     } catch (error) {
       console.error("문서 수정 실패:", error);
-      alert("문서 수정에 실패했습니다.");
+      toast.error("문서 수정에 실패했습니다.");
     } finally {
       setIsSaving(false);
     }

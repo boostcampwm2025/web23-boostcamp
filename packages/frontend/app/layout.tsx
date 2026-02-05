@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import MSWWorker from "@/app/components/msw/Worker";
+import { Toaster } from "react-hot-toast";
+import ConfirmProvider from "@/app/components/confirm/ConfirmProvider";
 
 const pretendard = localFont({
   src: [
@@ -70,7 +72,8 @@ export default function RootLayout({
     >
       <body className={`${pretendard.className} bg-neutral-50`}>
         <MSWWorker />
-        {children}
+        <Toaster position="top-right" />
+        <ConfirmProvider>{children}</ConfirmProvider>
       </body>
     </html>
   );

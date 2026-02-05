@@ -9,6 +9,7 @@ import {
   IPdfExtractionProgress,
 } from "@/app/lib/pdf-extractor";
 import { X, FileText, Loader2 } from "lucide-react";
+import { toast } from "react-hot-toast";
 import { motion } from "motion/react";
 import { CoverLetterForm } from "./cover-letter-form";
 import { PortfolioForm } from "./portfolio-form";
@@ -124,7 +125,7 @@ export default function DocumentCreateModal({
   async function handlePdfUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file || file.type !== "application/pdf") {
-      alert("PDF 파일만 업로드 가능합니다.");
+      toast.error("PDF 파일만 업로드 가능합니다.");
       return;
     }
 
@@ -143,9 +144,14 @@ export default function DocumentCreateModal({
 
       // 글자수 초과 경고
       if (result.totalCharacters > MAX_CONTENT_LENGTH) {
-        alert(
-          `추출된 텍스트가 ${result.totalCharacters.toLocaleString()}자로 최대 허용 글자수(${MAX_CONTENT_LENGTH.toLocaleString()}자)를 초과합니다. 텍스트를 줄여주세요.`,
-        );
+        if (result.ocrUsedPages && result.ocrUsedPages.length > 0) {
+          setShowMarkerWarning(true);
+          textareaRef.current?.focus();
+        }
+      } else {
+        if (result.ocrUsedPages && result.ocrUsedPages.length > 0) {
+          setShowMarkerWarning(false);
+        }
       }
 
       // 파일 이름을 제목으로 설정 (확장자 제거)
@@ -154,7 +160,7 @@ export default function DocumentCreateModal({
       }
     } catch (error) {
       console.error("PDF 추출 실패:", error);
-      alert("PDF 텍스트 추출에 실패했습니다.");
+      toast.error("PDF 텍스트 추출에 실패했습니다.");
       setUploadProgress(null);
     } finally {
       setIsExtracting(false);
@@ -212,7 +218,7 @@ export default function DocumentCreateModal({
       onCreate(createdDocument);
       onClose();
     } catch {
-      alert("문서 생성에 실패했습니다.");
+      toast.error("문서 생성에 실패했습니다.");
     } finally {
       setIsLoading(false);
       setTitle("");
