@@ -107,10 +107,25 @@ export async function deleteDocumentsClientSideBulk(
   return { successIds, failedIds } as IDeleteDocumentsResponse;
 }
 
+const portfolioSchema = z.object({
+  title: z.string().min(1).max(100),
+  content: z
+    .string()
+    .min(1)
+    .max(8000, "포트폴리오 내용은 최대 8000자까지 작성할 수 있습니다."),
+});
+
 /**
  * 새 포트폴리오를 생성하는 함수
  */
 export async function createPortfolio(parameters: ICreatePortfolioParameters) {
+  const parseResult = portfolioSchema.safeParse(parameters);
+  if (!parseResult.success) {
+    return {
+      error: "INVALID_PARAMETERS",
+    } as { error: string };
+  }
+
   const { user } = await getUserSession();
 
   if (!user) {
