@@ -36,17 +36,16 @@
 
 ### 1. 면접 서류 등록
 
-
 > "나의 경험이 면접 질문이 됩니다."
 
-* **자기소개서 등록**: 지원자의 강점과 경험이 담긴 자기소개서를 등록하면, AI가 내용을 분석해 예상 질문을 추출합니다.
+- **자기소개서 등록**: 지원자의 강점과 경험이 담긴 자기소개서를 등록하면, AI가 내용을 분석해 예상 질문을 추출합니다.
 
  <img src="https://github.com/user-attachments/assets/2123af78-5778-4a9c-8ab6-d86c63fe598d" width="700" />
 
 <br>
 <br>
 
-* **포트폴리오 등록 (PDF 지원)**: PDF 포트폴리오를 업로드하면, 사용된 기술 스택과 문제 해결 과정을 파악하여 검증 질문을 생성합니다.
+- **포트폴리오 등록 (PDF 지원)**: PDF 포트폴리오를 업로드하면, 사용된 기술 스택과 문제 해결 과정을 파악하여 검증 질문을 생성합니다.
 
  <img src="https://github.com/user-attachments/assets/7d576de2-e4ab-47f5-8a12-8af1fe278cb5" width="700" />
 
@@ -61,10 +60,9 @@
 
 <br>
 
+- **Real-time STT**: 사용자의 음성을 실시간으로 텍스트로 변환하여 AI 면접관과 자연스럽게 대화할 수 있습니다.
 
-* **Real-time STT**: 사용자의 음성을 실시간으로 텍스트로 변환하여 AI 면접관과 자연스럽게 대화할 수 있습니다.
-
-* **말하기 훈련**: 실제로 내뱉는 연습을 통해 면접장에서의 자신감을 키울 수 있습니다.
+- **말하기 훈련**: 실제로 내뱉는 연습을 통해 면접장에서의 자신감을 키울 수 있습니다.
 
 <br>
 
@@ -76,9 +74,9 @@
 
 <br>
 
-* **AI 상세 피드백**: 답변의 논리성, 적절성, 구체성 등을 분석하여 구조화된 피드백 리포트를 제공합니다.
+- **AI 상세 피드백**: 답변의 논리성, 적절성, 구체성 등을 분석하여 구조화된 피드백 리포트를 제공합니다.
 
-* **리플레이(Replay)**: 면접 녹화 영상을 통해 시선 처리, 표정, 말투 등 비언어적인 습관을 점검할 수 있습니다.
+- **리플레이(Replay)**: 면접 녹화 영상을 통해 시선 처리, 표정, 말투 등 비언어적인 습관을 점검할 수 있습니다.
 
 <br>
 
@@ -92,15 +90,15 @@
 
 ## 기술 스택
 
-* **Front-end**: `zod`, `iron-session`, `motion`, `tailwindcss`, `nextjs`, `chadcn`, `tw-animate-css`, `MSW`, `lucide-react`
+- **Front-end**: `zod`, `iron-session`, `motion`, `tailwindcss`, `nextjs`, `chadcn`, `tw-animate-css`, `MSW`, `lucide-react`
 
-* **Common**: `turbo`, `pnpm`, `eslint`, `prettier`
+- **Common**: `turbo`, `pnpm`, `eslint`, `prettier`
 
-* **DevOps(CI/CD)**: `docker`, `docker-compose`, `github action`, `NCP (Naver Cloud Platform)`, `Vercel`
+- **DevOps(CI/CD)**: `docker`, `docker-compose`, `github action`, `NCP (Naver Cloud Platform)`, `Vercel`
 
-* **Back-end**: `nest.js`, `TypeORM`, `typescript`, `mysql`, `clova studio`, `winston`
+- **Back-end**: `nest.js`, `TypeORM`, `typescript`, `mysql`, `clova studio`, `winston`
 
-* **Collaboration**: `Slack`, `Github`
+- **Collaboration**: `Slack`, `Github`
 
 <br>
 
@@ -157,7 +155,7 @@ Nest.js 서버를 개발하며, 컨트롤러에서 인증된 사용자 정보를
 createParamDecorator()를 활용해 인증 사용자 정보 추출 로직을 커스텀 데코레이터로 분리하고, 컨트롤러의 책임을 명확히 한 과정을 소개합니다.
 
 > 작성자: 박영규
-> 
+>
 > [[BE] Nest.js 커스텀 데코레이터로 컨트롤러 관심사 분리하기](https://github.com/boostcampwm2025/web23-PSI/wiki/%5BBE%5D-Nest.js-%EC%BB%A4%EC%8A%A4%ED%85%80-%EB%8D%B0%EC%BD%94%EB%A0%88%EC%9D%B4%ED%84%B0%EB%A1%9C-%EC%BB%A8%ED%8A%B8%EB%A1%A4%EB%9F%AC-%EA%B4%80%EC%8B%AC%EC%82%AC-%EB%B6%84%EB%A6%AC%ED%95%98%EA%B8%B0)
 
 <br>
@@ -169,3 +167,54 @@ createParamDecorator()를 활용해 인증 사용자 정보 추출 로직을 커
 > 작성자: 박영규
 >
 > [[BE] 루브릭지표를 활용해 면접 피드백하기](https://github.com/boostcampwm2025/web23-PSI/wiki/%5BBE%5D-%EB%A3%A8%EB%B8%8C%EB%A6%AD%EC%A7%80%ED%91%9C%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%B4-%EB%A9%B4%EC%A0%91-%ED%94%BC%EB%93%9C%EB%B0%B1%ED%95%98%EA%B8%B0)
+
+<br>
+
+### [BE] 무결점 배포를 위한 품질 게이트 - CI 통합 E2E 테스트 인프라 구축
+
+PSI 프로젝트는 모노레포 구조 내에서 백엔드와 프론트엔드가 긴밀하게 상호작용하는 환경으로, 로컬과 배포 환경(Staging/Production)의 불일치로 인한 'Flaky Test'와 데이터 간섭 문제가 빈번했습니다. 이를 해결하기 위해 CI 파이프라인 내에 프로덕션과 동일한 MySQL Service Container를 통합하고, 외래 키 제약 조건을 무시하며 데이터를 원자적으로 초기화하는 seed-db 유틸리티를 구현하여 완전한 환경 격리를 달성했습니다.
+
+또한, 런타임 에러를 방지하기 위해 NestJS의 ValidationPipe를 엄격하게 설정(Whitelist/ForbidNonWhitelisted)하여, 잘못된 데이터가 비즈니스 로직에 진입하기 전에 차단하는 Fail Fast 전략을 구축했습니다.
+
+비록 CI 실행 속도가 다소 느려지는 Trade-off가 있었으나, "내 로컬에서는 되는데"라는 불확실성을 제거하고 CI 파이프라인 통과가 곧 배포 안정성을 보장하는 무결점 배포 문화를 정착시켰습니다.
+
+> 작성자: 임장혁
+>
+> [[BE] 무결점 배포를 위한 품질 게이트 - CI 통합 E2E 테스트 인프라 구축](https://github.com/boostcampwm2025/web23-Synapse/wiki/%5BBE%5D-무결점-배포를-위한-품질-게이트)
+
+<br>
+
+### [BE] 실시간 세션 스케줄링 - Min-Heap 자료구조를 활용한 세션 TTL 관리
+
+PSI의 AI 면접 시스템은 세션 정보의 정리를 위해 실시간 타임아웃(TTL)을 관리해야 합니다. 하지만 개별 세션마다 setTimeout을 생성하는 기존 방식은 Node.js 이벤트 루프에 과부하(Starvation)를 일으키고 정밀도를 떨어뜨리는 문제가 있었습니다.
+
+이를 해결하기 위해 Min-Heap(최소 힙) 자료구조를 직접 구현하여 가장 먼저 만료될 세션을 $O(1)$로 조회하고, 수천 개의 타이머 대신 단일 마스터 타이머 하나만으로 전체 세션의 라이프사이클을 관리하는 아키텍처를 설계했습니다. 또한 Map을 병행 사용하여 특정 세션의 갱신 효율성도 확보했습니다.
+
+Redis와 같은 외부 인프라 도입도 적극 고려했으나, 네트워크 I/O 오버헤드와 관리 복잡도를 피하기 위해 In-Memory 자료구조를 택했습니다. 데이터 유실 위험이라는 Trade-off는 중요 시점마다 DB에 저장하는 Write-behind 전략으로 보완했습니다. 결과적으로 불필요한 타이머 객체 생성을 막아 CPU 및 메모리 효율을 극대화하였습니다.
+
+> 작성자: 임장혁
+>
+> [[BE] 실시간 세션 스케줄링 - Min-Heap 자료구조를 활용한 세션 TTL 관리](https://github.com/boostcampwm2025/web23-Synapse/wiki/%5BBE%5D-실시간-세션-스케줄링)
+
+<br>
+
+### [FE] Web Audio API 기반 마이크 증폭 & FFT 오디오 시각화
+
+이 문서는 브라우저 음성 녹음 환경에서 발생한 마이크 입력 편차 문제를 해결하기 위해
+Web Audio API의 GainNode와 FFT 기반 시각화를 적용한 과정을 정리한 부분입니다.
+
+> 작성자: 강범창
+>
+> [[FE] 마이크 증폭(게인) 푸리에(FFT) 기반 오디오 시각화 정리](https://github.com/boostcampwm2025/web23-Synapse/wiki/%5BFE%5D-%EB%A7%88%EC%9D%B4%ED%81%AC-%EC%A6%9D%ED%8F%AD%28%EA%B2%8C%EC%9D%B8%29---%ED%91%B8%EB%A6%AC%EC%97%90%28FFT%29-%EA%B8%B0%EB%B0%98-%EC%98%A4%EB%94%94%EC%98%A4-%EC%8B%9C%EA%B0%81%ED%99%94-%EC%A0%95%EB%A6%AC)
+
+<br>
+
+### [FE] Zod + iron-session 기반 인증 세션 관리와 BFF 패턴 적용
+
+프론트엔드에서 인증이 필요한 요청을 안정적으로 처리하기 위해
+Zod 기반 입력 검증과 iron-session 세션 관리,
+Next.js 서버 액션을 활용한 BFF 유사 구조를 적용한 기록입니다.
+
+> 작성자: 강범창
+>
+> [[FE] Zod ↔ iron‐session ↔ (Proxy BFF)로 인증 요청 안정성 올리기](https://github.com/boostcampwm2025/web23-Synapse/wiki/%5BFE%5D-Zod-%E2%86%94-iron%E2%80%90session-%E2%86%94-%28Proxy-BFF%29%EB%A1%9C-%EC%9D%B8%EC%A6%9D-%EC%9A%94%EC%B2%AD-%EC%95%88%EC%A0%95%EC%84%B1-%EC%98%AC%EB%A6%AC%EA%B8%B0)
