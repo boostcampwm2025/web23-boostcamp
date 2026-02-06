@@ -169,3 +169,31 @@ createParamDecorator()를 활용해 인증 사용자 정보 추출 로직을 커
 > 작성자: 박영규
 >
 > [[BE] 루브릭지표를 활용해 면접 피드백하기](https://github.com/boostcampwm2025/web23-PSI/wiki/%5BBE%5D-%EB%A3%A8%EB%B8%8C%EB%A6%AD%EC%A7%80%ED%91%9C%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%B4-%EB%A9%B4%EC%A0%91-%ED%94%BC%EB%93%9C%EB%B0%B1%ED%95%98%EA%B8%B0)
+
+<br>
+
+### [BE] 무결점 배포를 위한 품질 게이트 - CI 통합 E2E 테스트 인프라 구축
+PSI 프로젝트는 모노레포 구조 내에서 백엔드와 프론트엔드가 긴밀하게 상호작용하는 환경으로, 로컬과 배포 환경(Staging/Production)의 불일치로 인한 'Flaky Test'와 데이터 간섭 문제가 빈번했습니다. 이를 해결하기 위해 CI 파이프라인 내에 프로덕션과 동일한 MySQL Service Container를 통합하고, 외래 키 제약 조건을 무시하며 데이터를 원자적으로 초기화하는 seed-db 유틸리티를 구현하여 완전한 환경 격리를 달성했습니다.
+
+또한, 런타임 에러를 방지하기 위해 NestJS의 ValidationPipe를 엄격하게 설정(Whitelist/ForbidNonWhitelisted)하여, 잘못된 데이터가 비즈니스 로직에 진입하기 전에 차단하는 Fail Fast 전략을 구축했습니다.
+
+비록 CI 실행 속도가 다소 느려지는 Trade-off가 있었으나, "내 로컬에서는 되는데"라는 불확실성을 제거하고 CI 파이프라인 통과가 곧 배포 안정성을 보장하는 무결점 배포 문화를 정착시켰습니다.
+
+> 작성자: 임장혁
+> 
+> [[BE] 무결점 배포를 위한 품질 게이트 - CI 통합 E2E 테스트 인프라 구축](https://github.com/boostcampwm2025/web23-Synapse/wiki/%5BBE%5D-무결점-배포를-위한-품질-게이트)
+
+<br>
+
+### [BE] 실시간 세션 스케줄링 - Min-Heap 자료구조를 활용한 세션 TTL 관리
+PSI의 AI 면접 시스템은 세션 정보의 정리를 위해 실시간 타임아웃(TTL)을 관리해야 합니다. 하지만 개별 세션마다 setTimeout을 생성하는 기존 방식은 Node.js 이벤트 루프에 과부하(Starvation)를 일으키고 정밀도를 떨어뜨리는 문제가 있었습니다.
+
+이를 해결하기 위해 Min-Heap(최소 힙) 자료구조를 직접 구현하여 가장 먼저 만료될 세션을 $O(1)$로 조회하고, 수천 개의 타이머 대신 단일 마스터 타이머 하나만으로 전체 세션의 라이프사이클을 관리하는 아키텍처를 설계했습니다. 또한 Map을 병행 사용하여 특정 세션의 갱신 효율성도 확보했습니다.
+
+Redis와 같은 외부 인프라 도입도 적극 고려했으나, 네트워크 I/O 오버헤드와 관리 복잡도를 피하기 위해 In-Memory 자료구조를 택했습니다. 데이터 유실 위험이라는 Trade-off는 중요 시점마다 DB에 저장하는 Write-behind 전략으로 보완했습니다. 결과적으로 불필요한 타이머 객체 생성을 막아 CPU 및 메모리 효율을 극대화하였습니다.
+
+> 작성자: 임장혁
+> 
+> [[BE] 실시간 세션 스케줄링 - Min-Heap 자료구조를 활용한 세션 TTL 관리](https://github.com/boostcampwm2025/web23-Synapse/wiki/%5BBE%5D-실시간-세션-스케줄링)
+
+<br>
